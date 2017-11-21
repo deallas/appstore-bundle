@@ -1,0 +1,37 @@
+{
+  "name": "dreamcommerce/shop-appstore",
+  "type": "library",
+  "description": "Component for DreamCommerce-based shops application",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Michał Korus",
+      "email": "michal.korus@dreamcommerce.com"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "sylius/resource": "^1.0",
+    "sylius/registry": "^1.0"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "^4.0"
+  },
+  "config": {
+    "bin-dir": "bin"
+  },
+  "autoload": {
+    "psr-4": { "DreamCommerce\\Component\\ShopAppstore\\": "" }
+  },
+  "autoload-dev": {
+    "psr-4": { "DreamCommerce\\Component\\ShopAppstore\\spec\\": "spec/" }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../*/*"
+    }
+  ]
+}

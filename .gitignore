@@ -1,4 +1,4 @@
-vendor
-composer.lock
 .idea
 nbproject
+.php_cs.cache
+/docker/docker-compose.yml
