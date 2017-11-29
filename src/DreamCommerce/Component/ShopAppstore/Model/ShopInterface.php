@@ -5,30 +5,56 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
 use Doctrine\Common\Collections\Collection;
+use Psr\Http\Message\UriInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
+use Sylius\Component\Resource\Model\TimestampableInterface;
 
-interface ShopInterface extends ResourceInterface
+interface ShopInterface extends ResourceInterface, TimestampableInterface, ApplicationDependInterface
 {
-    /**
-     * @param BillingInterface|null $billing
-     */
-    public function setBilling(?BillingInterface $billing): void;
+    public const STATE_UNPAID       = 'unpaid';
+    public const STATE_PAID         = 'paid';
+    public const STATE_REFUNDED     = 'refunded';
+    public const STATE_CANCELLED    = 'cancelled';
 
     /**
-     * @return BillingInterface|null
+     * @return null|string
      */
-    public function getBilling(): ?BillingInterface;
+    public function getName(): ?string;
 
     /**
-     * @param string $shopUrl
+     * @param null|string $name
      */
-    public function setShopUrl(string $shopUrl): void;
+    public function setName(?string $name): void;
 
     /**
-     * get shop url
-     * @return string
+     * @return bool
      */
-    public function getShopUrl();
+    public function isInstalled(): bool;
+
+    /**
+     * @param bool $installed
+     */
+    public function setInstalled(bool $installed): void;
+
+    /**
+     * @return null|string
+     */
+    public function getState(): ?string;
+
+    /**
+     * @param string|null $state
+     */
+    public function setState(?string $state): void;
+
+    /**
+     * @param UriInterface $uri
+     */
+    public function setUri(?UriInterface $uri): void;
+
+    /**
+     * @return UriInterface|null
+     */
+    public function getUri(): ?UriInterface;
 
     /**
      * @return TokenInterface|null
@@ -69,5 +95,5 @@ interface ShopInterface extends ResourceInterface
     /**
      * @param integer $version
      */
-    public function setVersion(integer $version): void;
+    public function setVersion(?integer $version): void;
 }

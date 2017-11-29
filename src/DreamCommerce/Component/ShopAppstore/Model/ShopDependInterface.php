@@ -1,9 +1,18 @@
 <?php
-namespace DreamCommerce\Component\ShopAppstore\Model;
 
+declare(strict_types=1);
+
+namespace DreamCommerce\Component\ShopAppstore\Model;
 
 interface ShopDependInterface
 {
-    public function getShop();
-    public function setShop(ShopInterface $shop);
+    /**
+     * @return ShopInterface|null
+     */
+    public function getShop(): ?ShopInterface;
+
+    /**
+     * @param ShopInterface|null $shop
+     */
+    public function setShop(?ShopInterface $shop): void;
 }

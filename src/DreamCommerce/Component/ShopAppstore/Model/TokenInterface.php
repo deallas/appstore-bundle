@@ -7,7 +7,7 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 use DateTime;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-interface TokenInterface extends ResourceInterface
+interface TokenInterface extends ResourceInterface, ShopDependInterface
 {
     /**
      * @param DateTime $expiresAt
@@ -30,27 +30,12 @@ interface TokenInterface extends ResourceInterface
     public function getAccessToken(): ?string;
 
     /**
-     * @param string $refreshToken
-     * @return mixed
+     * @param string|null $refreshToken
      */
-    public function setRefreshToken($refreshToken);
+    public function setRefreshToken(?string $refreshToken): void;
 
     /**
-     * get refresh token
-     * @return string
+     * @return string|null
      */
-    public function getRefreshToken();
-
-    /**
-     * set shop
-     * @param ShopInterface $shop
-     * @return mixed
-     */
-    public function setShop(ShopInterface $shop);
-
-    /**
-     * get shop
-     * @return ShopInterface
-     */
-    public function getShop();
+    public function getRefreshToken(): ?string;
 }

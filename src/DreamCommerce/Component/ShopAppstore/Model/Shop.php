@@ -4,256 +4,216 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use DreamCommerce\Component\Common\Factory\DateTimeFactory;
+use Psr\Http\Message\UriInterface;
+use Sylius\Component\Resource\Model\TimestampableTrait;
 
 class Shop implements ShopInterface
 {
+    use TimestampableTrait;
+    use ApplicationDependTrait;
+
     /**
-     * @var int
+     * @var mixed
      */
     protected $id;
 
     /**
-     * @var int
-     */
-    protected $settings;
-
-    /**
-     * @var
-     */
-    protected $register;
-
-    /**
-     * shop identifier
      * @var string
      */
     protected $name;
 
     /**
-     * shop URL
-     * @var string
+     * @var string|null
      */
-    protected $shopUrl;
+    protected $state = ShopInterface::STATE_UNPAID;
 
     /**
-     * application name
-     * @var string
+     * @var integer|null
      */
-    protected $app;
+    protected $version;
 
     /**
-     * billing entity handle
-     * @var BillingInterface
+     * @var bool
      */
-    protected $billing;
+    protected $installed = false;
 
     /**
-     * tokens
+     * @var UriInterface
+     */
+    protected $uri;
+
+    /**
      * @var TokenInterface
      */
     protected $token;
 
     /**
-     * paid subscriptions
-     * @var SubscriptionInterface[]
+     * @var Collection|SubscriptionInterface[]
      */
     protected $subscriptions;
 
     /**
-     * version value
-     * @var integer
+     * @param DateTimeFactory|null $dateTimeFactory
      */
-    protected $version;
-
-    /**
-     * is installed
-     * @var bool
-     */
-    protected $installed;
-
-    /**
-     * @var string
-     */
-    protected $hash;
-
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function __construct(?DateTimeFactory $dateTimeFactory)
     {
-        return $this->id;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setShopUrl($shopUrl)
-    {
-        $this->shopUrl = $shopUrl;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getShopUrl()
-    {
-        return $this->shopUrl;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getToken(){
-        return $this->token;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setToken(TokenInterface $token){
-        $this->token = $token;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getApp()
-    {
-        return $this->app;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setApp($app)
-    {
-        $this->app = $app;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getBilling(){
-        return $this->billing;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setBilling(BillingInterface $billingInterface){
-        $this->billing = $billingInterface;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSubscriptions(){
-        return $this->subscriptions;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function addSubscription(SubscriptionInterface $subscription){
-        $this->subscriptions[] = $subscription;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
-    }
-
-    /**
-     * get installed
-     * @return bool
-     */
-    public function getInstalled()
-    {
-        return $this->installed;
-    }
-
-    /**
-     * set installed
-     * @param bool $installed
-     * @return void
-     */
-    public function setInstalled($installed)
-    {
-        $this->installed = $installed;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSettings(): int
-    {
-        return $this->settings;
-    }
-
-    /**
-     * @param int $settings
-     */
-    public function setSettings(int $settings)
-    {
-        $this->settings = $settings;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRegister()
-    {
-        return $this->register;
-    }
-
-    /**
-     * @param mixed $register
-     */
-    public function setRegister($register)
-    {
-        $this->register = $register;
+        $this->subscriptions = new ArrayCollection();
+        if($dateTimeFactory === null) {
+            $this->createdAt = new DateTime();
+        } else {
+            $this->createdAt = $dateTimeFactory->createNew();
+        }
     }
 
     /**
      * @return string
      */
-    public function getHash(): string
+    public function __toString(): string
     {
-        return $this->hash;
+        return (string) $this->getId();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHash(string $hash)
+    public function getId()
     {
-        $this->hash = $hash;
+        return $this->id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isInstalled(): bool
+    {
+        return $this->installed;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setInstalled(bool $installed): void
+    {
+        $this->installed = $installed;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setState(?string $state): void
+    {
+        $this->state = $state;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUri(?UriInterface $uri): void
+    {
+        $this->uri = $uri;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUri(): ?UriInterface
+    {
+        return $this->uri;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getToken(): ?TokenInterface
+    {
+        return $this->token;
+    }
+
+    public function setToken(?TokenInterface $token): void
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSubscriptions(): Collection
+    {
+        return $this->subscriptions;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasSubscription(SubscriptionInterface $subscription): bool
+    {
+        return $this->subscriptions->contains($subscription);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addSubscription(SubscriptionInterface $subscription): void
+    {
+        if(!$this->hasSubscription($subscription)) {
+            $subscription->setShop($this);
+            $this->subscriptions->add($subscription);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeSubscription(SubscriptionInterface $subscription): void
+    {
+        if($this->hasSubscription($subscription)) {
+            $subscription->setShop(null);
+            $this->subscriptions->removeElement($subscription);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): ?integer
+    {
+        return $this->version;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setVersion(?integer $version): void
+    {
+        $this->version = $version;
     }
 }
 

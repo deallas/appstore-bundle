@@ -15,4 +15,17 @@ interface ShopRepositoryInterface extends RepositoryInterface
      * @return ShopInterface[]
      */
     public function findByApplication(ApplicationInterface $application): array;
+
+    /**
+     * @param string $name
+     * @return ShopInterface|null
+     */
+    public function findOneByName(string $name): ?ShopInterface;
+
+    /**
+     * @param string $name
+     * @param ApplicationInterface $application
+     * @return ShopInterface|null
+     */
+    public function findOneByNameAndApplication(string $name, ApplicationInterface $application): ?ShopInterface;
 }

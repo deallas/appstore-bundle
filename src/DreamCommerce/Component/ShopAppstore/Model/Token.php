@@ -1,116 +1,96 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
+use DateTime;
 
-/**
- * Class Token
- *
- * OAuth tokens instance
- *
- * @package DreamCommerce\Component\ShopAppstore\Model
- */
 class Token implements TokenInterface
 {
+    use ShopDependTrait;
+
     /**
      * @var int
      */
     protected $id;
 
     /**
-     * expiration date
-     * @var \DateTime
+     * @var DateTime
      */
     protected $expiresAt;
 
     /**
-     * access token
      * @var string
      */
     protected $accessToken;
 
     /**
-     * refresh token
      * @var string
      */
     protected $refreshToken;
 
     /**
-     * shop handle
-     * @var ShopInterface
+     * @return string
      */
-    protected $shop;
+    public function __toString(): string
+    {
+        return (string) $this->getId();
+    }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function setExpiresAt(\DateTime $expiresAt)
+    public function setExpiresAt(?DateTime $expiresAt): void
     {
         $this->expiresAt = $expiresAt;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getExpiresAt()
+    public function getExpiresAt(): ?DateTime
     {
         return $this->expiresAt;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(?string $accessToken): void
     {
         $this->accessToken = $accessToken;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getAccessToken()
+    public function getAccessToken(): ?string
     {
         return $this->accessToken;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function setRefreshToken($refreshToken)
+    public function setRefreshToken(?string $refreshToken): void
     {
         $this->refreshToken = $refreshToken;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getRefreshToken()
+    public function getRefreshToken(): ?string
     {
         return $this->refreshToken;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function setShop(ShopInterface $shop)
-    {
-        $this->shop = $shop;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getShop()
-    {
-        return $this->shop;
-    }
-
 }

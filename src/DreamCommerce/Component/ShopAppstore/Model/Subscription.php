@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
 use DateTime;
+use DreamCommerce\Component\Common\Factory\DateTimeFactory;
+use Sylius\Component\Resource\Model\TimestampableTrait;
 
 class Subscription implements SubscriptionInterface
 {
+    use ShopDependTrait;
+    use TimestampableTrait;
+
     /**
      * @var int
      */
@@ -19,9 +24,16 @@ class Subscription implements SubscriptionInterface
     protected $expiresAt;
 
     /**
-     * @var ShopInterface
+     * @param DateTimeFactory|null $dateTimeFactory
      */
-    protected $shop;
+    public function __construct(?DateTimeFactory $dateTimeFactory)
+    {
+        if($dateTimeFactory === null) {
+            $this->createdAt = new DateTime();
+        } else {
+            $this->createdAt = $dateTimeFactory->createNew();
+        }
+    }
 
     /**
      * @return string
@@ -53,21 +65,5 @@ class Subscription implements SubscriptionInterface
     public function getExpiresAt(): ?DateTime
     {
         return $this->expiresAt;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setShop(?ShopInterface $shop): void
-    {
-        $this->shop = $shop;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getShop(): ?ShopInterface
-    {
-        return $this->shop;
     }
 }

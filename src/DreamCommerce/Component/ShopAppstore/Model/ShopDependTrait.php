@@ -1,30 +1,29 @@
 <?php
-namespace DreamCommerce\Component\ShopAppstore\Model;
 
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+declare(strict_types=1);
+
+namespace DreamCommerce\Component\ShopAppstore\Model;
 
 trait ShopDependTrait
 {
     /**
-     * @var \DreamCommerce\Component\ShopAppstore\Model\ShopInterface
+     * @var ShopInterface|null
      */
     protected $shop;
 
     /**
-     * @return \DreamCommerce\Component\ShopAppstore\Model\ShopInterface
+     * @return ShopInterface|null
      */
-    public function getShop(): ShopInterface
+    public function getShop(): ?ShopInterface
     {
         return $this->shop;
     }
 
     /**
-     * @param \DreamCommerce\Component\ShopAppstore\Model\ShopInterface $shop
+     * @param ShopInterface|null $shop
      */
-    public function setShop(ShopInterface $shop)
+    public function setShop(?ShopInterface $shop): void
     {
         $this->shop = $shop;
     }
-
-
 }

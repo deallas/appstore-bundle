@@ -1,18 +1,24 @@
 {
   "name": "dreamcommerce/shop-appstore",
   "type": "library",
-  "description": "Component for DreamCommerce-based shops application",
+  "description": "Component for DreamCommerce-based shop application",
   "license": "MIT",
   "authors": [
     {
       "name": "Michał Korus",
       "email": "michal.korus@dreamcommerce.com"
+    },
+    {
+      "name": "Przemysław eRIZ Pawliczuk",
+      "email": "przemyslaw.pawliczuk@shoper.pl"
     }
   ],
   "require": {
     "php": "^7.1",
     "sylius/resource": "^1.0",
-    "sylius/registry": "^1.0"
+    "sylius/registry": "^1.0",
+    "psr/http-message": "^1.0",
+    "dreamcommerce/common-bundle": "^1.0"
   },
   "require-dev": {
     "phpspec/phpspec": "^4.0"
