@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing;
 
-use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Sylius\Component\Registry\ServiceRegistryInterface;
 
-interface DispatcherInterface
+interface DispatcherInterface extends ServiceRegistryInterface
 {
-    /**
-     * @param string $action
-     * @param MessageResolverInterface $resolver
-     */
-    public function registerResolver(string $action, MessageResolverInterface $resolver): void;
+    public const ACTION_BILLING_INSTALL         = 'billing_install';
+    public const ACTION_BILLING_SUBSCRIPTION    = 'billing_subscription';
+    public const ACTION_INSTALL                 = 'install';
+    public const ACTION_UPGRADE                 = 'upgrade';
+    public const ACTION_UNINSTALL               = 'uninstall';
 
     /**
      * @param ServerRequestInterface $serverRequest

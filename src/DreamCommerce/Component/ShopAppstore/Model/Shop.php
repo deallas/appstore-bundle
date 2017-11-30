@@ -19,42 +19,47 @@ class Shop implements ShopInterface
     /**
      * @var mixed
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
      */
-    protected $name;
+    private $name;
 
     /**
      * @var string|null
      */
-    protected $state = ShopInterface::STATE_UNPAID;
+    private $state;
+
+    /**
+     * @var string|null
+     */
+    private $billingState;
+
+    /**
+     * @var string|null
+     */
+    private $subscriptionState;
 
     /**
      * @var integer|null
      */
-    protected $version;
-
-    /**
-     * @var bool
-     */
-    protected $installed = false;
+    private $version;
 
     /**
      * @var UriInterface
      */
-    protected $uri;
+    private $uri;
 
     /**
      * @var TokenInterface
      */
-    protected $token;
+    private $token;
 
     /**
      * @var Collection|SubscriptionInterface[]
      */
-    protected $subscriptions;
+    private $subscriptions;
 
     /**
      * @param DateTimeFactory|null $dateTimeFactory
@@ -104,17 +109,33 @@ class Shop implements ShopInterface
     /**
      * {@inheritdoc}
      */
-    public function isInstalled(): bool
+    public function setBillingState(?string $billingState): void
     {
-        return $this->installed;
+        $this->billingState = $billingState;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setInstalled(bool $installed): void
+    public function getBillingState(): ?string
     {
-        $this->installed = $installed;
+        return $this->billingState;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSubscriptionState(?string $subscriptionState): void
+    {
+        $this->subscriptionState = $subscriptionState;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSubscriptionState(): ?string
+    {
+        return $this->subscriptionState;
     }
 
     /**

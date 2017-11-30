@@ -16,12 +16,12 @@ class Subscription implements SubscriptionInterface
     /**
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @var DateTime
      */
-    protected $expiresAt;
+    private $expiresAt;
 
     /**
      * @param DateTimeFactory|null $dateTimeFactory

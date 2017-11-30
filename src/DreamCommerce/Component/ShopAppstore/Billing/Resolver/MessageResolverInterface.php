@@ -8,5 +8,5 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 
 interface MessageResolverInterface
 {
-    public function resolve(Message $message);
+    public function resolve(Message $message): void;
 }

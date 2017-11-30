@@ -5,30 +5,25 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Billing\Payload;
 
 use DateTime;
+use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 
 abstract class Message
 {
-    public const ACTION_BILLING_INSTALL         = 'billing_install';
-    public const ACTION_BILLING_SUBSCRIPTION    = 'billing_subscription';
-    public const ACTION_INSTALL                 = 'install';
-    public const ACTION_UPGRADE                 = 'upgrade';
-    public const ACTION_UNINSTALL               = 'uninstall';
-
     /**
      * @var ShopInterface
      */
     protected $shop;
 
     /**
+     * @var ApplicationInterface
+     */
+    protected $application;
+
+    /**
      * @var DateTime
      */
     protected $dateTime;
-
-    /**
-     * @return string
-     */
-    abstract public function getAction(): string;
 
     /**
      * @return ShopInterface
@@ -39,10 +34,28 @@ abstract class Message
     }
 
     /**
+     * @return ApplicationInterface
+     */
+    public function getApplication(): ApplicationInterface
+    {
+        return $this->application;
+    }
+
+    /**
      * @return DateTime
      */
     public function getDateTime(): DateTime
     {
         return $this->dateTime;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequiredParams(): array
+    {
+        return [
+            'shop', 'shop_url', 'application_code', 'hash', 'timestamp'
+        ];
     }
 }

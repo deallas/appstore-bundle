@@ -13,22 +13,22 @@ class Token implements TokenInterface
     /**
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    protected $expiresAt;
+    private $expiresAt;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $accessToken;
+    private $accessToken;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $refreshToken;
+    private $refreshToken;
 
     /**
      * @return string

@@ -14,14 +14,6 @@ final class BillingSubscription extends Message
     private $subscriptionEndTime;
 
     /**
-     * {@inheritdoc}
-     */
-    public function getAction(): string
-    {
-        return Message::ACTION_BILLING_SUBSCRIPTION;
-    }
-
-    /**
      * @return DateTime
      */
     public function getSubscriptionEndTime(): DateTime

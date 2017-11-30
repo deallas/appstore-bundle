@@ -17,14 +17,6 @@ final class Install extends Message
     private $authCode;
 
     /**
-     * {@inheritdoc}
-     */
-    public function getAction(): string
-    {
-        return Message::ACTION_INSTALL;
-    }
-
-    /**
      * @return int
      */
     public function getApplicationVersion(): int

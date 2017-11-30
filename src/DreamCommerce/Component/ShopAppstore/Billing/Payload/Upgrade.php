@@ -12,14 +12,6 @@ final class Upgrade extends Message
     private $applicationVersion;
 
     /**
-     * {@inheritdoc}
-     */
-    public function getAction(): string
-    {
-        return Message::ACTION_UPGRADE;
-    }
-
-    /**
      * @return int
      */
     public function getApplicationVersion(): int

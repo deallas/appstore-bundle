@@ -4,31 +4,41 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingSubscription;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
-use DreamCommerce\Component\ShopAppstore\Model\SubscriptionInterface;
-use Sylius\Component\Resource\Factory\FactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Factory\SubscriptionFactoryInterface;
 use Webmozart\Assert\Assert;
 
 final class BillingSubscriptionResolver implements MessageResolverInterface
 {
     /**
-     * @var FactoryInterface
+     * @var SubscriptionFactoryInterface
      */
     private $subscriptionFactory;
 
-    public function resolve(Message $message)
+    /**
+     * @var ObjectManager
+     */
+    private $subscriptionObjectManager;
+
+    public function __construct(ObjectManager $subscriptionObjectManager, SubscriptionFactoryInterface $subscriptionFactory)
     {
+        $this->subscriptionFactory = $subscriptionFactory;
+        $this->subscriptionObjectManager = $subscriptionObjectManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve(Message $message): void
+    {
+        /** @var BillingSubscription $message */
         Assert::isInstanceOf($message, BillingSubscription::class);
 
-        $shop = $message->getShop();
+        $subscription = $this->subscriptionFactory->createNewByPayload($message);
 
-        /** @var SubscriptionInterface $subscription */
-        $subscription = $this->subscriptionFactory->createNew();
-        $subscription->setExpiresAt($expiresAt);
-        $subscription->setShop($shop);
-
-        $this->objectManager->persist($subscription);
-        $this->objectManager->flush();
+        $this->subscriptionObjectManager->persist($subscription);
+        $this->subscriptionObjectManager->flush();
     }
 }
