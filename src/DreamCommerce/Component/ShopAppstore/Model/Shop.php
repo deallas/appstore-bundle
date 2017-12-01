@@ -7,7 +7,7 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use DreamCommerce\Component\Common\Factory\DateTimeFactory;
+use DreamCommerce\Component\Common\Factory\DateTimeFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use Sylius\Component\Resource\Model\TimestampableTrait;
 
@@ -62,9 +62,9 @@ class Shop implements ShopInterface
     private $subscriptions;
 
     /**
-     * @param DateTimeFactory|null $dateTimeFactory
+     * @param DateTimeFactoryInterface|null $dateTimeFactory
      */
-    public function __construct(?DateTimeFactory $dateTimeFactory)
+    public function __construct(?DateTimeFactoryInterface $dateTimeFactory)
     {
         $this->subscriptions = new ArrayCollection();
         if($dateTimeFactory === null) {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
 use DateTime;
-use DreamCommerce\Component\Common\Factory\DateTimeFactory;
+use DreamCommerce\Component\Common\Factory\DateTimeFactoryInterface;
 use Sylius\Component\Resource\Model\TimestampableTrait;
 
 class Subscription implements SubscriptionInterface
@@ -24,9 +24,9 @@ class Subscription implements SubscriptionInterface
     private $expiresAt;
 
     /**
-     * @param DateTimeFactory|null $dateTimeFactory
+     * @param DateTimeFactoryInterface|null $dateTimeFactory
      */
-    public function __construct(?DateTimeFactory $dateTimeFactory)
+    public function __construct(?DateTimeFactoryInterface $dateTimeFactory)
     {
         if($dateTimeFactory === null) {
             $this->createdAt = new DateTime();

@@ -15,22 +15,15 @@ use Webmozart\Assert\Assert;
 final class UninstallResolver implements MessageResolverInterface
 {
     /**
-     * @var ObjectManager
-     */
-    private $shopObjectManager;
-
-    /**
      * @var FactoryInterface
      */
     private $shopStateMachineFactory;
 
     /**
-     * @param ObjectManager $shopObjectManager
      * @param FactoryInterface $shopStateMachineFactory
      */
-    public function __construct(ObjectManager $shopObjectManager, FactoryInterface $shopStateMachineFactory)
+    public function __construct(FactoryInterface $shopStateMachineFactory)
     {
-        $this->shopObjectManager = $shopObjectManager;
         $this->shopStateMachineFactory = $shopStateMachineFactory;
     }
 
@@ -49,8 +42,5 @@ final class UninstallResolver implements MessageResolverInterface
         } else {
             $stateMachine->apply(ShopTransitions::TRANSITION_UNINSTALL);
         }
-
-        $this->shopObjectManager->persist($shop);
-        $this->shopObjectManager->flush();
     }
 }

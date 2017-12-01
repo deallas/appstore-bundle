@@ -12,19 +12,6 @@ use Webmozart\Assert\Assert;
 final class UpgradeResolver implements MessageResolverInterface
 {
     /**
-     * @var ObjectManager
-     */
-    private $shopObjectManager;
-
-    /**
-     * @param ObjectManager $shopObjectManager
-     */
-    public function __construct(ObjectManager $shopObjectManager)
-    {
-        $this->shopObjectManager = $shopObjectManager;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function resolve(Message $message): void
@@ -38,8 +25,5 @@ final class UpgradeResolver implements MessageResolverInterface
         if($appVersion > $shop->getVersion()) {
             $shop->setVersion($appVersion);
         }
-
-        $this->shopObjectManager->persist($shop);
-        $this->shopObjectManager->flush();
     }
 }
