@@ -9,7 +9,7 @@ final class Upgrade extends Message
     /**
      * @var integer
      */
-    private $applicationVersion;
+    protected $applicationVersion;
 
     /**
      * @return int

@@ -21,16 +21,16 @@
     "dreamcommerce/common-bundle": "dev-master"
   },
   "require-dev": {
-    "phpspec/phpspec": "^4.0"
+    "phpunit/phpunit": "^6.5"
   },
   "config": {
     "bin-dir": "bin"
   },
   "autoload": {
-    "psr-4": { "DreamCommerce\\Component\\ShopAppstore\\": "" }
-  },
-  "autoload-dev": {
-    "psr-4": { "DreamCommerce\\Component\\ShopAppstore\\spec\\": "spec/" }
+    "psr-4": { "DreamCommerce\\Component\\ShopAppstore\\": "" },
+    "exclude-from-classmap": [
+      "/Tests/"
+    ]
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

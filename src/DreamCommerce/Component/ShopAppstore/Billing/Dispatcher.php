@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Billing;
 
 use DateTime;
+use DateTimeZone;
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Factory\UriFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
+use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
 use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
@@ -17,6 +19,7 @@ use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Sylius\Component\Registry\NonExistingServiceException;
 use Sylius\Component\Registry\ServiceRegistry;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 
@@ -25,23 +28,12 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
     /**
      * @var array
      */
-    private $availableActions = [
-        self::ACTION_BILLING_INSTALL,
-        self::ACTION_BILLING_SUBSCRIPTION,
-        self::ACTION_INSTALL,
-        self::ACTION_UNINSTALL,
-        self::ACTION_UPGRADE
-    ];
-
-    /**
-     * @var array
-     */
     private $mapActionToClass = [
-        self::ACTION_BILLING_INSTALL => Payload\BillingInstall::class,
-        self::ACTION_BILLING_SUBSCRIPTION => Payload\BillingSubscription::class,
-        self::ACTION_INSTALL => Payload\Install::class,
-        self::ACTION_UNINSTALL => Payload\Uninstall::class,
-        self::ACTION_UPGRADE => Payload\Upgrade::class
+        self::ACTION_BILLING_INSTALL        => Payload\BillingInstall::class,
+        self::ACTION_BILLING_SUBSCRIPTION   => Payload\BillingSubscription::class,
+        self::ACTION_INSTALL                => Payload\Install::class,
+        self::ACTION_UNINSTALL              => Payload\Uninstall::class,
+        self::ACTION_UPGRADE                => Payload\Upgrade::class
     ];
 
     /**
@@ -95,15 +87,25 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
     public function dispatch(ServerRequestInterface $serverRequest): void
     {
         if($serverRequest->getMethod() !== 'POST') {
-            return;
+            throw UnableDispatchException::forInvalidRequestMethod($serverRequest);
         }
 
         $params = $serverRequest->getParsedBody();
-        $this->verifyRequirement($params);
 
-        /** @var ApplicationInterface $application */
-        $application = $this->applicationRegistry->get($params['application_code']);
-        $this->verifyPayload($application, $params);
+        try {
+            $this->verifyRequirements($params);
+        } catch(NotDefinedException $exception) {
+            throw UnableDispatchException::forUnfulfilledRequirements($serverRequest, $exception);
+        }
+
+        try {
+            /** @var ApplicationInterface $application */
+            $application = $this->applicationRegistry->get($params['application_code']);
+        } catch(NonExistingServiceException $exception) {
+            throw UnableDispatchException::forNotExistApplication($serverRequest, $exception);
+        }
+
+        $this->verifyPayload($serverRequest, $application, $params);
 
         /** @var UriInterface $shopUri */
         $shopUri = $this->uriFactory->createNewByUriString($params['shop_url']);
@@ -115,9 +117,14 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
             $shop->setUri($shopUri);
         }
 
-        /** @var MessageResolverInterface $resolver */
-        $resolver = $this->get($params['action']);
-        $resolver->resolve($this->getPayloadByAction($application, $shop, $params));
+        try {
+            /** @var MessageResolverInterface $resolver */
+            $resolver = $this->get($params['action']);
+        } catch(NonExistingServiceException $exception) {
+            throw UnableDispatchException::forNotSupportedAction($serverRequest, $exception);
+        }
+
+        $resolver->resolve($this->getPayload($application, $shop, $params));
 
         $this->shopObjectManager->persist($shop);
         $this->shopObjectManager->flush();
@@ -128,7 +135,7 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
      */
     public function has(string $identifier): bool
     {
-        if(!in_array($identifier, $this->availableActions)) {
+        if(!in_array($identifier, array_keys($this->mapActionToClass))) {
             throw new InvalidArgumentException('Action "' . $identifier . '" is not supported');
         }
 
@@ -139,11 +146,11 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
      * @param array $params
      * @throws NotDefinedException
      */
-    private function verifyRequirement(array $params): void
+    private function verifyRequirements(array $params = array()): void
     {
         $requiredParams = [ 'action', 'shop', 'shop_url', 'hash', 'timestamp', 'application_code' ];
 
-        if(isset($params['action'])) {
+        if(isset($params['action']) && !empty($params['action'])) {
             switch ($params['action']) {
                 case self::ACTION_BILLING_SUBSCRIPTION:
                     $requiredParams[] = 'subscription_end_time';
@@ -156,16 +163,18 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
                     $requiredParams[] = 'application_version';
                     break;
             }
+        } else {
+            throw NotDefinedException::forParameter('action');
         }
 
         foreach($requiredParams as $requiredParam) {
-            if (!isset($params[$requiredParam])) {
+            if (!isset($params[$requiredParam]) || empty($params[$requiredParam])) {
                 throw NotDefinedException::forParameter($requiredParam);
             }
         }
     }
 
-    public function verifyPayload(ApplicationInterface $application, array $params): void
+    private function verifyPayload(ServerRequestInterface $serverRequest, ApplicationInterface $application, array $params): void
     {
         $providedHash = $params['hash'];
         unset($params['hash']);
@@ -181,7 +190,7 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
 
         $computedHash = hash_hmac('sha512', $processedPayload, $application->getAppstoreSecret());
         if((string)$computedHash !== (string)$providedHash) {
-            // TODO throw exception
+            throw UnableDispatchException::forInvalidPayloadHash($serverRequest, $application);
         }
     }
 
@@ -191,10 +200,10 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
      * @param array $params
      * @return Payload\Message
      */
-    private function getPayloadByAction(ApplicationInterface $application, ShopInterface $shop, array $params): Payload\Message
+    private function getPayload(ApplicationInterface $application, ShopInterface $shop, array $params): Payload\Message
     {
         $messageClass = $this->mapActionToClass[$params['action']];
-        $dateTime = new DateTime($params['timestamp'], self::TIMEZONE);
+        $dateTime = new DateTime($params['timestamp'], new DateTimeZone(self::TIMEZONE));
 
         unset($params['timestamp']);
         unset($params['action']);
@@ -203,8 +212,8 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
         unset($params['application_code']);
 
         return new $messageClass(
-            $shop,
             $application,
+            $shop,
             $dateTime,
             $params
         );

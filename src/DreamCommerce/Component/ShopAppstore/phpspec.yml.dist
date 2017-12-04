@@ -1,5 +1,0 @@
-suites:
-    main:
-        namespace: DreamCommerce\Component\ShopAppstore
-        psr4_prefix: DreamCommerce\Component\ShopAppstore
-        src_path: .

@@ -9,12 +9,12 @@ final class Install extends Message
     /**
      * @var integer
      */
-    private $applicationVersion;
+    protected $applicationVersion;
 
     /**
      * @var string
      */
-    private $authCode;
+    protected $authCode;
 
     /**
      * @return int

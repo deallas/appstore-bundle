@@ -1,6 +1,6 @@
 FROM php:7.1-cli
 
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt-get install -y \
     curl \
     wget \
@@ -24,6 +24,8 @@ RUN apt-get install -y \
     && echo "xdebug.remote_autostart = 0" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_connect_back = 0" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.profiler_enable = 0" >> /usr/local/etc/php/conf.d/xdebug.ini \
-    && echo "xdebug.idekey = DC_OBJECT_AUDIT" >> /usr/local/etc/php/conf.d/xdebug.ini
+    && echo "xdebug.idekey = DC_SHOP_APPSTORE" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+EXPOSE 9000

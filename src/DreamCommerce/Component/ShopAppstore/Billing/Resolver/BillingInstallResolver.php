@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingInstall;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\ShopBillingTransitions;

@@ -17,30 +17,30 @@ abstract class Message implements ArrayableInterface
     /**
      * @var ShopInterface
      */
-    private $shop;
+    protected $shop;
 
     /**
      * @var ApplicationInterface
      */
-    private $application;
+    protected $application;
 
     /**
      * @var DateTime
      */
-    private $dateTime;
+    protected $dateTime;
 
     /**
-     * @param ShopInterface $shop
      * @param ApplicationInterface $application
+     * @param ShopInterface $shop
      * @param DateTime $dateTime
      * @param array $params
      */
-    public function __construct(ShopInterface $shop, ApplicationInterface $application, DateTime $dateTime, array $params = array())
+    public function __construct(ApplicationInterface $application, ShopInterface $shop, DateTime $dateTime, array $params = array())
     {
         $this->fromArray($params);
 
-        $this->shop = $shop;
         $this->application = $application;
+        $this->shop = $shop;
         $this->dateTime = $dateTime;
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing;
 
+use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
 use Psr\Http\Message\ServerRequestInterface;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 
@@ -19,6 +20,7 @@ interface DispatcherInterface extends ServiceRegistryInterface
 
     /**
      * @param ServerRequestInterface $serverRequest
+     * @throws UnableDispatchException
      */
     public function dispatch(ServerRequestInterface $serverRequest): void;
 }

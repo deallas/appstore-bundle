@@ -22,6 +22,18 @@ class Application implements ApplicationInterface
     private $appstoreSecret;
 
     /**
+     * @param string $appId
+     * @param string $appSecret
+     * @param string $appstoreSecret
+     */
+    public function __construct($appId, $appSecret, $appstoreSecret)
+    {
+        $this->appId = $appId;
+        $this->appSecret = $appSecret;
+        $this->appstoreSecret = $appstoreSecret;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getAppId(): string

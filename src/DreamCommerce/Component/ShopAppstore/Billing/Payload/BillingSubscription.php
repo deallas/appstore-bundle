@@ -11,7 +11,7 @@ final class BillingSubscription extends Message
     /**
      * @var DateTime
      */
-    private $subscriptionEndTime;
+    protected $subscriptionEndTime;
 
     /**
      * @return DateTime
