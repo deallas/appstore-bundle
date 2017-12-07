@@ -107,12 +107,12 @@ interface ShopInterface extends ResourceInterface, TimestampableInterface, Appli
     public function removeSubscription(SubscriptionInterface $subscription): void;
 
     /**
-     * @return integer|null
+     * @return int|null
      */
-    public function getVersion(): ?integer;
+    public function getVersion(): ?int;
 
     /**
-     * @param integer $version
+     * @param int|null $version
      */
-    public function setVersion(?integer $version): void;
+    public function setVersion(?int $version): void;
 }

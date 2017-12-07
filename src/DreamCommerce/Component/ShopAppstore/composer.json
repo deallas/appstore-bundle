@@ -18,6 +18,7 @@
     "sylius/resource": "^1.0",
     "sylius/registry": "^1.0",
     "psr/http-message": "^1.0",
+    "guzzlehttp/guzzle": "^6.2",
     "dreamcommerce/common-bundle": "dev-master"
   },
   "require-dev": {

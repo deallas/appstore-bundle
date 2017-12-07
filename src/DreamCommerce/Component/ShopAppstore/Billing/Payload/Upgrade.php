@@ -18,4 +18,12 @@ final class Upgrade extends Message
     {
         return $this->applicationVersion;
     }
+
+    /**
+     * @param mixed $applicationVersion
+     */
+    protected function setApplicationVersion($applicationVersion): void
+    {
+        $this->applicationVersion = (int) $applicationVersion;
+    }
 }

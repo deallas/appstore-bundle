@@ -224,7 +224,7 @@ class Shop implements ShopInterface
     /**
      * {@inheritdoc}
      */
-    public function getVersion(): ?integer
+    public function getVersion(): ?int
     {
         return $this->version;
     }
@@ -232,7 +232,7 @@ class Shop implements ShopInterface
     /**
      * {@inheritdoc}
      */
-    public function setVersion(?integer $version): void
+    public function setVersion(?int $version): void
     {
         $this->version = $version;
     }

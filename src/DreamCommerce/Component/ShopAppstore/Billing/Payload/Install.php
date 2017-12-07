@@ -31,4 +31,12 @@ final class Install extends Message
     {
         return $this->authCode;
     }
+
+    /**
+     * @param mixed $applicationVersion
+     */
+    protected function setApplicationVersion($applicationVersion): void
+    {
+        $this->applicationVersion = (int) $applicationVersion;
+    }
 }

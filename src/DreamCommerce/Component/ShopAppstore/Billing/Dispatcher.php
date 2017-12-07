@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing;
 
-use DateTime;
-use DateTimeZone;
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Factory\UriFactoryInterface;
@@ -203,19 +201,12 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
     private function getPayload(ApplicationInterface $application, ShopInterface $shop, array $params): Payload\Message
     {
         $messageClass = $this->mapActionToClass[$params['action']];
-        $dateTime = new DateTime($params['timestamp'], new DateTimeZone(self::TIMEZONE));
 
-        unset($params['timestamp']);
         unset($params['action']);
         unset($params['shop']);
         unset($params['shop_url']);
         unset($params['application_code']);
 
-        return new $messageClass(
-            $application,
-            $shop,
-            $dateTime,
-            $params
-        );
+        return new $messageClass($application, $shop, $params);
     }
 }

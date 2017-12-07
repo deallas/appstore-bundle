@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Billing\Payload;
 
 use DateTime;
+use DateTimeZone;
 use DreamCommerce\Component\Common\Model\ArrayableInterface;
 use DreamCommerce\Component\Common\Model\ArrayableTrait;
+use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 
@@ -27,21 +29,19 @@ abstract class Message implements ArrayableInterface
     /**
      * @var DateTime
      */
-    protected $dateTime;
+    protected $timestamp;
 
     /**
      * @param ApplicationInterface $application
      * @param ShopInterface $shop
-     * @param DateTime $dateTime
      * @param array $params
      */
-    public function __construct(ApplicationInterface $application, ShopInterface $shop, DateTime $dateTime, array $params = array())
+    public function __construct(ApplicationInterface $application, ShopInterface $shop, array $params = array())
     {
         $this->fromArray($params);
 
         $this->application = $application;
         $this->shop = $shop;
-        $this->dateTime = $dateTime;
     }
 
     /**
@@ -63,8 +63,20 @@ abstract class Message implements ArrayableInterface
     /**
      * @return DateTime
      */
-    public function getDateTime(): DateTime
+    public function getTimestamp(): DateTime
     {
-        return $this->dateTime;
+        return $this->timestamp;
+    }
+
+    /**
+     * @param mixed $timestamp
+     */
+    public function setTimestamp($timestamp): void
+    {
+        if(!($timestamp instanceof DateTime)) {
+            $timestamp = new DateTime($timestamp, new DateTimeZone(DispatcherInterface::TIMEZONE));
+        }
+
+        $this->timestamp = $timestamp;
     }
 }
