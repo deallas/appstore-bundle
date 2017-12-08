@@ -6,6 +6,7 @@ namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
 
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Uninstall;
+use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use DreamCommerce\Component\ShopAppstore\ShopTransitions;
 use SM\Factory\FactoryInterface;
@@ -36,10 +37,20 @@ final class UninstallResolver implements MessageResolverInterface
         $shop = $message->getShop();
 
         $stateMachine = $this->shopStateMachineFactory->get($shop, ShopTransitions::GRAPH);
-        if($shop->getState() === ShopInterface::STATE_PREFETCH_TOKENS) {
-            $stateMachine->apply(ShopTransitions::TRANSITION_CANCEL_DOWNLOAD_TOKENS);
-        } else {
-            $stateMachine->apply(ShopTransitions::TRANSITION_UNINSTALL);
+        switch($shop->getState()) {
+            case ShopInterface::STATE_PREFETCH_TOKENS:
+                $transition = ShopTransitions::TRANSITION_CANCEL_DOWNLOAD_TOKENS;
+                break;
+            case ShopInterface::STATE_REJECTED_AUTH_CODE:
+                $transition = ShopTransitions::TRANSITION_GIVE_UP;
+                break;
+            case ShopInterface::STATE_INSTALLED:
+                $transition = ShopTransitions::TRANSITION_UNINSTALL;
+                break;
+            default:
+                throw UnableDispatchException::forUnsupportedShopState($shop, $message);
         }
+
+        $stateMachine->apply($transition);
     }
 }

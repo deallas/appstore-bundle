@@ -9,24 +9,16 @@ use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Factory\UriFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Dispatcher;
 use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
-use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingInstall;
-use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingSubscription;
-use DreamCommerce\Component\ShopAppstore\Billing\Payload\Install;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
-use DreamCommerce\Component\ShopAppstore\Billing\Payload\Uninstall;
-use DreamCommerce\Component\ShopAppstore\Billing\Payload\Upgrade;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
-use DreamCommerce\Component\ShopAppstore\Tests\Fixtures\Billing\ExampleResolver;
-use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use stdClass;
 use Sylius\Component\Registry\NonExistingServiceException;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 
@@ -34,17 +26,6 @@ class DispatcherTest extends TestCase
 {
     private const APPSTORE_SECRET   = 'APPSTORE_SECRET';
     private const APPLICATION_CODE  = 'APPLICATION_CODE';
-
-    /**
-     * @var array
-     */
-    private $payloads = [
-        DispatcherInterface::ACTION_BILLING_INSTALL         => BillingInstall::class,
-        DispatcherInterface::ACTION_BILLING_SUBSCRIPTION    => BillingSubscription::class,
-        DispatcherInterface::ACTION_INSTALL                 => Install::class,
-        DispatcherInterface::ACTION_UNINSTALL               => Uninstall::class,
-        DispatcherInterface::ACTION_UPGRADE                 => Upgrade::class
-    ];
 
     /**
      * @var Dispatcher
@@ -81,6 +62,11 @@ class DispatcherTest extends TestCase
      */
     private $uriFactory;
 
+    /**
+     * @var ServiceRegistryInterface|MockObject
+     */
+    private $resolverRegistry;
+
     public function setUp()
     {
         $this->applicationRegistry = $this->getMockBuilder(ServiceRegistryInterface::class)->getMock();
@@ -88,44 +74,21 @@ class DispatcherTest extends TestCase
         $this->shopFactory = $this->getMockBuilder(ShopFactoryInterface::class)->getMock();
         $this->shopObjectManager = $this->getMockBuilder(ObjectManager::class)->getMock();
         $this->uriFactory = $this->getMockBuilder(UriFactoryInterface::class)->getMock();
+        $this->resolverRegistry = $this->getMockBuilder(ServiceRegistryInterface::class)->getMock();
 
         $this->dispatcher = new Dispatcher(
             $this->applicationRegistry,
             $this->shopRepository,
             $this->shopFactory,
             $this->shopObjectManager,
-            $this->uriFactory
+            $this->uriFactory,
+            $this->resolverRegistry
         );
     }
 
     public function testShouldImplements()
     {
         $this->assertInstanceOf(DispatcherInterface::class, $this->dispatcher);
-    }
-
-    /**
-     * @dataProvider validResolvers
-     *
-     * @param string $action
-     * @param string $className
-     */
-    public function testRegisterValidResolver(string $action , string $className)
-    {
-        $resolver = new $className();
-        $this->dispatcher->register($action, $resolver);
-        $this->assertSame($resolver, $this->dispatcher->get($action));
-    }
-
-    /**
-     * @dataProvider invalidResolvers
-     * @expectedException InvalidArgumentException
-     *
-     * @param string $action
-     * @param string $className
-     */
-    public function testRegisterInvalidResolver(string $action, string $className)
-    {
-        $this->dispatcher->register($action, new $className);
     }
 
     /**
@@ -267,7 +230,7 @@ class DispatcherTest extends TestCase
             ->method('resolve')
             ->will($this->returnCallback(function($payload) use($action) {
                 /** @var Message $payload */
-                $this->assertInstanceOf($this->payloads[$action], $payload);
+                $this->assertInstanceOf(DispatcherInterface::ACTION_PAYLOAD_MAP[$action], $payload);
 
                 $timestamp = $payload->getTimestamp();
                 $this->assertInstanceOf(DateTime::class, $timestamp);
@@ -302,7 +265,8 @@ class DispatcherTest extends TestCase
         $serverRequest = $this->getValidServerRequest($action);
 
         $resolver = $this->getMockBuilder(MessageResolverInterface::class)->getMock();
-        $this->dispatcher->register($action, $resolver);
+        $this->resolverRegistry->method('get')
+            ->willReturn($resolver);
 
         $uri = $this->getMockBuilder(UriInterface::class)->getMock();
 
@@ -349,26 +313,10 @@ class DispatcherTest extends TestCase
 
     /* --------------------------------------------------------------------- */
 
-    public function validResolvers()
-    {
-        return [
-            [ DispatcherInterface::ACTION_INSTALL, ExampleResolver::class ]
-        ];
-    }
-
-    public function invalidResolvers()
-    {
-        return [
-            [ DispatcherInterface::ACTION_INSTALL, stdClass::class ],
-            [ 'test', ExampleResolver::class ],
-            [ 'test', stdClass::class ]
-        ];
-    }
-
     public function validServerRequests()
     {
         $serverRequests = [];
-        foreach(array_keys($this->payloads) as $action) {
+        foreach(array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
             $serverRequests[] = [ $this->getValidServerRequest($action), $action ];
         }
 
@@ -380,7 +328,7 @@ class DispatcherTest extends TestCase
         $validParams = [
             'action' => DispatcherInterface::ACTION_UNINSTALL,
             'shop' => '12345',
-            'shop_url' => 'http://example.com',
+            'shop_url' => 'http://dreamcommerce.com',
             'hash' => '#',
             'timestamp' => time(),
             'application_code' => md5((string)time())
@@ -420,6 +368,10 @@ class DispatcherTest extends TestCase
 
     /* --------------------------------------------------------------------- */
 
+    /**
+     * @param string $action
+     * @return MockObject|ServerRequestInterface
+     */
     private function getValidServerRequest(string $action)
     {
         $serverRequest = $this->getMockBuilder(ServerRequestInterface::class)->getMock();
@@ -442,7 +394,7 @@ class DispatcherTest extends TestCase
         $params = [
             'action' => $action,
             'shop' => md5(uniqid((string)rand(), true)),
-            'shop_url' => 'http://example.com',
+            'shop_url' => 'http://dreamcommerce.com',
             'timestamp' => $dt->format('Y-m-d H:i:s'),
             'application_code' => self::APPLICATION_CODE
         ];
@@ -475,10 +427,14 @@ class DispatcherTest extends TestCase
 
     private function registerResolvers()
     {
-        foreach(array_keys($this->payloads) as $action) {
-            $resolver = $this->getMockBuilder(MessageResolverInterface::class)->getMock();
-            $this->dispatcher->register($action, $resolver);
-            $this->resolvers[$action] = $resolver;
+        $map = [];
+        foreach(array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
+            $this->resolvers[$action] = $this->getMockBuilder(MessageResolverInterface::class)->getMock();
+            $map[] = [ $action, $this->resolvers[$action] ];
         }
+
+        $this->resolverRegistry->method('get')
+            ->will($this->returnValueMap($map))
+        ;
     }
 }

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Exception\Billing;
 
+use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Exception\BillingException;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
@@ -16,6 +18,7 @@ class UnableDispatchException extends BillingException
     const CODE_NOT_EXIST_APPLICATION        = 12;
     const CODE_UNFULFILLED_REQUIREMENTS     = 13;
     const CODE_NOT_SUPPORTED_ACTION         = 14;
+    const CODE_UNSUPPORTED_SHOP_STATE       = 15;
 
     /**
      * @var ServerRequestInterface
@@ -26,6 +29,16 @@ class UnableDispatchException extends BillingException
      * @var ApplicationInterface
      */
     private $application;
+
+    /**
+     * @var ShopInterface
+     */
+    private $shop;
+
+    /**
+     * @var Message
+     */
+    private $payload;
 
     /**
      * @param ServerRequestInterface $serverRequest
@@ -95,6 +108,21 @@ class UnableDispatchException extends BillingException
     }
 
     /**
+     * @param ShopInterface $shop
+     * @param Message $payload
+     * @param Throwable|null $exception
+     * @return UnableDispatchException
+     */
+    public static function forUnsupportedShopState(ShopInterface $shop, Message $payload, Throwable $exception = null): UnableDispatchException
+    {
+        $exception = new static('Unsupported state of shop', self::CODE_UNSUPPORTED_SHOP_STATE, $exception);
+        $exception->payload = $payload;
+        $exception->shop = $shop;
+
+        return $exception;
+    }
+
+    /**
      * @return ServerRequestInterface|null
      */
     public function getServerRequest(): ?ServerRequestInterface
@@ -108,5 +136,21 @@ class UnableDispatchException extends BillingException
     public function getApplication(): ?ApplicationInterface
     {
         return $this->application;
+    }
+
+    /**
+     * @return ShopInterface
+     */
+    public function getShop(): ShopInterface
+    {
+        return $this->shop;
+    }
+
+    /**
+     * @return Message
+     */
+    public function getPayload(): Message
+    {
+        return $this->payload;
     }
 }

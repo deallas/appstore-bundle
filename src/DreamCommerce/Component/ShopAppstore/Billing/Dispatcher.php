@@ -14,26 +14,13 @@ use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
-use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Sylius\Component\Registry\NonExistingServiceException;
-use Sylius\Component\Registry\ServiceRegistry;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 
-final class Dispatcher extends ServiceRegistry implements DispatcherInterface
+final class Dispatcher implements DispatcherInterface
 {
-    /**
-     * @var array
-     */
-    private $mapActionToClass = [
-        self::ACTION_BILLING_INSTALL        => Payload\BillingInstall::class,
-        self::ACTION_BILLING_SUBSCRIPTION   => Payload\BillingSubscription::class,
-        self::ACTION_INSTALL                => Payload\Install::class,
-        self::ACTION_UNINSTALL              => Payload\Uninstall::class,
-        self::ACTION_UPGRADE                => Payload\Upgrade::class
-    ];
-
     /**
      * @var ServiceRegistryInterface
      */
@@ -60,23 +47,28 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
     private $uriFactory;
 
     /**
+     * @var ServiceRegistryInterface
+     */
+    private $resolverRegistry;
+
+    /**
      * @param ServiceRegistryInterface $applicationRegistry
      * @param ShopRepositoryInterface $shopRepository
      * @param ShopFactoryInterface $shopFactory
      * @param ObjectManager $shopObjectManager
      * @param UriFactoryInterface $uriFactory
+     * @param ServiceRegistryInterface $resolverRegistry
      */
     public function __construct(ServiceRegistryInterface $applicationRegistry, ShopRepositoryInterface $shopRepository,
                                 ShopFactoryInterface $shopFactory, ObjectManager $shopObjectManager,
-                                UriFactoryInterface $uriFactory)
+                                UriFactoryInterface $uriFactory, ServiceRegistryInterface $resolverRegistry)
     {
         $this->applicationRegistry = $applicationRegistry;
         $this->shopRepository = $shopRepository;
         $this->shopFactory = $shopFactory;
         $this->shopObjectManager = $shopObjectManager;
         $this->uriFactory = $uriFactory;
-
-        parent::__construct(MessageResolverInterface::class);
+        $this->resolverRegistry = $resolverRegistry;
     }
 
     /**
@@ -117,7 +109,7 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
 
         try {
             /** @var MessageResolverInterface $resolver */
-            $resolver = $this->get($params['action']);
+            $resolver = $this->resolverRegistry->get($params['action']);
         } catch(NonExistingServiceException $exception) {
             throw UnableDispatchException::forNotSupportedAction($serverRequest, $exception);
         }
@@ -126,18 +118,6 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
 
         $this->shopObjectManager->persist($shop);
         $this->shopObjectManager->flush();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function has(string $identifier): bool
-    {
-        if(!in_array($identifier, array_keys($this->mapActionToClass))) {
-            throw new InvalidArgumentException('Action "' . $identifier . '" is not supported');
-        }
-
-        return parent::has($identifier);
     }
 
     /**
@@ -200,7 +180,7 @@ final class Dispatcher extends ServiceRegistry implements DispatcherInterface
      */
     private function getPayload(ApplicationInterface $application, ShopInterface $shop, array $params): Payload\Message
     {
-        $messageClass = $this->mapActionToClass[$params['action']];
+        $messageClass = self::ACTION_PAYLOAD_MAP[$params['action']];
 
         unset($params['action']);
         unset($params['shop']);

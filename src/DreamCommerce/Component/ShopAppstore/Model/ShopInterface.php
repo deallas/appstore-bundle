@@ -14,6 +14,7 @@ interface ShopInterface extends ResourceInterface, TimestampableInterface, Appli
     public const STATE_NEW                  = 'new';
     public const STATE_UNINSTALLED          = 'uninstalled';
     public const STATE_PREFETCH_TOKENS      = 'prefetch_tokens';
+    public const STATE_REJECTED_AUTH_CODE   = 'rejected_auth_code';
     public const STATE_INSTALLED            = 'installed';
 
     public const STATE_BILLING_UNPAID       = 'unpaid';
