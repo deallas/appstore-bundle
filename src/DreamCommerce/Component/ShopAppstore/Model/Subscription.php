@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
@@ -28,7 +37,7 @@ class Subscription implements SubscriptionInterface
      */
     public function __construct(?DateTimeFactoryInterface $dateTimeFactory)
     {
-        if($dateTimeFactory === null) {
+        if ($dateTimeFactory === null) {
             $this->createdAt = new DateTime();
         } else {
             $this->createdAt = $dateTimeFactory->createNew();

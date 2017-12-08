@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
@@ -7,7 +16,6 @@ namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
 use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\ResolverRegistry;
 use DreamCommerce\Component\ShopAppstore\Tests\Fixtures\Billing\ExampleResolver;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Sylius\Component\Registry\ServiceRegistryInterface;
@@ -35,7 +43,7 @@ class ResolverRegistryTest extends TestCase
      * @param string $action
      * @param string $className
      */
-    public function testRegisterValidResolver(string $action , string $className)
+    public function testRegisterValidResolver(string $action, string $className)
     {
         $resolver = new $className();
         $this->resolver->register($action, $resolver);
@@ -44,14 +52,14 @@ class ResolverRegistryTest extends TestCase
 
     /**
      * @dataProvider invalidResolvers
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      *
      * @param string $action
      * @param string $className
      */
     public function testRegisterInvalidResolver(string $action, string $className)
     {
-        $this->resolver->register($action, new $className);
+        $this->resolver->register($action, new $className());
     }
 
     /* --------------------------------------------------------------------- */
@@ -59,16 +67,16 @@ class ResolverRegistryTest extends TestCase
     public function validResolvers()
     {
         return [
-            [ DispatcherInterface::ACTION_INSTALL, ExampleResolver::class ]
+            [DispatcherInterface::ACTION_INSTALL, ExampleResolver::class],
         ];
     }
 
     public function invalidResolvers()
     {
         return [
-            [ DispatcherInterface::ACTION_INSTALL, stdClass::class ],
-            [ 'test', ExampleResolver::class ],
-            [ 'test', stdClass::class ]
+            [DispatcherInterface::ACTION_INSTALL, stdClass::class],
+            ['test', ExampleResolver::class],
+            ['test', stdClass::class],
         ];
     }
 }

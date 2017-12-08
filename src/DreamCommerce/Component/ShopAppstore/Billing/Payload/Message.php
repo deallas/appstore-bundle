@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing\Payload;
@@ -36,7 +45,7 @@ abstract class Message implements ArrayableInterface
      * @param ShopInterface $shop
      * @param array $params
      */
-    public function __construct(ApplicationInterface $application, ShopInterface $shop, array $params = array())
+    public function __construct(ApplicationInterface $application, ShopInterface $shop, array $params = [])
     {
         $this->fromArray($params);
 
@@ -73,7 +82,7 @@ abstract class Message implements ArrayableInterface
      */
     public function setTimestamp($timestamp): void
     {
-        if(!($timestamp instanceof DateTime)) {
+        if (!($timestamp instanceof DateTime)) {
             $timestamp = new DateTime($timestamp, new DateTimeZone(DispatcherInterface::TIMEZONE));
         }
 

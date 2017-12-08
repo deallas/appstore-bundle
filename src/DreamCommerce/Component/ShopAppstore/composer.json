@@ -23,7 +23,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^6.5",
-    "friendsofphp/php-cs-fixer": "^2.8"
+    "symplify/easy-coding-standard": "^2.4",
+    "sylius-labs/coding-standard": "^1.0"
   },
   "config": {
     "bin-dir": "bin"

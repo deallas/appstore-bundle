@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing;
@@ -20,7 +29,7 @@ final class ResolverRegistry extends ServiceRegistry
      */
     public function has(string $identifier): bool
     {
-        if(!in_array($identifier, array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP))) {
+        if (!in_array($identifier, array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP))) {
             throw new InvalidArgumentException('Action "' . $identifier . '" is not supported');
         }
 

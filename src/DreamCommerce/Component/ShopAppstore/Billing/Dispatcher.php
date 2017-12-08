@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing;
@@ -7,7 +16,6 @@ namespace DreamCommerce\Component\ShopAppstore\Billing;
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Factory\UriFactoryInterface;
-use DreamCommerce\Component\ShopAppstore\Billing\Payload;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
 use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
@@ -59,10 +67,14 @@ final class Dispatcher implements DispatcherInterface
      * @param UriFactoryInterface $uriFactory
      * @param ServiceRegistryInterface $resolverRegistry
      */
-    public function __construct(ServiceRegistryInterface $applicationRegistry, ShopRepositoryInterface $shopRepository,
-                                ShopFactoryInterface $shopFactory, ObjectManager $shopObjectManager,
-                                UriFactoryInterface $uriFactory, ServiceRegistryInterface $resolverRegistry)
-    {
+    public function __construct(
+        ServiceRegistryInterface $applicationRegistry,
+        ShopRepositoryInterface $shopRepository,
+                                ShopFactoryInterface $shopFactory,
+        ObjectManager $shopObjectManager,
+                                UriFactoryInterface $uriFactory,
+        ServiceRegistryInterface $resolverRegistry
+    ) {
         $this->applicationRegistry = $applicationRegistry;
         $this->shopRepository = $shopRepository;
         $this->shopFactory = $shopFactory;
@@ -76,7 +88,7 @@ final class Dispatcher implements DispatcherInterface
      */
     public function dispatch(ServerRequestInterface $serverRequest): void
     {
-        if($serverRequest->getMethod() !== 'POST') {
+        if ($serverRequest->getMethod() !== 'POST') {
             throw UnableDispatchException::forInvalidRequestMethod($serverRequest);
         }
 
@@ -84,14 +96,14 @@ final class Dispatcher implements DispatcherInterface
 
         try {
             $this->verifyRequirements($params);
-        } catch(NotDefinedException $exception) {
+        } catch (NotDefinedException $exception) {
             throw UnableDispatchException::forUnfulfilledRequirements($serverRequest, $exception);
         }
 
         try {
             /** @var ApplicationInterface $application */
             $application = $this->applicationRegistry->get($params['application_code']);
-        } catch(NonExistingServiceException $exception) {
+        } catch (NonExistingServiceException $exception) {
             throw UnableDispatchException::forNotExistApplication($serverRequest, $exception);
         }
 
@@ -101,7 +113,7 @@ final class Dispatcher implements DispatcherInterface
         $shopUri = $this->uriFactory->createNewByUriString($params['shop_url']);
 
         $shop = $this->shopRepository->findOneByNameAndApplication($params['shop'], $application);
-        if($shop === null) {
+        if ($shop === null) {
             $shop = $this->shopFactory->createNewByApplicationAndUri($application, $shopUri);
         } else {
             $shop->setUri($shopUri);
@@ -110,7 +122,7 @@ final class Dispatcher implements DispatcherInterface
         try {
             /** @var MessageResolverInterface $resolver */
             $resolver = $this->resolverRegistry->get($params['action']);
-        } catch(NonExistingServiceException $exception) {
+        } catch (NonExistingServiceException $exception) {
             throw UnableDispatchException::forNotSupportedAction($serverRequest, $exception);
         }
 
@@ -122,30 +134,34 @@ final class Dispatcher implements DispatcherInterface
 
     /**
      * @param array $params
+     *
      * @throws NotDefinedException
      */
-    private function verifyRequirements(array $params = array()): void
+    private function verifyRequirements(array $params = []): void
     {
-        $requiredParams = [ 'action', 'shop', 'shop_url', 'hash', 'timestamp', 'application_code' ];
+        $requiredParams = ['action', 'shop', 'shop_url', 'hash', 'timestamp', 'application_code'];
 
-        if(isset($params['action']) && !empty($params['action'])) {
+        if (isset($params['action']) && !empty($params['action'])) {
             switch ($params['action']) {
                 case self::ACTION_BILLING_SUBSCRIPTION:
                     $requiredParams[] = 'subscription_end_time';
+
                     break;
                 case self::ACTION_INSTALL:
                     $requiredParams[] = 'application_version';
                     $requiredParams[] = 'auth_code';
+
                     break;
                 case self::ACTION_UPGRADE:
                     $requiredParams[] = 'application_version';
+
                     break;
             }
         } else {
             throw NotDefinedException::forParameter('action');
         }
 
-        foreach($requiredParams as $requiredParam) {
+        foreach ($requiredParams as $requiredParam) {
             if (!isset($params[$requiredParam]) || empty($params[$requiredParam])) {
                 throw NotDefinedException::forParameter($requiredParam);
             }
@@ -160,14 +176,14 @@ final class Dispatcher implements DispatcherInterface
         // sort params
         ksort($params);
 
-        $processedPayload = "";
-        foreach($params as $k => $v){
-            $processedPayload .= '&'.$k.'='.$v;
+        $processedPayload = '';
+        foreach ($params as $k => $v) {
+            $processedPayload .= '&' . $k . '=' . $v;
         }
         $processedPayload = substr($processedPayload, 1);
 
         $computedHash = hash_hmac('sha512', $processedPayload, $application->getAppstoreSecret());
-        if((string)$computedHash !== (string)$providedHash) {
+        if ((string) $computedHash !== (string) $providedHash) {
             throw UnableDispatchException::forInvalidPayloadHash($serverRequest, $application);
         }
     }
@@ -176,16 +192,14 @@ final class Dispatcher implements DispatcherInterface
      * @param ApplicationInterface $application
      * @param ShopInterface $shop
      * @param array $params
+     *
      * @return Payload\Message
      */
     private function getPayload(ApplicationInterface $application, ShopInterface $shop, array $params): Payload\Message
     {
         $messageClass = self::ACTION_PAYLOAD_MAP[$params['action']];
 
-        unset($params['action']);
-        unset($params['shop']);
-        unset($params['shop_url']);
-        unset($params['application_code']);
+        unset($params['action'], $params['shop'], $params['shop_url'], $params['application_code']);
 
         return new $messageClass($application, $shop, $params);
     }

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
@@ -88,9 +97,9 @@ class UpgradeResolverTest extends TestCase
         ;
 
         return [
-            [ new Upgrade($application, $shop1, [ 'application_version' => $currentVersion - 10 ]) ],
-            [ new Upgrade($application, $shop2, [ 'application_version' => $currentVersion ]) ],
-            [ new Upgrade($application, $shop3, [ 'application_version' => $currentVersion + 10 ]) ]
+            [new Upgrade($application, $shop1, ['application_version' => $currentVersion - 10])],
+            [new Upgrade($application, $shop2, ['application_version' => $currentVersion])],
+            [new Upgrade($application, $shop3, ['application_version' => $currentVersion + 10])],
         ];
     }
 }

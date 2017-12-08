@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
@@ -37,15 +46,18 @@ final class UninstallResolver implements MessageResolverInterface
         $shop = $message->getShop();
 
         $stateMachine = $this->shopStateMachineFactory->get($shop, ShopTransitions::GRAPH);
-        switch($shop->getState()) {
+        switch ($shop->getState()) {
             case ShopInterface::STATE_PREFETCH_TOKENS:
                 $transition = ShopTransitions::TRANSITION_CANCEL_DOWNLOAD_TOKENS;
+
                 break;
             case ShopInterface::STATE_REJECTED_AUTH_CODE:
                 $transition = ShopTransitions::TRANSITION_GIVE_UP;
+
                 break;
             case ShopInterface::STATE_INSTALLED:
                 $transition = ShopTransitions::TRANSITION_UNINSTALL;
+
                 break;
             default:
                 throw UnableDispatchException::forUnsupportedShopState($shop, $message);

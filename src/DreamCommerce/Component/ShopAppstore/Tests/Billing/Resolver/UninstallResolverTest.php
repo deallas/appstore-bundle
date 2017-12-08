@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
@@ -62,18 +71,17 @@ class UninstallResolverTest extends TestCase
         $this->shopStateMachineFactory
             ->expects($this->once())
             ->method('get')
-            ->will($this->returnCallback(function() use($transition) {
+            ->will($this->returnCallback(function () use ($transition) {
                 $stateMachine = $this->getMockBuilder(StateMachineInterface::class)->getMock();
                 $stateMachine
                     ->expects($this->once())
                     ->method('apply')
-                    ->will($this->returnCallback(function($fTransition) use($transition) {
+                    ->will($this->returnCallback(function ($fTransition) use ($transition) {
                         $this->assertEquals($transition, $fTransition);
                     }));
 
                 return $stateMachine;
             }));
-        ;
 
         $this->resolver->resolve($message);
     }
@@ -89,15 +97,15 @@ class UninstallResolverTest extends TestCase
         $map = [
             ShopInterface::STATE_PREFETCH_TOKENS => ShopTransitions::TRANSITION_CANCEL_DOWNLOAD_TOKENS,
             ShopInterface::STATE_REJECTED_AUTH_CODE => ShopTransitions::TRANSITION_GIVE_UP,
-            ShopInterface::STATE_INSTALLED => ShopTransitions::TRANSITION_UNINSTALL
+            ShopInterface::STATE_INSTALLED => ShopTransitions::TRANSITION_UNINSTALL,
         ];
 
-        foreach($map as $state => $transition) {
+        foreach ($map as $state => $transition) {
             $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
             $shop->method('getState')
                 ->willReturn($state);
 
-            $messages[] = [ new Uninstall($application, $shop), $transition ];
+            $messages[] = [new Uninstall($application, $shop), $transition];
         }
 
         return $messages;

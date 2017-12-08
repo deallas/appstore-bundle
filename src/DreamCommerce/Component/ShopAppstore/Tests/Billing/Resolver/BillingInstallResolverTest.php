@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
@@ -62,7 +71,7 @@ class BillingInstallResolverTest extends TestCase
         $this->billingStateMachineFactory
             ->expects($this->once())
             ->method('get')
-            ->will($this->returnCallback(function($fShop, $graph) use($shop) {
+            ->will($this->returnCallback(function ($fShop, $graph) use ($shop) {
                 $this->assertEquals($shop, $fShop);
                 $this->assertEquals(ShopBillingTransitions::GRAPH, $graph);
 
@@ -70,7 +79,7 @@ class BillingInstallResolverTest extends TestCase
                 $stateMachine
                     ->expects($this->once())
                     ->method('apply')
-                    ->will($this->returnCallback(function($transition) {
+                    ->will($this->returnCallback(function ($transition) {
                         $this->assertEquals(ShopBillingTransitions::TRANSITION_PAY, $transition);
                     }));
 

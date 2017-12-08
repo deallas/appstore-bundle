@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
@@ -28,7 +37,7 @@ final class ResourceList extends ArrayObject
      * @param array $array
      * @param int $flags
      */
-    public function __construct($array = array(), $flags = parent::ARRAY_AS_PROPS)
+    public function __construct($array = [], $flags = parent::ARRAY_AS_PROPS)
     {
         $array = $this->transform($array);
 
@@ -85,13 +94,14 @@ final class ResourceList extends ArrayObject
 
     /**
      * @param array|ArrayObject $array
+     *
      * @return ArrayObject
      */
     private function transform($array): ArrayObject
     {
-        if(!$array instanceof ArrayObject) {
-            if(is_array($array) || $array instanceof stdClass) {
-                foreach($array as $k => $value){
+        if (!$array instanceof ArrayObject) {
+            if (is_array($array) || $array instanceof stdClass) {
+                foreach ($array as $k => $value) {
                     $array[$k] = $this->transform($value);
                 }
                 $array = new ArrayObject($array, ArrayObject::ARRAY_AS_PROPS);

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DreamCommerce Shop AppStore package.
+ *
+ * (c) DreamCommerce
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
@@ -24,8 +33,8 @@ use Sylius\Component\Registry\ServiceRegistryInterface;
 
 class DispatcherTest extends TestCase
 {
-    private const APPSTORE_SECRET   = 'APPSTORE_SECRET';
-    private const APPLICATION_CODE  = 'APPLICATION_CODE';
+    private const APPSTORE_SECRET = 'APPSTORE_SECRET';
+    private const APPLICATION_CODE = 'APPLICATION_CODE';
 
     /**
      * @var Dispatcher
@@ -113,7 +122,7 @@ class DispatcherTest extends TestCase
      *
      * @param array $params
      */
-    public function testUnfulfilledRequirementsWhileDispatching(array $params = array())
+    public function testUnfulfilledRequirementsWhileDispatching(array $params = [])
     {
         $serverRequest = $this->getMockBuilder(ServerRequestInterface::class)
             ->getMock();
@@ -146,7 +155,7 @@ class DispatcherTest extends TestCase
 
         $this->applicationRegistry->expects($this->once())
             ->method('get')
-            ->willThrowException(new NonExistingServiceException('', '', array()));
+            ->willThrowException(new NonExistingServiceException('', '', []));
 
         $this->dispatcher->dispatch($serverRequest);
     }
@@ -198,7 +207,7 @@ class DispatcherTest extends TestCase
 
         $this->uriFactory->expects($this->once())
             ->method('createNewByUriString')
-            ->will($this->returnCallback(function($uriString) use($serverRequest, $uri) {
+            ->will($this->returnCallback(function ($uriString) use ($serverRequest, $uri) {
                 $params = $serverRequest->getParsedBody();
                 $this->assertEquals($params['shop_url'], $uriString);
 
@@ -219,7 +228,7 @@ class DispatcherTest extends TestCase
 
         $this->shopFactory->expects($this->once())
             ->method('createNewByApplicationAndUri')
-            ->will($this->returnCallback(function($fApplication, $fUri) use($application, $uri, $shop) {
+            ->will($this->returnCallback(function ($fApplication, $fUri) use ($application, $uri, $shop) {
                 $this->assertEquals($application, $fApplication);
                 $this->assertEquals($uri, $fUri);
 
@@ -228,7 +237,7 @@ class DispatcherTest extends TestCase
 
         $this->resolvers[$action]->expects($this->once())
             ->method('resolve')
-            ->will($this->returnCallback(function($payload) use($action) {
+            ->will($this->returnCallback(function ($payload) use ($action) {
                 /** @var Message $payload */
                 $this->assertInstanceOf(DispatcherInterface::ACTION_PAYLOAD_MAP[$action], $payload);
 
@@ -239,13 +248,13 @@ class DispatcherTest extends TestCase
                 $this->assertInstanceOf(ShopInterface::class, $payload->getShop());
                 $this->assertInstanceOf(ApplicationInterface::class, $payload->getApplication());
 
-                if($action === DispatcherInterface::ACTION_BILLING_SUBSCRIPTION) {
+                if ($action === DispatcherInterface::ACTION_BILLING_SUBSCRIPTION) {
                     $subscriptionTime = $payload->getSubscriptionEndTime();
                     $this->assertInstanceOf(DateTime::class, $subscriptionTime);
                     $this->assertEquals($subscriptionTime->getTimezone()->getName(), DispatcherInterface::TIMEZONE);
-                } elseif(in_array($action, [ DispatcherInterface::ACTION_INSTALL, DispatcherInterface::ACTION_UPGRADE ])) {
-                    $this->assertInternalType("int", $payload->getApplicationVersion());
-                    if($action === DispatcherInterface::ACTION_INSTALL) {
+                } elseif (in_array($action, [DispatcherInterface::ACTION_INSTALL, DispatcherInterface::ACTION_UPGRADE])) {
+                    $this->assertInternalType('int', $payload->getApplicationVersion());
+                    if ($action === DispatcherInterface::ACTION_INSTALL) {
                         $this->assertNotNull($payload->getAuthCode());
                     }
                 }
@@ -272,7 +281,7 @@ class DispatcherTest extends TestCase
 
         $this->uriFactory->expects($this->once())
             ->method('createNewByUriString')
-            ->will($this->returnCallback(function($uriString) use($serverRequest, $uri) {
+            ->will($this->returnCallback(function ($uriString) use ($serverRequest, $uri) {
                 $params = $serverRequest->getParsedBody();
                 $this->assertEquals($params['shop_url'], $uriString);
 
@@ -282,7 +291,7 @@ class DispatcherTest extends TestCase
         $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
         $shop->expects($this->once())
             ->method('setUri')
-            ->will($this->returnCallback(function($fUri) use($uri) {
+            ->will($this->returnCallback(function ($fUri) use ($uri) {
                 /** @var UriInterface $fUri */
                 $this->assertInstanceOf(UriInterface::class, $fUri);
                 $this->assertEquals($uri, $fUri);
@@ -316,8 +325,8 @@ class DispatcherTest extends TestCase
     public function validServerRequests()
     {
         $serverRequests = [];
-        foreach(array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
-            $serverRequests[] = [ $this->getValidServerRequest($action), $action ];
+        foreach (array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
+            $serverRequests[] = [$this->getValidServerRequest($action), $action];
         }
 
         return $serverRequests;
@@ -331,37 +340,37 @@ class DispatcherTest extends TestCase
             'shop_url' => 'http://dreamcommerce.com',
             'hash' => '#',
             'timestamp' => time(),
-            'application_code' => md5((string)time())
+            'application_code' => md5((string) time()),
         ];
 
         $params = [];
 
         // 1. parameters have not been sent
 
-        $params[] = [ [] ];
+        $params[] = [[]];
 
         // 2. parameters are empty
 
-        $params[] = [ array_fill_keys(array_keys($validParams), '') ];
+        $params[] = [array_fill_keys(array_keys($validParams), '')];
 
         // 3. parameter "subscription_end_time" has not been sent for action "billing_subscription"
 
         $invalidParams = $validParams;
         $invalidParams['action'] = DispatcherInterface::ACTION_BILLING_SUBSCRIPTION;
 
-        $params[] = [ $invalidParams ];
+        $params[] = [$invalidParams];
 
         // 4. parameter "application_version" has not been sent for action "install" and "upgrade"
 
         $invalidParams = $validParams;
         $invalidParams['action'] = DispatcherInterface::ACTION_INSTALL;
 
-        $params[] = [ $invalidParams ];
+        $params[] = [$invalidParams];
 
         $invalidParams = $validParams;
         $invalidParams['action'] = DispatcherInterface::ACTION_UPGRADE;
 
-        $params[] = [ $invalidParams ];
+        $params[] = [$invalidParams];
 
         return $params;
     }
@@ -370,6 +379,7 @@ class DispatcherTest extends TestCase
 
     /**
      * @param string $action
+     *
      * @return MockObject|ServerRequestInterface
      */
     private function getValidServerRequest(string $action)
@@ -393,31 +403,34 @@ class DispatcherTest extends TestCase
 
         $params = [
             'action' => $action,
-            'shop' => md5(uniqid((string)rand(), true)),
+            'shop' => md5(uniqid((string) rand(), true)),
             'shop_url' => 'http://dreamcommerce.com',
             'timestamp' => $dt->format('Y-m-d H:i:s'),
-            'application_code' => self::APPLICATION_CODE
+            'application_code' => self::APPLICATION_CODE,
         ];
 
-        switch($action) {
+        switch ($action) {
             case DispatcherInterface::ACTION_INSTALL:
                 $params['auth_code'] = 'AUTH_CODE';
-                $params['application_version'] = (string)time();
+                $params['application_version'] = (string) time();
+
                 break;
             case DispatcherInterface::ACTION_UPGRADE:
-                $params['application_version'] = (string)time();
+                $params['application_version'] = (string) time();
+
                 break;
             case DispatcherInterface::ACTION_BILLING_SUBSCRIPTION:
                 $dt->add(new \DateInterval('P10D'));
                 $params['subscription_end_time'] = $dt->format('Y-m-d H:i:s');
+
                 break;
         }
 
         ksort($params);
 
-        $processedPayload = "";
-        foreach($params as $k => $v){
-            $processedPayload .= '&'.$k.'='.$v;
+        $processedPayload = '';
+        foreach ($params as $k => $v) {
+            $processedPayload .= '&' . $k . '=' . $v;
         }
         $processedPayload = substr($processedPayload, 1);
         $params['hash'] = hash_hmac('sha512', $processedPayload, self::APPSTORE_SECRET);
@@ -428,9 +441,9 @@ class DispatcherTest extends TestCase
     private function registerResolvers()
     {
         $map = [];
-        foreach(array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
+        foreach (array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
             $this->resolvers[$action] = $this->getMockBuilder(MessageResolverInterface::class)->getMock();
-            $map[] = [ $action, $this->resolvers[$action] ];
+            $map[] = [$action, $this->resolvers[$action]];
         }
 
         $this->resolverRegistry->method('get')
