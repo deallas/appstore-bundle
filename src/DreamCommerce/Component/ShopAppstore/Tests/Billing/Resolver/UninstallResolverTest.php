@@ -18,7 +18,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Uninstall;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\UninstallResolver;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\ShopTransitions;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -95,13 +95,13 @@ class UninstallResolverTest extends TestCase
 
         $messages = [];
         $map = [
-            ShopInterface::STATE_PREFETCH_TOKENS => ShopTransitions::TRANSITION_CANCEL_DOWNLOAD_TOKENS,
-            ShopInterface::STATE_REJECTED_AUTH_CODE => ShopTransitions::TRANSITION_GIVE_UP,
-            ShopInterface::STATE_INSTALLED => ShopTransitions::TRANSITION_UNINSTALL,
+            OAuthShopInterface::STATE_PREFETCH_TOKENS => ShopTransitions::TRANSITION_CANCEL_DOWNLOAD_TOKENS,
+            OAuthShopInterface::STATE_REJECTED_AUTH_CODE => ShopTransitions::TRANSITION_GIVE_UP,
+            OAuthShopInterface::STATE_INSTALLED => ShopTransitions::TRANSITION_UNINSTALL,
         ];
 
         foreach ($map as $state => $transition) {
-            $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
+            $shop = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
             $shop->method('getState')
                 ->willReturn($state);
 

@@ -22,7 +22,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -224,7 +224,7 @@ class DispatcherTest extends TestCase
             ->willReturn(null)
         ;
 
-        $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
 
         $this->shopFactory->expects($this->once())
             ->method('createNewByApplicationAndUri')
@@ -245,7 +245,7 @@ class DispatcherTest extends TestCase
                 $this->assertInstanceOf(DateTime::class, $timestamp);
                 $this->assertEquals($timestamp->getTimezone()->getName(), DispatcherInterface::TIMEZONE);
 
-                $this->assertInstanceOf(ShopInterface::class, $payload->getShop());
+                $this->assertInstanceOf(OAuthShopInterface::class, $payload->getShop());
                 $this->assertInstanceOf(ApplicationInterface::class, $payload->getApplication());
 
                 if ($action === DispatcherInterface::ACTION_BILLING_SUBSCRIPTION) {
@@ -288,7 +288,7 @@ class DispatcherTest extends TestCase
                 return $uri;
             }));
 
-        $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         $shop->expects($this->once())
             ->method('setUri')
             ->will($this->returnCallback(function ($fUri) use ($uri) {

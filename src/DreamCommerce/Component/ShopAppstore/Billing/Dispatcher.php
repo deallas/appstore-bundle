@@ -20,7 +20,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterfa
 use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
 use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -190,12 +190,12 @@ final class Dispatcher implements DispatcherInterface
 
     /**
      * @param ApplicationInterface $application
-     * @param ShopInterface $shop
+     * @param OAuthShopInterface $shop
      * @param array $params
      *
      * @return Payload\Message
      */
-    private function getPayload(ApplicationInterface $application, ShopInterface $shop, array $params): Payload\Message
+    private function getPayload(ApplicationInterface $application, OAuthShopInterface $shop, array $params): Payload\Message
     {
         $messageClass = self::ACTION_PAYLOAD_MAP[$params['action']];
 

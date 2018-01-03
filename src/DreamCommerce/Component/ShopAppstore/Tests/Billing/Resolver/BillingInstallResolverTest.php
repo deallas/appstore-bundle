@@ -18,7 +18,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\BillingInstallResolver;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\ShopBillingTransitions;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -64,8 +64,8 @@ class BillingInstallResolverTest extends TestCase
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();
-        /** @var ShopInterface $shop */
-        $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
+        /** @var OAuthShopInterface $shop */
+        $shop = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
 
         $message = new BillingInstall($application, $shop);
         $this->billingStateMachineFactory

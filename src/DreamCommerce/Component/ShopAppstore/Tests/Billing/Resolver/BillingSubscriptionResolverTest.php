@@ -20,7 +20,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Resolver\BillingSubscriptionRes
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\SubscriptionFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\SubscriptionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -70,8 +70,8 @@ class BillingSubscriptionResolverTest extends TestCase
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();
-        /** @var ShopInterface $shop */
-        $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
+        /** @var OAuthShopInterface $shop */
+        $shop = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         /** @var SubscriptionInterface $subscription */
         $subscription = $this->getMockBuilder(SubscriptionInterface::class)->getMock();
 

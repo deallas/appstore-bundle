@@ -15,8 +15,16 @@ namespace DreamCommerce\Component\ShopAppstore\Api;
 
 final class Criteria
 {
-    const OPERATOR_EQUAL        = '=';
-    const OPERATOR_NOT_EQUAL    = '!=';
+    const OPERATOR_EQUAL            = '=';
+    const OPERATOR_NOT_EQUAL        = '!=';
+    const OPERATOR_GREATER          = '>';
+    const OPERATOR_GREATER_EQUAL    = '>=';
+    const OPERATOR_LESS             = '<';
+    const OPERATOR_LESS_EQUAL       = '<=';
+    const OPERATOR_LIKE             = 'like';
+    const OPERATOR_NOT_LIKE         = 'not like';
+    const OPERATOR_IN               = 'in';
+    const OPERATOR_NOT_IN           = 'not in';
 
     /**
      * @var array|null
@@ -59,7 +67,7 @@ final class Criteria
      * @param string $operator
      * @return self
      */
-    public function where(string $field, $value, $operator = self::OPERATOR_EQUAL): self
+    public function where(string $field, $value = null, $operator = self::OPERATOR_EQUAL): self
     {
         $this->expressions = [];
         $this->andWhere($field, $value, $operator);

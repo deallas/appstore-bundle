@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Doctrine\DBAL\Types;
 
 use DreamCommerce\Component\Common\Doctrine\DBAL\Types\MapEnumType;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 
 final class ShopStateSmallIntType extends MapEnumType
 {
@@ -25,10 +25,10 @@ final class ShopStateSmallIntType extends MapEnumType
      * @var array
      */
     protected $values = array(
-        ShopInterface::STATE_NEW => 1,
-        ShopInterface::STATE_UNINSTALLED => 2,
-        ShopInterface::STATE_PREFETCH_TOKENS => 3,
-        ShopInterface::STATE_REJECTED_AUTH_CODE => 4,
-        ShopInterface::STATE_INSTALLED => 5,
+        OAuthShopInterface::STATE_NEW => 1,
+        OAuthShopInterface::STATE_UNINSTALLED => 2,
+        OAuthShopInterface::STATE_PREFETCH_TOKENS => 3,
+        OAuthShopInterface::STATE_REJECTED_AUTH_CODE => 4,
+        OAuthShopInterface::STATE_INSTALLED => 5,
     );
 }

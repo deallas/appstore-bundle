@@ -18,7 +18,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\InstallResolver;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\ShopTransitions;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -118,14 +118,14 @@ class InstallResolverTest extends TestCase
 
         $messages = [];
         $map = [
-            ShopInterface::STATE_NEW => ShopTransitions::TRANSITION_ENQUEUE_DOWNLOAD_TOKENS,
-            ShopInterface::STATE_PREFETCH_TOKENS => ShopTransitions::TRANSITION_RETRY_DOWNLOAD_TOKENS,
-            ShopInterface::STATE_REJECTED_AUTH_CODE => ShopTransitions::TRANSITION_REFRESH_AUTH_CODE,
-            ShopInterface::STATE_UNINSTALLED => ShopTransitions::TRANSITION_REINSTALL,
+            OAuthShopInterface::STATE_NEW => ShopTransitions::TRANSITION_ENQUEUE_DOWNLOAD_TOKENS,
+            OAuthShopInterface::STATE_PREFETCH_TOKENS => ShopTransitions::TRANSITION_RETRY_DOWNLOAD_TOKENS,
+            OAuthShopInterface::STATE_REJECTED_AUTH_CODE => ShopTransitions::TRANSITION_REFRESH_AUTH_CODE,
+            OAuthShopInterface::STATE_UNINSTALLED => ShopTransitions::TRANSITION_REINSTALL,
         ];
 
         foreach ($map as $state => $transition) {
-            $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
+            $shop = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
             $shop->method('getState')
                 ->willReturn($state);
 
@@ -141,7 +141,7 @@ class InstallResolverTest extends TestCase
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();
         $currentVersion = time();
 
-        $shop1 = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop1 = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         $shop1->expects($this->any())
             ->method('getVersion')
             ->willReturn($currentVersion)
@@ -150,7 +150,7 @@ class InstallResolverTest extends TestCase
             ->method('setVersion')
         ;
 
-        $shop2 = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop2 = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         $shop2->expects($this->any())
             ->method('getVersion')
             ->willReturn($currentVersion)
@@ -159,7 +159,7 @@ class InstallResolverTest extends TestCase
             ->method('setVersion')
         ;
 
-        $shop3 = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop3 = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         $shop3->expects($this->any())
             ->method('getVersion')
             ->willReturn($currentVersion)
@@ -171,7 +171,7 @@ class InstallResolverTest extends TestCase
         foreach ([$shop1, $shop2, $shop3] as $shop) {
             $shop->expects($this->once())
                 ->method('getState')
-                ->willReturn(ShopInterface::STATE_NEW)
+                ->willReturn(OAuthShopInterface::STATE_NEW)
             ;
         }
 

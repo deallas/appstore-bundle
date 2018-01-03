@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Doctrine\DBAL\Types;
 
 use DreamCommerce\Component\Common\Doctrine\DBAL\Types\EnumType;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 
 final class ShopStateEnumType extends EnumType
 {
@@ -20,10 +20,10 @@ final class ShopStateEnumType extends EnumType
      * @var array
      */
     protected $values = array(
-        ShopInterface::STATE_NEW,
-        ShopInterface::STATE_UNINSTALLED,
-        ShopInterface::STATE_PREFETCH_TOKENS,
-        ShopInterface::STATE_REJECTED_AUTH_CODE,
-        ShopInterface::STATE_INSTALLED,
+        OAuthShopInterface::STATE_NEW,
+        OAuthShopInterface::STATE_UNINSTALLED,
+        OAuthShopInterface::STATE_PREFETCH_TOKENS,
+        OAuthShopInterface::STATE_REJECTED_AUTH_CODE,
+        OAuthShopInterface::STATE_INSTALLED,
     );
 }

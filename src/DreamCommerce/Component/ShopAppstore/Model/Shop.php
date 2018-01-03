@@ -14,46 +14,22 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use DreamCommerce\Component\Common\Factory\DateTimeFactoryInterface;
+use DreamCommerce\Component\Common\Model\ArrayableInterface;
+use DreamCommerce\Component\Common\Model\ArrayableTrait;
 use Psr\Http\Message\UriInterface;
 use Sylius\Component\Resource\Model\TimestampableTrait;
+use Webmozart\Assert\Assert;
 
-class Shop implements ShopInterface
+class Shop implements ShopInterface, ArrayableInterface
 {
     use TimestampableTrait;
-    use ApplicationDependTrait;
+    use ArrayableTrait;
 
     /**
      * @var mixed
      */
     private $id;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string|null
-     */
-    private $state;
-
-    /**
-     * @var string|null
-     */
-    private $billingState;
-
-    /**
-     * @var string|null
-     */
-    private $subscriptionState;
-
-    /**
-     * @var int|null
-     */
-    private $version;
 
     /**
      * @var UriInterface
@@ -66,16 +42,13 @@ class Shop implements ShopInterface
     private $token;
 
     /**
-     * @var Collection|SubscriptionInterface[]
-     */
-    private $subscriptions;
-
-    /**
+     * @param array $params
      * @param DateTimeFactoryInterface|null $dateTimeFactory
      */
-    public function __construct(?DateTimeFactoryInterface $dateTimeFactory)
+    public function __construct(array $params = array(), ?DateTimeFactoryInterface $dateTimeFactory)
     {
-        $this->subscriptions = new ArrayCollection();
+        $this->fromArray($params);
+
         if ($dateTimeFactory === null) {
             $this->createdAt = new DateTime();
         } else {
@@ -102,72 +75,14 @@ class Shop implements ShopInterface
     /**
      * {@inheritdoc}
      */
-    public function getName(): ?string
+    public function setUri($uri): void
     {
-        return $this->name;
-    }
+        if(is_string($uri) && class_exists('\\GuzzleHttp\\Psr7\\Uri')) {
+            $uri = new \GuzzleHttp\Psr7\Uri($uri);
+        } else {
+            Assert::isInstanceOf($uri, UriInterface::class);
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setName(?string $name): void
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setBillingState(?string $billingState): void
-    {
-        $this->billingState = $billingState;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBillingState(): ?string
-    {
-        return $this->billingState;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSubscriptionState(?string $subscriptionState): void
-    {
-        $this->subscriptionState = $subscriptionState;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubscriptionState(): ?string
-    {
-        return $this->subscriptionState;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setState(?string $state): void
-    {
-        $this->state = $state;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getState(): ?string
-    {
-        return $this->state;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUri(?UriInterface $uri): void
-    {
         $this->uri = $uri;
     }
 
@@ -190,59 +105,5 @@ class Shop implements ShopInterface
     public function setToken(?TokenInterface $token): void
     {
         $this->token = $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubscriptions(): Collection
-    {
-        return $this->subscriptions;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasSubscription(SubscriptionInterface $subscription): bool
-    {
-        return $this->subscriptions->contains($subscription);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addSubscription(SubscriptionInterface $subscription): void
-    {
-        if (!$this->hasSubscription($subscription)) {
-            $subscription->setShop($this);
-            $this->subscriptions->add($subscription);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeSubscription(SubscriptionInterface $subscription): void
-    {
-        if ($this->hasSubscription($subscription)) {
-            $subscription->setShop(null);
-            $this->subscriptions->removeElement($subscription);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getVersion(): ?int
-    {
-        return $this->version;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setVersion(?int $version): void
-    {
-        $this->version = $version;
     }
 }

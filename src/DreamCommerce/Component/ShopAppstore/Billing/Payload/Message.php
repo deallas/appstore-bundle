@@ -19,14 +19,14 @@ use DreamCommerce\Component\Common\Model\ArrayableInterface;
 use DreamCommerce\Component\Common\Model\ArrayableTrait;
 use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 
 abstract class Message implements ArrayableInterface
 {
     use ArrayableTrait;
 
     /**
-     * @var ShopInterface
+     * @var OAuthShopInterface
      */
     protected $shop;
 
@@ -42,10 +42,10 @@ abstract class Message implements ArrayableInterface
 
     /**
      * @param ApplicationInterface $application
-     * @param ShopInterface $shop
+     * @param OAuthShopInterface $shop
      * @param array $params
      */
-    public function __construct(ApplicationInterface $application, ShopInterface $shop, array $params = [])
+    public function __construct(ApplicationInterface $application, OAuthShopInterface $shop, array $params = [])
     {
         $this->fromArray($params);
 
@@ -54,9 +54,9 @@ abstract class Message implements ArrayableInterface
     }
 
     /**
-     * @return ShopInterface
+     * @return OAuthShopInterface
      */
-    public function getShop(): ShopInterface
+    public function getShop(): OAuthShopInterface
     {
         return $this->shop;
     }

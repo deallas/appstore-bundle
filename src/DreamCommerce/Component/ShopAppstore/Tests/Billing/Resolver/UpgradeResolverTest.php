@@ -18,7 +18,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Upgrade;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\UpgradeResolver;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use PHPUnit\Framework\TestCase;
 
 class UpgradeResolverTest extends TestCase
@@ -69,7 +69,7 @@ class UpgradeResolverTest extends TestCase
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();
         $currentVersion = time();
 
-        $shop1 = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop1 = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         $shop1->expects($this->any())
             ->method('getVersion')
             ->willReturn($currentVersion)
@@ -78,7 +78,7 @@ class UpgradeResolverTest extends TestCase
             ->method('setVersion')
         ;
 
-        $shop2 = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop2 = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         $shop2->expects($this->any())
             ->method('getVersion')
             ->willReturn($currentVersion)
@@ -87,7 +87,7 @@ class UpgradeResolverTest extends TestCase
             ->method('setVersion')
         ;
 
-        $shop3 = $this->getMockBuilder(ShopInterface::class)->getMock();
+        $shop3 = $this->getMockBuilder(OAuthShopInterface::class)->getMock();
         $shop3->expects($this->any())
             ->method('getVersion')
             ->willReturn($currentVersion)

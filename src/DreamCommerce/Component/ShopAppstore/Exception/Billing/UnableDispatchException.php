@@ -16,7 +16,7 @@ namespace DreamCommerce\Component\ShopAppstore\Exception\Billing;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Exception\BillingException;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
@@ -40,7 +40,7 @@ class UnableDispatchException extends BillingException
     private $application;
 
     /**
-     * @var ShopInterface
+     * @var OAuthShopInterface
      */
     private $shop;
 
@@ -122,13 +122,13 @@ class UnableDispatchException extends BillingException
     }
 
     /**
-     * @param ShopInterface $shop
+     * @param OAuthShopInterface $shop
      * @param Message $payload
      * @param Throwable|null $exception
      *
      * @return UnableDispatchException
      */
-    public static function forUnsupportedShopState(ShopInterface $shop, Message $payload, Throwable $exception = null): self
+    public static function forUnsupportedShopState(OAuthShopInterface $shop, Message $payload, Throwable $exception = null): self
     {
         $exception = new static('Unsupported state of shop', self::CODE_UNSUPPORTED_SHOP_STATE, $exception);
         $exception->payload = $payload;
@@ -154,9 +154,9 @@ class UnableDispatchException extends BillingException
     }
 
     /**
-     * @return ShopInterface
+     * @return OAuthShopInterface
      */
-    public function getShop(): ShopInterface
+    public function getShop(): OAuthShopInterface
     {
         return $this->shop;
     }

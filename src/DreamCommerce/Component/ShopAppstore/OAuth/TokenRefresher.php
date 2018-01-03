@@ -15,10 +15,13 @@ namespace DreamCommerce\Component\ShopAppstore\OAuth;
 
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 
-interface TokenRefresherInterface
+final class TokenRefresher implements TokenRefresherInterface
 {
     /**
-     * @param ShopInterface $shop
+     * {@inheritdoc}
      */
-    public function refresh(ShopInterface $shop): void;
+    public function refresh(ShopInterface $shop): void
+    {
+
+    }
 }
