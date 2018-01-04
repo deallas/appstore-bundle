@@ -24,19 +24,27 @@ use Throwable;
 abstract class Resource implements ResourceInterface
 {
     /**
+     * @var AuthenticatorInterface
+     */
+    private $authenticator;
+
+    /**
      * @var HttpClientInterface
      */
     private $httpClient;
 
     /**
-     * @param HttpClientInterface $httpClient
+     * @param AuthenticatorInterface|null $authenticator
+     * @param HttpClientInterface|null $httpClient
      */
-    public function __construct(?HttpClientInterface $httpClient)
+    public function __construct(AuthenticatorInterface $authenticator = null, HttpClientInterface $httpClient = null)
     {
+        $this->authenticator = $authenticator;
+
         if($this->httpClient !== null) {
             $this->httpClient = $httpClient;
         } elseif(class_exists('\\GuzzleHttp\\Client')) {
-            $this->httpClient = new \DreamCommerce\Component\Common\Http\GuzzleClient(new \GuzzleHttp\Client());
+            $this->httpClient = new AwaitGuzzleClient(new \GuzzleHttp\Client());
         }
     }
 
@@ -77,6 +85,8 @@ abstract class Resource implements ResourceInterface
      */
     public function delete(ShopInterface $shop, int $id): void
     {
+        $this->authenticator->authenticate($shop);
+
         try {
             $this->httpClient->request($this, 'delete', $args);
         } catch(Throwable $ex) {
@@ -96,8 +106,10 @@ abstract class Resource implements ResourceInterface
 
     }
 
-    private function handleRequest(RequestInterface $request)
+    private function handleRequest(ShopInterface $shop, RequestInterface $request)
     {
+        $this->authenticator->authenticate($shop);
+
         try {
             $response = $this->httpClient->send($request);
         } catch(Throwable $exception) {
@@ -166,7 +178,7 @@ abstract class Resource implements ResourceInterface
                 $msg = $response;
             }
 
-            throw new ResourceException($msg, $code);
+            throw new ResourceException($msg, $code); // TODO
         }
     }
 

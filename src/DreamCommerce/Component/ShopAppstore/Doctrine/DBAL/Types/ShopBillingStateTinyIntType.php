@@ -7,14 +7,14 @@ namespace DreamCommerce\Component\ShopAppstore\Doctrine\DBAL\Types;
 use DreamCommerce\Component\Common\Doctrine\DBAL\Types\MapEnumType;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 
-final class ShopStateSmallIntType extends MapEnumType
+final class ShopBillingStateTinyIntType extends MapEnumType
 {
-    const TYPE_NAME = 'dc_appstore_shop_state_smallint';
+    const TYPE_NAME = 'dc_appstore_shop_billing_state_tinyint';
 
     /**
      * @var string
      */
-    protected $enumType = self::TYPE_UINT16;
+    protected $enumType = self::TYPE_UINT8;
 
     /**
      * @var string
@@ -25,10 +25,9 @@ final class ShopStateSmallIntType extends MapEnumType
      * @var array
      */
     protected $values = array(
-        OAuthShopInterface::STATE_NEW => 1,
-        OAuthShopInterface::STATE_UNINSTALLED => 2,
-        OAuthShopInterface::STATE_PREFETCH_TOKENS => 3,
-        OAuthShopInterface::STATE_REJECTED_AUTH_CODE => 4,
-        OAuthShopInterface::STATE_INSTALLED => 5,
+        OAuthShopInterface::STATE_BILLING_UNPAID => 1,
+        OAuthShopInterface::STATE_BILLING_PAID => 2,
+        OAuthShopInterface::STATE_BILLING_REFUNDED => 3,
+        OAuthShopInterface::STATE_BILLING_CANCELLED => 4,
     );
 }

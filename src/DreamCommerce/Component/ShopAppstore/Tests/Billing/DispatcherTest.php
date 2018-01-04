@@ -20,7 +20,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Dispatcher;
 use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
-use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Factory\OAuthShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
@@ -57,7 +57,7 @@ class DispatcherTest extends TestCase
     private $shopRepository;
 
     /**
-     * @var ShopFactoryInterface|MockObject
+     * @var OAuthShopFactoryInterface|MockObject
      */
     private $shopFactory;
 
@@ -80,7 +80,7 @@ class DispatcherTest extends TestCase
     {
         $this->applicationRegistry = $this->getMockBuilder(ServiceRegistryInterface::class)->getMock();
         $this->shopRepository = $this->getMockBuilder(ShopRepositoryInterface::class)->getMock();
-        $this->shopFactory = $this->getMockBuilder(ShopFactoryInterface::class)->getMock();
+        $this->shopFactory = $this->getMockBuilder(OAuthShopFactoryInterface::class)->getMock();
         $this->shopObjectManager = $this->getMockBuilder(ObjectManager::class)->getMock();
         $this->uriFactory = $this->getMockBuilder(UriFactoryInterface::class)->getMock();
         $this->resolverRegistry = $this->getMockBuilder(ServiceRegistryInterface::class)->getMock();

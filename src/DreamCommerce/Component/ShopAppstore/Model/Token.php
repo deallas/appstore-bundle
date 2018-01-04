@@ -40,6 +40,11 @@ class Token implements TokenInterface
     private $refreshToken;
 
     /**
+     * @var array
+     */
+    private $scopes = [];
+
+    /**
      * @return string
      */
     public function __toString(): string
@@ -101,5 +106,21 @@ class Token implements TokenInterface
     public function getRefreshToken(): ?string
     {
         return $this->refreshToken;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getScopes(): array
+    {
+        return $this->scopes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setScopes(array $scopes): void
+    {
+        $this->scopes = $scopes;
     }
 }

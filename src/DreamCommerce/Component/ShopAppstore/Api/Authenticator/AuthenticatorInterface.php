@@ -11,12 +11,20 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\OAuth;
+namespace DreamCommerce\Component\ShopAppstore\Api;
 
+use ArrayObject;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\TokenInterface;
 
-interface TokenRefresherInterface
+interface AuthenticatorInterface
 {
+    /**
+     * @param ShopInterface $shop
+     * @return void
+     */
+    public function authenticate(ShopInterface $shop): void;
+
     /**
      * @param ShopInterface $shop
      */

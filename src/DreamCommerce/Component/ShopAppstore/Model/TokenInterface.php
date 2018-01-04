@@ -47,4 +47,14 @@ interface TokenInterface extends ResourceInterface, ShopDependInterface
      * @return string|null
      */
     public function getRefreshToken(): ?string;
+
+    /**
+     * @return array
+     */
+    public function getScopes(): array;
+
+    /**
+     * @param array $scopes
+     */
+    public function setScopes(array $scopes): void;
 }

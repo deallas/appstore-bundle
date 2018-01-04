@@ -1,2 +1,0 @@
-DreamCommerce Shop AppStore Component
-==================

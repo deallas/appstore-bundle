@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
 
+use DreamCommerce\Component\ShopAppstore\Api\AuthenticatorInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Install;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
@@ -29,11 +30,18 @@ final class InstallResolver implements MessageResolverInterface
     private $shopStateMachineFactory;
 
     /**
-     * @param FactoryInterface $shopStateMachineFactory
+     * @var AuthenticatorInterface
      */
-    public function __construct(FactoryInterface $shopStateMachineFactory)
+    private $authenticator;
+
+    /**
+     * @param FactoryInterface $shopStateMachineFactory
+     * @param AuthenticatorInterface $authenticator
+     */
+    public function __construct(FactoryInterface $shopStateMachineFactory, AuthenticatorInterface $authenticator)
     {
         $this->shopStateMachineFactory = $shopStateMachineFactory;
+        $this->authenticator = $authenticator;
     }
 
     /**
@@ -72,7 +80,8 @@ final class InstallResolver implements MessageResolverInterface
             default:
                 throw UnableDispatchException::forUnsupportedShopState($shop, $message);
         }
-
         $stateMachine->apply($transition);
+
+        $this->authenticator->authenticate($shop);
     }
 }

@@ -13,13 +13,11 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
-use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\TokenInterface;
-use Psr\Http\Message\UriInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 
-class ShopFactory implements ShopFactoryInterface
+class ShopFactory implements FactoryInterface
 {
     /**
      * @var FactoryInterface
@@ -48,25 +46,10 @@ class ShopFactory implements ShopFactoryInterface
     {
         /** @var ShopInterface $object */
         $object = $this->factory->createNew();
-        $object->setState(ShopInterface::STATE_NEW);
-        $object->setBillingState(ShopInterface::STATE_BILLING_UNPAID);
-        $object->setVersion(0);
 
         /** @var TokenInterface $token */
         $token = $this->tokenFactory->createNew();
         $object->setToken($token);
-
-        return $object;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createNewByApplicationAndUri(ApplicationInterface $application, UriInterface $uri): ShopInterface
-    {
-        $object = $this->createNew();
-        $object->setUri($uri);
-        $object->setApplication($application);
 
         return $object;
     }

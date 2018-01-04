@@ -18,7 +18,7 @@ use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Factory\UriFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
-use DreamCommerce\Component\ShopAppstore\Factory\ShopFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Factory\OAuthShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
@@ -40,7 +40,7 @@ final class Dispatcher implements DispatcherInterface
     private $shopRepository;
 
     /**
-     * @var ShopFactoryInterface
+     * @var OAuthShopFactoryInterface
      */
     private $shopFactory;
 
@@ -62,7 +62,7 @@ final class Dispatcher implements DispatcherInterface
     /**
      * @param ServiceRegistryInterface $applicationRegistry
      * @param ShopRepositoryInterface $shopRepository
-     * @param ShopFactoryInterface $shopFactory
+     * @param OAuthShopFactoryInterface $shopFactory
      * @param ObjectManager $shopObjectManager
      * @param UriFactoryInterface $uriFactory
      * @param ServiceRegistryInterface $resolverRegistry
@@ -70,9 +70,9 @@ final class Dispatcher implements DispatcherInterface
     public function __construct(
         ServiceRegistryInterface $applicationRegistry,
         ShopRepositoryInterface $shopRepository,
-                                ShopFactoryInterface $shopFactory,
+        OAuthShopFactoryInterface $shopFactory,
         ObjectManager $shopObjectManager,
-                                UriFactoryInterface $uriFactory,
+        UriFactoryInterface $uriFactory,
         ServiceRegistryInterface $resolverRegistry
     ) {
         $this->applicationRegistry = $applicationRegistry;
