@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Product extends Resource
+final class Product extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'products';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'products';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'product_id';
+    }
 }

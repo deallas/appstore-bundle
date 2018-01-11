@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class AttributeGroup extends Resource
+final class AttributeGroup extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'attribute-groups';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'attribute-groups';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'attribute_group_id';
+    }
 }

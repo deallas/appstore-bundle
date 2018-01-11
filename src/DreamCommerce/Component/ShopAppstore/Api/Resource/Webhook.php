@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Webhook extends Resource
+final class Webhook extends Resource implements IdentifierAwareInterface
 {
     /**
      * webhook data encoded using JSON
@@ -96,5 +96,19 @@ class Webhook extends Resource
      */
     const EVENT_PARCEL_DELETE = 'parcel.delete';
 
-    protected $name = 'webhooks';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'webhooks';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'webhook_id';
+    }
 }

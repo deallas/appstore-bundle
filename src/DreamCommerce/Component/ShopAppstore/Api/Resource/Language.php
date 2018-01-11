@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Language extends Resource
+final class Language extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'languages';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'languages';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'lang_id';
+    }
 }

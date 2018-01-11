@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Metafield extends Resource
+final class Metafield extends Resource implements IdentifierAwareInterface
 {
     /**
      * type of integer
@@ -38,7 +38,21 @@ class Metafield extends Resource
      */
     const TYPE_BLOB = 4;
 
-    protected $name = 'metafields';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'metafields';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'metafield_id';
+    }
 
     // TODO
 //    /**

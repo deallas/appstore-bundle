@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Zone extends Resource
+final class Zone extends Resource implements IdentifierAwareInterface
 {
     /**
      * zone division by countries
@@ -32,5 +32,19 @@ class Zone extends Resource
      */
     const ZONE_MODE_CODES = 3;
 
-    protected $name = 'zones';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'zones';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'zone_id';
+    }
 }

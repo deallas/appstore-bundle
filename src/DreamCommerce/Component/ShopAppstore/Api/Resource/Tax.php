@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Tax extends Resource
+final class Tax extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'taxes';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'taxes';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'tax_id';
+    }
 }

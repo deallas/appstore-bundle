@@ -15,7 +15,13 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class DashboardActivity extends Resource
+final class DashboardActivity extends Resource
 {
-    protected $name = 'dashboard-activities';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'dashboard-activities';
+    }
 }

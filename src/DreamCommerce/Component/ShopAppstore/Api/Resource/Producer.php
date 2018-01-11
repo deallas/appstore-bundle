@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Producer extends Resource
+final class Producer extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'producers';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'producers';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'producer_id';
+    }
 }

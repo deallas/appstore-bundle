@@ -52,4 +52,9 @@ interface ResourceInterface
      * @param int $id
      */
     public function delete(ShopInterface $shop, int $id): void;
+
+    /**
+     * @return string
+     */
+    public function getName(): string;
 }

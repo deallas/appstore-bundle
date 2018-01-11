@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Aboutpage extends Resource
+final class AboutPage extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'aboutpages';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'aboutpages';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'page_id';
+    }
 }

@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Currency extends Resource
+final class Currency extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'currencies';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'currencies';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'currency_id';
+    }
 }

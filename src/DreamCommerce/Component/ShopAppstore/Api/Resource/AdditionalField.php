@@ -15,24 +15,28 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class AdditionalField extends Resource
+final class AdditionalField extends Resource implements IdentifierAwareInterface
 {
     /**
      * text input
      */
     const FIELD_TYPE_TEXT = 1;
+
     /**
      * checkbox field
      */
     const FIELD_TYPE_CHECKBOX = 2;
+
     /**
      * select (drop down)
      */
     const FIELD_TYPE_SELECT = 3;
+
     /**
      * file input
      */
     const FIELD_TYPE_FILE = 4;
+
     /**
      * hidden field
      */
@@ -42,10 +46,12 @@ class AdditionalField extends Resource
      * place field in user context
      */
     const LOCATE_USER = 1;
+
     /**
      * place field in user account panel
      */
     const LOCATE_USER_ACCOUNT = 2;
+
     /**
      * place field in user registration
      */
@@ -55,14 +61,17 @@ class AdditionalField extends Resource
      * place field in order
      */
     const LOCATE_ORDER = 8;
+
     /**
      * place field when user is being registered upon order
      */
     const LOCATE_ORDER_WITH_REGISTRATION = 16;
+
     /**
      * place field when user is not being registered upon order
      */
     const LOCATE_ORDER_WITHOUT_REGISTRATION = 32;
+
     /**
      * place field when user is logged in upon order
      */
@@ -73,5 +82,19 @@ class AdditionalField extends Resource
      */
     const LOCATE_CONTACT_FORM = 128;
 
-    protected $name = 'additional-fields';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'additional-fields';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'field_id';
+    }
 }

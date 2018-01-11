@@ -15,8 +15,13 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class DashboardStat extends Resource
+final class DashboardStat extends Resource
 {
-    protected $isSingleOnly = true;
-    protected $name = 'dashboard-stats';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'dashboard-stats';
+    }
 }

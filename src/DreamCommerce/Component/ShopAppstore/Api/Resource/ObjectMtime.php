@@ -15,8 +15,13 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class ObjectMtime extends Resource
+final class ObjectMtime extends Resource
 {
-    protected $isSingleOnly = true;
-    protected $name = 'object-mtime';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'object-mtime';
+    }
 }

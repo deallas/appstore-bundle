@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class MetafieldValue extends Resource
+final class MetafieldValue extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'metafield-values';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'metafields-values';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'value_id';
+    }
 }

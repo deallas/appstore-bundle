@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Order extends Resource
+final class Order extends Resource implements IdentifierAwareInterface
 {
     /**
      * Combined order has been detected
@@ -92,5 +92,19 @@ class Order extends Resource
      */
     const ADDRESS_TYPE_DELIVERY = 2;
 
-    protected $name = 'orders';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'orders';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'order_id';
+    }
 }

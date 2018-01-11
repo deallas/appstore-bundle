@@ -49,11 +49,6 @@ final class OAuthAuthenticator extends BearerAuthenticator
         /** @var OAuthShopInterface $shop */
         Assert::isInstanceOf($shop, OAuthShopInterface::class);
 
-        $authCode = $shop->getAuthCode();
-        if($authCode !== null || $shop->getToken()->getAccessToken() !== null) {
-            return;
-        }
-
         $application = $shop->getApplication();
         $shopUri = $shop->getUri();
 
@@ -62,7 +57,7 @@ final class OAuthAuthenticator extends BearerAuthenticator
         ];
 
         $params = [
-            'code' => $authCode
+            'code' => $shop->getAuthCode()
         ];
 
         $authUri = $shopUri
@@ -80,6 +75,7 @@ final class OAuthAuthenticator extends BearerAuthenticator
         );
 
         $this->handleRequest($request, $shop);
+        $shop->setAuthCode(null);
 
         if($this->shopStateMachineFactory !== null) {
             $stateMachine = $this->shopStateMachineFactory->get($shop, ShopTransitions::GRAPH);

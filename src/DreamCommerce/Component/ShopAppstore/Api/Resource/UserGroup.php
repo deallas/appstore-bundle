@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class UserGroup extends Resource
+final class UserGroup extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'user-groups';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'user-groups';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'group_id';
+    }
 }

@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Option extends Resource
+final class Option extends Resource implements IdentifierAwareInterface
 {
     /**
      * It's not possible to change required flag for option with warehouse support
@@ -74,5 +74,19 @@ class Option extends Resource
      */
     const PRICE_AMOUNT = 1;
 
-    protected $name = 'options';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'options';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'option_id';
+    }
 }

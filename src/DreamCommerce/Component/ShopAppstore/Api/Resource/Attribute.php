@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Attribute extends Resource
+final class Attribute extends Resource implements IdentifierAwareInterface
 {
     /**
      * field type text
@@ -32,5 +32,19 @@ class Attribute extends Resource
      */
     const TYPE_SELECT = 2;
 
-    protected $name = 'attributes';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'attributes';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'attribute_id';
+    }
 }

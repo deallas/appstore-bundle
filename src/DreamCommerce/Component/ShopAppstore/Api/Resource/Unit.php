@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Unit extends Resource
+final class Unit extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'units';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'units';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'unit_id';
+    }
 }

@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class OptionValue extends Resource
+final class OptionValue extends Resource implements IdentifierAwareInterface
 {
     /**
      * This option type doesn't support values management
@@ -47,5 +47,19 @@ class OptionValue extends Resource
      */
     const PRICE_AMOUNT = 1;
 
-    protected $name = 'option-values';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'option-values';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'ovalue_id';
+    }
 }

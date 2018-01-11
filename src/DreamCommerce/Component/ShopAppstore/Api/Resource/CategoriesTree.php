@@ -15,8 +15,13 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class CategoriesTree extends Resource
+final class CategoriesTree extends Resource
 {
-    protected $isSingleOnly = true;
-    protected $name = 'categories-tree';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'categories-tree';
+    }
 }

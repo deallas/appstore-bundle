@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Gauge extends Resource
+final class Gauge extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'gauges';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'gauges';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'gauge_id';
+    }
 }

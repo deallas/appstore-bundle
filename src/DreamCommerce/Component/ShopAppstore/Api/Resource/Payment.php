@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Payment extends Resource
+final class Payment extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'payments';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'payments';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'payment_id';
+    }
 }

@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class ProductStock extends Resource
+final class ProductStock extends Resource implements IdentifierAwareInterface
 {
     /**
      * keep base price
@@ -57,5 +57,19 @@ class ProductStock extends Resource
      */
     const WEIGHT_TYPE_DECREASE = 3;
 
-    protected $name = 'product-stocks';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'product-stocks';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'stock_id';
+    }
 }

@@ -38,4 +38,9 @@ interface ShopInterface extends ResourceInterface, TimestampableInterface
      * @param TokenInterface $token
      */
     public function setToken(?TokenInterface $token): void;
+
+    /**
+     * @return bool
+     */
+    public function isAuthenticated(): bool;
 }

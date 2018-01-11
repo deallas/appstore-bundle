@@ -42,10 +42,6 @@ final class BasicAuthAuthenticator extends BearerAuthenticator
         /** @var BasicAuthShopInterface $shop */
         Assert::isInstanceOf($shop, BasicAuthShopInterface::class);
 
-        if($shop->getToken()->getAccessToken() !== null) {
-            return;
-        }
-
         $shopUri = $shop->getUri();
 
         $query = [

@@ -15,20 +15,36 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Auction extends Resource
+final class Auction extends Resource implements IdentifierAwareInterface
 {
     /**
      * auction is bid-based
      */
     const SALES_FORMAT_BIDDING = 0;
+
     /**
      * "buy now"
      */
     const SALES_FORMAT_IMMEDIATE = 1;
+
     /**
      * treat auction just like a shop
      */
     const SALES_FORMAT_SHOP = 2;
 
-    protected $name = 'auctions';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'auctions';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'auction_id';
+    }
 }

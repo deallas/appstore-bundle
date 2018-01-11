@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class User extends Resource
+final class User extends Resource implements IdentifierAwareInterface
 {
     /**
      * user created via shop
@@ -67,5 +67,19 @@ class User extends Resource
      */
     const FIELD_SHOW_REGISTRATION = 4;
 
-    protected $name = 'users';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'users';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'user_id';
+    }
 }

@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Parcel extends Resource
+final class Parcel extends Resource implements IdentifierAwareInterface
 {
     /**
      * It's not possibly to modify shipped parcel except shipping code
@@ -37,5 +37,19 @@ class Parcel extends Resource
      */
     const ADDRESS_TYPE_DELIVERY = 2;
 
-    protected $name = 'parcels';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'parcels';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'parcel_id';
+    }
 }

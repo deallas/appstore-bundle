@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class NewsCategory extends Resource
+final class NewsCategory extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'news-categories';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'news-categories';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'category_id';
+    }
 }

@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class UserAddress extends Resource
+final class UserAddress extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'user-addresses';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'user-addresses';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'address_book_id';
+    }
 }

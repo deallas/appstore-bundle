@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Availability extends Resource
+final class Availability extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'availabilities';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'availabilities';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'availability_id';
+    }
 }

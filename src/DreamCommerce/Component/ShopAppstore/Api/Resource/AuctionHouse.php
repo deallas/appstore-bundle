@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class AuctionHouse extends Resource
+final class AuctionHouse extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'auction-houses';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'auction-houses';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'auction_house_id';
+    }
 }

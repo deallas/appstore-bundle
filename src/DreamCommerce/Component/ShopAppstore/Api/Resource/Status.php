@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Status extends Resource
+final class Status extends Resource implements IdentifierAwareInterface
 {
     /**
      * status: new
@@ -37,5 +37,19 @@ class Status extends Resource
      */
     const TYPE_UNREALIZED = 4;
 
-    protected $name = 'statuses';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'statuses';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'status_id';
+    }
 }

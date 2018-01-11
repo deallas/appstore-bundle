@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class NewsTag extends Resource
+final class NewsTag extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'news-tags';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'news-tags';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'tag_id';
+    }
 }

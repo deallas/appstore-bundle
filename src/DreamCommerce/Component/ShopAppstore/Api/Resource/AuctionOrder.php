@@ -15,12 +15,26 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class AuctionOrder extends Resource
+final class AuctionOrder extends Resource implements IdentifierAwareInterface
 {
     /**
      * The order has already been connected to the auction
      */
     const HTTP_ERROR_AUCTION_ORDER_ALREADY_CONNECTED = 'auction_order_already_connected';
 
-    protected $name = 'auction-orders';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'auction-orders';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'auction_order_id';
+    }
 }

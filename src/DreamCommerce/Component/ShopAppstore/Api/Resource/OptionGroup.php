@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class OptionGroup extends Resource
+final class OptionGroup extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'option-groups';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'option-groups';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'group_id';
+    }
 }

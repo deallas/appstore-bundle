@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class ApplicationConfig extends Resource
+final class ApplicationConfig extends Resource
 {
     /**
      * Shop URL - string
@@ -481,6 +481,11 @@ class ApplicationConfig extends Resource
      */
     const CONFIG_DEFAULT_CURRENCY_ID = 'default_currency_id';
 
-    protected $isSingleOnly = true;
-    protected $name = 'application-config';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'application-config';
+    }
 }

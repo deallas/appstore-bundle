@@ -15,8 +15,13 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class ApplicationLock extends Resource
+final class ApplicationLock extends Resource
 {
-    protected $isSingleOnly = true;
-    protected $name = 'application-lock';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'application-lock';
+    }
 }

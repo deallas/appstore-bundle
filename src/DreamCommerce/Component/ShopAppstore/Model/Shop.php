@@ -102,8 +102,19 @@ class Shop implements ShopInterface, ArrayableInterface
         return $this->token;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setToken(?TokenInterface $token): void
     {
         $this->token = $token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAuthenticated(): bool
+    {
+        return ($this->getToken()->getAccessToken() !== null);
     }
 }

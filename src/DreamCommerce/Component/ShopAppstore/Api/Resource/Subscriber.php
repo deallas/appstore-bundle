@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class Subscriber extends Resource
+final class Subscriber extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'subscribers';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'subscribers';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'subscriber_id';
+    }
 }

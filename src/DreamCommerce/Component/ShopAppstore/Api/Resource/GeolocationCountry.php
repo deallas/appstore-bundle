@@ -15,7 +15,21 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class GeolocationCountry extends Resource
+final class GeolocationCountry extends Resource implements IdentifierAwareInterface
 {
-    protected $name = 'geolocation-countries';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'geolocation-countries';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifierName(): string
+    {
+        return 'country_id';
+    }
 }

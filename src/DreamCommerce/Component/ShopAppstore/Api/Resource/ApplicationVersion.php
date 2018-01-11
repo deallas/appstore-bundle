@@ -15,9 +15,13 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-class ApplicationVersion extends Resource
+final class ApplicationVersion extends Resource
 {
-    protected $isSingleOnly = true;
-    protected $name = 'application-version';
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
+    {
+        return 'application-version';
+    }
 }
