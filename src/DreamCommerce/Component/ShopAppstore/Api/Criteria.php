@@ -17,6 +17,11 @@ use Psr\Http\Message\RequestInterface;
 
 final class Criteria
 {
+    const PART_EXPRESSIONS          = 'expressions';
+    const PART_ORDERING             = 'ordering';
+    const PART_LIMIT                = 'limit';
+    const PART_PAGE                 = 'page';
+
     const OPERATOR_EQUAL            = '=';
     const OPERATOR_NOT_EQUAL        = '!=';
     const OPERATOR_GREATER          = '>';
@@ -73,6 +78,8 @@ final class Criteria
     {
         $this->expressions = [];
         $this->andWhere($field, $value, $operator);
+
+        return $this;
     }
 
     /**
@@ -83,35 +90,44 @@ final class Criteria
      */
     public function andWhere(string $field, $value, $operator = self::OPERATOR_EQUAL): self
     {
-        $this->expressions[] = array(
-            'field' => $field,
-            'value' => $value,
-            'operator' => $operator
-        );
+        if(!isset($this->expressions[$field])) {
+            $this->expressions[$field] = [];
+        }
+
+        if(is_array($value)) {
+            if($operator === self::OPERATOR_EQUAL) {
+                $operator = self::OPERATOR_IN;
+            } elseif($operator === self::OPERATOR_NOT_EQUAL) {
+                $operator = self::OPERATOR_NOT_IN;
+            } else {
+                // TODO throw exception
+            }
+        } elseif(!is_scalar($value)) {
+            // TODO throw exception
+        }
+
+        $this->expressions[$field][$operator] = $value;
+
+        return $this;
     }
 
     /**
-     * @param string $expr syntax:
+     * @param string|array $expr syntax:
      * <field> (asc|desc)
      * or
      * (+|-)<field>
      * @return self
      * @throws \RuntimeException
      */
-    public function orderBy(string $expr): self
+    public function orderBy($expr): self
     {
-        $matches = array();
-
         $expr = (array)$expr;
-
-        $result = array();
 
         foreach($expr as $e) {
             // basic syntax, with asc/desc suffix
             if (preg_match('/([a-z_0-9.]+) (asc|desc)$/i', $e)) {
-                $result[] = $e;
+                $this->orderings[] = $e;
             } else if (preg_match('/([\+\-]?)([a-z_0-9.]+)/i', $e, $matches)) {
-
                 // alternative syntax - with +/- prefix
                 $subResult = $matches[2];
                 if ($matches[1] == '' || $matches[1] == '+') {
@@ -119,14 +135,13 @@ final class Criteria
                 } else {
                     $subResult .= ' desc';
                 }
-                $result[] = $subResult;
+                $this->orderings[] = $subResult;
             } else {
-                // something which should never happen but take care [;
-                throw new \RuntimeException('Cannot understand ordering expression', ResourceException::ORDER_NOT_SUPPORTED); // TODO
+                // TODO throw exception
             }
         }
 
-        $this->orderings = $result;
+        return $this;
     }
 
     /**
@@ -151,7 +166,6 @@ final class Criteria
         return $this;
     }
 
-
     /**
      * Gets the expression attached to this Criteria.
      *
@@ -161,6 +175,7 @@ final class Criteria
     {
         return $this->expressions;
     }
+
     /**
      * Gets the current orderings of this Criteria.
      *
@@ -172,14 +187,23 @@ final class Criteria
     }
 
     /**
+     * @param string $part
      * @return void
      */
-    public function reset(): void
+    public function reset(string $part = null): void
     {
-        $this->limit = 50;
-        $this->page = 1;
-        $this->expressions = null;
-        $this->orderings = null;
+        if($part === self::PART_LIMIT || $part === null) {
+            $this->limit = 50;
+        }
+        if($part === self::PART_PAGE || $part === null) {
+            $this->page = 1;
+        }
+        if($part === self::PART_EXPRESSIONS || $part === null) {
+            $this->expressions = null;
+        }
+        if($part === self::PART_ORDERING || $part === null) {
+            $this->orderings = null;
+        }
     }
 
     /**
@@ -187,6 +211,25 @@ final class Criteria
      */
     public function fillRequest(RequestInterface $request): void
     {
-        // TODO
+        $query = [];
+        if(count($this->expressions) > 0) {
+            $query['filters'] = $this->expressions;
+        }
+        if($this->limit !== null) {
+            $query['limit'] = $this->limit;
+        }
+        if($this->orderings !== null) {
+            $query['order'] = $this->orderings;
+        }
+        if($this->page !== null) {
+            $query['page'] = $this->page;
+        }
+
+        if(count($query) > 0) {
+            $uri = $request->getUri();
+            $uri = $uri->withQuery(http_build_query($query));
+
+            $request->withUri($uri);
+        }
     }
 }
