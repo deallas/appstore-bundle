@@ -11,11 +11,9 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api;
+namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
 
-use ArrayObject;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
-use DreamCommerce\Component\ShopAppstore\Model\TokenInterface;
 
 interface AuthenticatorInterface
 {

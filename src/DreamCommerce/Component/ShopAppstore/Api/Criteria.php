@@ -99,10 +99,16 @@ final class Criteria
                 $operator = self::OPERATOR_IN;
             } elseif($operator === self::OPERATOR_NOT_EQUAL) {
                 $operator = self::OPERATOR_NOT_IN;
-            } else {
+            } elseif(!in_array($operator, [ self::OPERATOR_IN, self::OPERATOR_NOT_IN ])) {
                 // TODO throw exception
             }
-        } elseif(!is_scalar($value)) {
+        } elseif(is_scalar($value)) {
+            if($operator === self::OPERATOR_IN) {
+                $operator = self::OPERATOR_EQUAL;
+            } elseif($operator === self::OPERATOR_NOT_IN) {
+                $operator = self::OPERATOR_NOT_EQUAL;
+            }
+        } else {
             // TODO throw exception
         }
 
@@ -199,10 +205,10 @@ final class Criteria
             $this->page = 1;
         }
         if($part === self::PART_EXPRESSIONS || $part === null) {
-            $this->expressions = null;
+            $this->expressions = [];
         }
         if($part === self::PART_ORDERING || $part === null) {
-            $this->orderings = null;
+            $this->orderings = [];
         }
     }
 
@@ -215,11 +221,11 @@ final class Criteria
         if(count($this->expressions) > 0) {
             $query['filters'] = $this->expressions;
         }
+        if(count($this->orderings) > 0) {
+            $query['order'] = $this->orderings;
+        }
         if($this->limit !== null) {
             $query['limit'] = $this->limit;
-        }
-        if($this->orderings !== null) {
-            $query['order'] = $this->orderings;
         }
         if($this->page !== null) {
             $query['page'] = $this->page;

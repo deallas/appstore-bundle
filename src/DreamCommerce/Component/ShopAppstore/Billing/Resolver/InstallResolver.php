@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
 
-use DreamCommerce\Component\ShopAppstore\Api\AuthenticatorInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Authenticator\AuthenticatorInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Install;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;

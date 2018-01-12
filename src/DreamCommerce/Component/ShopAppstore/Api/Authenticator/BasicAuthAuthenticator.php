@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api;
+namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
 
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;

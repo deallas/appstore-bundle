@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
 
+use DreamCommerce\Component\ShopAppstore\Api\Authenticator\AuthenticatorInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Install;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\InstallResolver;
@@ -33,6 +34,11 @@ class InstallResolverTest extends TestCase
     protected $shopStateMachineFactory;
 
     /**
+     * @var AuthenticatorInterface|MockObject
+     */
+    protected $authenticator;
+
+    /**
      * @var InstallResolver
      */
     protected $resolver;
@@ -40,7 +46,8 @@ class InstallResolverTest extends TestCase
     public function setUp()
     {
         $this->shopStateMachineFactory = $this->getMockBuilder(FactoryInterface::class)->getMock();
-        $this->resolver = new InstallResolver($this->shopStateMachineFactory);
+        $this->authenticator = $this->getMockBuilder(AuthenticatorInterface::class)->getMock();
+        $this->resolver = new InstallResolver($this->shopStateMachineFactory,$this->authenticator);
     }
 
     public function testShouldImplements()
@@ -79,6 +86,10 @@ class InstallResolverTest extends TestCase
                 return $stateMachine;
             }));
 
+        $this->authenticator
+            ->expects($this->once())
+            ->method('authenticate');
+
         $this->resolver->resolve($message);
         $this->assertTrue($message->getShop()->getVersion() >= $lastVersion);
     }
@@ -105,6 +116,10 @@ class InstallResolverTest extends TestCase
 
                 return $stateMachine;
             }));
+
+        $this->authenticator
+            ->expects($this->once())
+            ->method('authenticate');
 
         $this->resolver->resolve($message);
     }

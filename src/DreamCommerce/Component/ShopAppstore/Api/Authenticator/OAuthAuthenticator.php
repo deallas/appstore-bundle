@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api;
+namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
