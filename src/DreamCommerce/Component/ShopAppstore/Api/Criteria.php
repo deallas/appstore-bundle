@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
+use Psr\Http\Message\RequestInterface;
+
 final class Criteria
 {
     const OPERATOR_EQUAL            = '=';
@@ -178,5 +180,13 @@ final class Criteria
         $this->page = 1;
         $this->expressions = null;
         $this->orderings = null;
+    }
+
+    /**
+     * @param RequestInterface $request
+     */
+    public function fillRequest(RequestInterface $request): void
+    {
+        // TODO
     }
 }

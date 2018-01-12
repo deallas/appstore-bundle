@@ -29,16 +29,25 @@ final class OAuthAuthenticator extends BearerAuthenticator
     private $shopStateMachineFactory;
 
     /**
+     * @var ObjectManager
+     */
+    private $shopObjectManager;
+
+    /**
+     * @param HttpClientInterface $httpClient
      * @param ObjectManager|null $tokenObjectManager
-     * @param HttpClientInterface|null $httpClient
+     * @param ObjectManager|null $shopObjectManager
      * @param FactoryInterface|null $shopStateMachineFactory
      */
-    public function __construct(ObjectManager $tokenObjectManager = null,
-                                HttpClientInterface $httpClient = null,
+    public function __construct(HttpClientInterface $httpClient,
+                                ObjectManager $tokenObjectManager = null,
+                                ObjectManager $shopObjectManager = null,
                                 FactoryInterface $shopStateMachineFactory = null
     ) {
+        $this->shopObjectManager = $shopObjectManager;
         $this->shopStateMachineFactory = $shopStateMachineFactory;
-        parent::__construct($tokenObjectManager, $httpClient);
+
+        parent::__construct($httpClient, $tokenObjectManager);
     }
 
     /**
@@ -80,6 +89,11 @@ final class OAuthAuthenticator extends BearerAuthenticator
         if($this->shopStateMachineFactory !== null) {
             $stateMachine = $this->shopStateMachineFactory->get($shop, ShopTransitions::GRAPH);
             $stateMachine->apply(ShopTransitions::TRANSITION_INSTALL);
+        }
+
+        if($this->shopObjectManager !== null) {
+            $this->shopObjectManager->persist($shop);
+            $this->shopObjectManager->flush();
         }
     }
 

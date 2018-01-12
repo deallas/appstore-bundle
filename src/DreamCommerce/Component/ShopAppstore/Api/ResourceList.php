@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
 use ArrayObject;
-use stdClass;
 
 final class ResourceList extends ArrayObject
 {
@@ -39,8 +38,6 @@ final class ResourceList extends ArrayObject
      */
     public function __construct($array = [], $flags = parent::ARRAY_AS_PROPS)
     {
-        $array = $this->transform($array);
-
         parent::__construct($array, $flags);
     }
 
@@ -63,7 +60,7 @@ final class ResourceList extends ArrayObject
     /**
      * @param int|null $page
      */
-    public function setPage(?int $page)
+    public function setPage(?int $page): void
     {
         $this->page = $page;
     }
@@ -79,7 +76,7 @@ final class ResourceList extends ArrayObject
     /**
      * @param int|null $count
      */
-    public function setPageCount(?int $count)
+    public function setPageCount(?int $count): void
     {
         $this->pages = $count;
     }
@@ -90,24 +87,5 @@ final class ResourceList extends ArrayObject
     public function getPageCount(): ?int
     {
         return $this->pages;
-    }
-
-    /**
-     * @param array|ArrayObject $array
-     *
-     * @return ArrayObject
-     */
-    private function transform($array): ArrayObject
-    {
-        if (!$array instanceof ArrayObject) {
-            if (is_array($array) || $array instanceof stdClass) {
-                foreach ($array as $k => $value) {
-                    $array[$k] = $this->transform($value);
-                }
-                $array = new ArrayObject($array, ArrayObject::ARRAY_AS_PROPS);
-            }
-        }
-
-        return $array;
     }
 }

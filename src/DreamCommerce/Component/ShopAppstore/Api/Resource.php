@@ -14,23 +14,33 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
 use ArrayObject;
+use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
 use DreamCommerce\Component\Common\Http\GuzzleClient as GuzzlePsrClient;
 use DreamCommerce\Component\ShopAppstore\Api\Http\AwaitShopClient;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Resource\IdentifierAwareInterface;
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
-use GuzzleHttp\Client as GuzzleHttpClient;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use Throwable;
 
 abstract class Resource implements ResourceInterface
 {
     /**
-     * @var ShopClientInterface
+     * @var ShopClientInterface|null
      */
     private $shopClient;
+
+    /**
+     * @var AuthenticatorInterface|null
+     */
+    private $authenticator;
+
+    /**
+     * @var HttpClientInterface
+     */
+    private static $httpClient;
 
     /**
      * @var array
@@ -47,10 +57,12 @@ abstract class Resource implements ResourceInterface
 
     /**
      * @param ShopClientInterface|null $shopClient
+     * @param AuthenticatorInterface|null $authenticator
      */
-    public function __construct(ShopClientInterface $shopClient = null)
+    public function __construct(ShopClientInterface $shopClient = null, AuthenticatorInterface $authenticator = null)
     {
         $this->shopClient = $shopClient;
+        $this->authenticator = $authenticator;
     }
 
     /**
@@ -58,7 +70,8 @@ abstract class Resource implements ResourceInterface
      */
     public function get(ShopInterface $shop, ...$args): ArrayObject
     {
-        $args = $this->parseArgs($args);
+        list($id, $criteria) = $this->parseArgs($args);
+        $response = $this->perform($shop, 'GET', $id, null, $criteria);
     }
 
     /**
@@ -66,7 +79,7 @@ abstract class Resource implements ResourceInterface
      */
     public function head(ShopInterface $shop, ...$args): ArrayObject
     {
-        $args = $this->parseArgs($args);
+        list($id, $criteria) = $this->parseArgs($args);
     }
 
     /**
@@ -74,7 +87,8 @@ abstract class Resource implements ResourceInterface
      */
     public function post(ShopInterface $shop, array $data): int
     {
-        // TODO: Implement post() method.
+        $response = $this->perform($shop, 'POST', null, $data);
+        return (int) $response->getBody()->getContents();
     }
 
     /**
@@ -82,7 +96,7 @@ abstract class Resource implements ResourceInterface
      */
     public function put(ShopInterface $shop, int $id, array $data): void
     {
-        // TODO: Implement put() method.
+        $this->perform($shop, 'PUT', $id, $data);
     }
 
     /**
@@ -90,22 +104,7 @@ abstract class Resource implements ResourceInterface
      */
     public function delete(ShopInterface $shop, int $id): void
     {
-        $this->authenticator->authenticate($shop);
-
-        try {
-            $this->httpClient->request($this, 'delete', $args);
-        } catch(Throwable $ex) {
-            $this->dispatchException($ex);
-        }
-    }
-
-    /**
-     * @param string $shopClass
-     * @param string $authClass
-     */
-    public static function setAuthMap(string $shopClass, string $authClass): void
-    {
-        self::$authMap[$shopClass] = $authClass;
+        $this->perform($shop, 'DELETE', $id);
     }
 
     /**
@@ -114,64 +113,15 @@ abstract class Resource implements ResourceInterface
      */
     private function parseArgs(array $args): array
     {
-        if(count($args) !== 1) {
-            return $args;
-        }
-
-        if(is_array($args[0])) {
-            return $args[0];
-        }
-
-        // TODO
-    }
-
-    private function perform(ShopInterface $shop, string $method, array $data)
-    {
-
-    }
-
-    /**
-     * @param ShopInterface $shop
-     * @return AuthenticatorInterface
-     */
-    private function getAuthByShop(ShopInterface $shop): AuthenticatorInterface
-    {
-        foreach(self::$authMap as $shopClass => $authClass) {
-            if($shop instanceof $shopClass) {
-                return $this->getAuthInstance($authClass);
+        if(count($args) === 1) {
+            if(is_numeric($args[0]) && (int)$args[0] == $args[0]) {
+                return [$args[0], null];
+            } elseif($args[0] instanceof Criteria) {
+                return [ null, $args[0] ];
+            } else {
+                // TODO throw exception
             }
         }
-
-        throw new RuntimeException('Unable find authenticator for class "' . get_class($shop) . '"');
-    }
-
-    /**
-     * @param string $authClass
-     * @return AuthenticatorInterface
-     */
-    private function getAuthInstance(string $authClass): AuthenticatorInterface
-    {
-        if(!isset(self::$authInstances[$authClass])) {
-            self::$authInstances[$authClass] = new $authClass;
-        }
-
-        return self::$authInstances[$authClass];
-    }
-
-    /**
-     * @return ShopClientInterface
-     */
-    private function getShopClient(): ShopClientInterface
-    {
-        if($this->shopClient === null) {
-            $this->shopClient = new AwaitShopClient(
-                new GuzzlePsrClient(
-                    new GuzzleHttpClient()
-                )
-            );
-        }
-
-        return $this->shopClient;
     }
 
     /**
@@ -182,20 +132,22 @@ abstract class Resource implements ResourceInterface
      */
     protected function transformResponse(ResponseInterface $response, bool $isCollection)
     {
-        $code = null;
-        if (isset($response['headers']['Code'])) {
-            $code = $response['headers']['Code'];
+        $code = $response->getStatusCode();
+        $data = @json_decode($response->getBody());
+        if($data === false) {
+            // TODO throw exception
         }
 
         // everything is okay when 200-299 status code
         if ($code >= 200 && $code < 300) {
-            // for example, last insert ID
-            if ($isCollection) {
-                if (isset($response['data']['list'])) {
-                    $objectList = new ResourceList($response['data']['list']);
+            if ($this instanceof IdentifierAwareInterface) {
+                if (isset($data['list'])) {
+                    $objectList = new ResourceList($data['list']);
                 } else {
                     $objectList = new ResourceList();
                 }
+
+                $headers = $response->getHeaders();
 
                 // add meta properties (eg. count, page, etc) as a ArrayObject properties
                 if (isset($response['data']['page'])) {
@@ -218,9 +170,7 @@ abstract class Resource implements ResourceInterface
 
                 return $objectList;
             } else {
-
                 $result = $response['data'];
-
                 if (!is_scalar($response['data'])) {
                     $result = new ArrayObject(ResourceList::transform($result));
                 }
@@ -237,5 +187,118 @@ abstract class Resource implements ResourceInterface
 
             throw new ResourceException($msg, $code); // TODO
         }
+    }
+
+    /**
+     * @param ShopInterface $shop
+     * @param string $method
+     * @param int|null $id
+     * @param array|null $data
+     * @param Criteria|null $criteria
+     * @return ResponseInterface
+     */
+    private function perform(ShopInterface $shop, string $method, int $id = null, array $data = null, Criteria $criteria = null): ResponseInterface
+    {
+        if(!$shop->isAuthenticated()) {
+            $authenticator = $this->getAuthByShop($shop);
+            $authenticator->authenticate($shop);
+        }
+
+        $httpClient = $this->getHttpClient();
+        $shopClient = $this->getShopClient();
+
+        $uri = $shop->getUri();
+        $uri = $uri->withPath($uri->getPath() . '/webapi/rest/' . $this->getName());
+
+        if($id !== null) {
+            $uri = $uri->withPath($uri->getPath() . '/' . $id);
+        }
+
+        $body = null;
+        if($data !== null && in_array($method, [ 'POST', 'PUT' ])) {
+            $body = @json_encode($data);
+            if ($body === false) {
+                // TODO throw exception
+            }
+        }
+
+        $request = $httpClient->createRequest(
+            $method,
+            $uri,
+            [
+                'Authorization' => 'Bearer ' . $shop->getToken()->getAccessToken(),
+                'Content-Type' => 'application/json',
+                'User-Agent' => 'DreamCommerce ShopAppStore Agent', // TODO
+                'Accept-Language' => 'en_US;q=0.8' // TODO
+            ],
+            $body
+        );
+        $criteria->fillRequest($request);
+
+        $shopClient->send($request);
+    }
+
+    /**
+     * @param ShopInterface $shop
+     * @return AuthenticatorInterface
+     */
+    private function getAuthByShop(ShopInterface $shop): AuthenticatorInterface
+    {
+        if($this->authenticator !== null) {
+            return $this->authenticator;
+        }
+
+        foreach(self::$authMap as $shopClass => $authClass) {
+            if($shop instanceof $shopClass) {
+                return $this->getAuthInstance($authClass);
+            }
+        }
+
+        throw new RuntimeException('Unable find authenticator for class "' . get_class($shop) . '"');
+    }
+
+    /**
+     * @param string $authClass
+     * @return AuthenticatorInterface
+     */
+    private function getAuthInstance(string $authClass): AuthenticatorInterface
+    {
+        if(!isset(self::$authInstances[$authClass])) {
+            self::$authInstances[$authClass] = new $authClass($this->getHttpClient());
+        }
+
+        return self::$authInstances[$authClass];
+    }
+
+    /**
+     * @return ShopClientInterface
+     */
+    private function getShopClient(): ShopClientInterface
+    {
+        if($this->shopClient === null) {
+            if(class_exists('\\GuzzleHttp\\Client')) {
+                $this->shopClient = new AwaitShopClient($this->getHttpClient());
+            } else {
+                throw new RuntimeException('Unable initialize shop client');
+            }
+        }
+
+        return $this->shopClient;
+    }
+
+    /**
+     * @return HttpClientInterface
+     */
+    private function getHttpClient(): HttpClientInterface
+    {
+        if(self::$httpClient === null) {
+            if (class_exists('\\GuzzleHttp\\Client')) {
+                self::$httpClient = new GuzzlePsrClient(new \GuzzleHttp\Client());
+            } else {
+                throw new RuntimeException('Unable initialize HTTP client');
+            }
+        }
+
+        return self::$httpClient;
     }
 }

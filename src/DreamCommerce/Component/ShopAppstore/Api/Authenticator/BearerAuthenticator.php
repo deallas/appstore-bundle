@@ -35,17 +35,12 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
     protected $tokenObjectManager;
 
     /**
-     * @param ObjectManager $tokenObjectManager
-     * @param HttpClientInterface|null $httpClient
+     * @param HttpClientInterface $httpClient
+     * @param ObjectManager|null $tokenObjectManager
      */
-    public function __construct(ObjectManager $tokenObjectManager = null, HttpClientInterface $httpClient = null)
+    public function __construct(HttpClientInterface $httpClient, ObjectManager $tokenObjectManager = null)
     {
-        if($this->httpClient !== null) {
-            $this->httpClient = $httpClient;
-        } elseif(class_exists('\\GuzzleHttp\\Client')) {
-            $this->httpClient = new AwaitGuzzleClient(new \GuzzleHttp\Client());
-        }
-
+        $this->httpClient = $httpClient;
         $this->tokenObjectManager = $tokenObjectManager;
     }
 
