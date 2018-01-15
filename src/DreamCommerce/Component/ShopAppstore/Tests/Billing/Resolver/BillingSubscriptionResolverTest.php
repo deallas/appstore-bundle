@@ -42,14 +42,14 @@ class BillingSubscriptionResolverTest extends TestCase
      */
     protected $subscriptionObjectManager;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subscriptionFactory = $this->getMockBuilder(SubscriptionFactoryInterface::class)->getMock();
         $this->subscriptionObjectManager = $this->getMockBuilder(ObjectManager::class)->getMock();
         $this->resolver = new BillingSubscriptionResolver($this->subscriptionObjectManager, $this->subscriptionFactory);
     }
 
-    public function testShouldImplements()
+    public function testShouldImplements(): void
     {
         $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
     }
@@ -57,7 +57,7 @@ class BillingSubscriptionResolverTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidArgumentWhileResolve()
+    public function testInvalidArgumentWhileResolve(): void
     {
         $message = $this->getMockBuilder(Message::class)
             ->disableOriginalConstructor()
@@ -66,7 +66,7 @@ class BillingSubscriptionResolverTest extends TestCase
         $this->resolver->resolve($message);
     }
 
-    public function testValidResolve()
+    public function testValidResolve(): void
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();

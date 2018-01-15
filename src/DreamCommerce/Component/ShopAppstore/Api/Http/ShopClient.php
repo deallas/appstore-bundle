@@ -15,7 +15,6 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Http;
 
 use DreamCommerce\Component\Common\Http\ClientInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Exception;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -65,7 +64,9 @@ class ShopClient implements ShopClientInterface
         try {
             $response = $this->httpClient->send($request);
         } catch (Throwable $exception) {
-            if($exception instanceof RequestException) {
+            if (class_exists('\\GuzzleHttp\\Exception\\RequestException') &&
+                $exception instanceof \GuzzleHttp\Exception\RequestException
+            ) {
                 $response = $exception->getResponse();
                 $this->logResponse($response);
 

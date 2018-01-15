@@ -37,13 +37,13 @@ class UninstallResolverTest extends TestCase
      */
     protected $resolver;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->shopStateMachineFactory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $this->resolver = new UninstallResolver($this->shopStateMachineFactory);
     }
 
-    public function testShouldImplements()
+    public function testShouldImplements(): void
     {
         $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
     }
@@ -51,7 +51,7 @@ class UninstallResolverTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidArgumentWhileResolve()
+    public function testInvalidArgumentWhileResolve(): void
     {
         $message = $this->getMockBuilder(Message::class)
             ->disableOriginalConstructor()
@@ -66,7 +66,7 @@ class UninstallResolverTest extends TestCase
      * @param Uninstall $message
      * @param string $transition
      */
-    public function testChangeStateWhileResolving(Uninstall $message, string $transition)
+    public function testChangeStateWhileResolving(Uninstall $message, string $transition): void
     {
         $this->shopStateMachineFactory
             ->expects($this->once())
@@ -88,7 +88,7 @@ class UninstallResolverTest extends TestCase
 
     /* --------------------------------------------------------------------- */
 
-    public function stateMessages()
+    public function stateMessages(): array
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();

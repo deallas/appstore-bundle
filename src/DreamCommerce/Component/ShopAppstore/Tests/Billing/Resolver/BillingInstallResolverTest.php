@@ -37,13 +37,13 @@ class BillingInstallResolverTest extends TestCase
      */
     protected $billingStateMachineFactory;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->billingStateMachineFactory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $this->resolver = new BillingInstallResolver($this->billingStateMachineFactory);
     }
 
-    public function testShouldImplements()
+    public function testShouldImplements(): void
     {
         $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
     }
@@ -51,7 +51,7 @@ class BillingInstallResolverTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidArgumentWhileResolve()
+    public function testInvalidArgumentWhileResolve(): void
     {
         $message = $this->getMockBuilder(Message::class)
             ->disableOriginalConstructor()
@@ -60,7 +60,7 @@ class BillingInstallResolverTest extends TestCase
         $this->resolver->resolve($message);
     }
 
-    public function testValidResolve()
+    public function testValidResolve(): void
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();

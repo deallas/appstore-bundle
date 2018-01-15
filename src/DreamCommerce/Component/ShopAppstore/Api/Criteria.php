@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
+use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
+use Webmozart\Assert\Assert;
 
 final class Criteria
 {
@@ -33,6 +35,19 @@ final class Criteria
     const OPERATOR_IN               = 'in';
     const OPERATOR_NOT_IN           = 'not in';
 
+    const ALL_OPERATORS = [
+        self::OPERATOR_EQUAL,
+        self::OPERATOR_NOT_EQUAL,
+        self::OPERATOR_GREATER,
+        self::OPERATOR_GREATER_EQUAL,
+        self::OPERATOR_LESS,
+        self::OPERATOR_LESS_EQUAL,
+        self::OPERATOR_LIKE,
+        self::OPERATOR_NOT_LIKE,
+        self::OPERATOR_IN,
+        self::OPERATOR_NOT_IN
+    ];
+
     /**
      * @var array|null
      */
@@ -44,12 +59,12 @@ final class Criteria
     private $orderings;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $page;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $limit;
 
@@ -70,7 +85,7 @@ final class Criteria
 
     /**
      * @param string $field
-     * @param array|string $value
+     * @param array|string|null $value
      * @param string $operator
      * @return self
      */
@@ -84,12 +99,20 @@ final class Criteria
 
     /**
      * @param string $field
-     * @param array|string $value
+     * @param array|string|null $value
      * @param string $operator
      * @return Criteria
      */
-    public function andWhere(string $field, $value, $operator = self::OPERATOR_EQUAL): self
+    public function andWhere(string $field, $value = null, $operator = self::OPERATOR_EQUAL): self
     {
+        if(preg_match('/^([a-z0-9\._]+)[ ]?(>|>=|<=|<|=|!=|like|not like)(.*)$/i', $field, $matches)) {
+            $field = trim($matches[1]);
+            $operator = trim($matches[2]);
+            $value = trim($matches[3], " \"'");
+        }
+
+        Assert::oneOf($operator, self::ALL_OPERATORS);
+
         if(!isset($this->expressions[$field])) {
             $this->expressions[$field] = [];
         }
@@ -100,7 +123,7 @@ final class Criteria
             } elseif($operator === self::OPERATOR_NOT_EQUAL) {
                 $operator = self::OPERATOR_NOT_IN;
             } elseif(!in_array($operator, [ self::OPERATOR_IN, self::OPERATOR_NOT_IN ])) {
-                // TODO throw exception
+                throw new InvalidArgumentException('Unsupported operator "' . $operator . '"');
             }
         } elseif(is_scalar($value)) {
             if($operator === self::OPERATOR_IN) {
@@ -109,7 +132,7 @@ final class Criteria
                 $operator = self::OPERATOR_NOT_EQUAL;
             }
         } else {
-            // TODO throw exception
+            throw new InvalidArgumentException('Expected string or array. Got: ' . (is_object($value) ? get_class($value) : gettype($value)));
         }
 
         $this->expressions[$field][$operator] = $value;
@@ -131,7 +154,7 @@ final class Criteria
 
         foreach($expr as $e) {
             // basic syntax, with asc/desc suffix
-            if (preg_match('/([a-z_0-9.]+) (asc|desc)$/i', $e)) {
+            if (preg_match('/([a-z0-9\._]+) (asc|desc)$/i', $e)) {
                 $this->orderings[] = $e;
             } else if (preg_match('/([\+\-]?)([a-z_0-9.]+)/i', $e, $matches)) {
                 // alternative syntax - with +/- prefix
@@ -143,7 +166,7 @@ final class Criteria
                 }
                 $this->orderings[] = $subResult;
             } else {
-                // TODO throw exception
+                throw new InvalidArgumentException('Unsupported expression "' . $e . '"');
             }
         }
 
@@ -151,10 +174,10 @@ final class Criteria
     }
 
     /**
-     * @param int $page
+     * @param int|null $page
      * @return self
      */
-    public function setPage(int $page): self
+    public function setPage(?int $page): self
     {
         $this->page = $page;
 
@@ -162,14 +185,30 @@ final class Criteria
     }
 
     /**
-     * @param int $limit
+     * @return int|null
+     */
+    public function getPage(): ?int
+    {
+        return $this->page;
+    }
+
+    /**
+     * @param int|null $limit
      * @return self
      */
-    public function setMaxResults(int $limit): self
+    public function setMaxResults(?int $limit): self
     {
         $this->limit = $limit;
 
         return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMaxResults(): ?int
+    {
+        return $this->limit;
     }
 
     /**
@@ -233,8 +272,11 @@ final class Criteria
 
         if(count($query) > 0) {
             $uri = $request->getUri();
-            $uri = $uri->withQuery(http_build_query($query));
+            parse_str($uri->getQuery(), $params);
+            $query = array_merge($params, $query);
+            ksort($query);
 
+            $uri = $uri->withQuery(http_build_query($query, '', '&'));
             $request->withUri($uri);
         }
     }

@@ -28,12 +28,12 @@ class UpgradeResolverTest extends TestCase
      */
     protected $resolver;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->resolver = new UpgradeResolver();
     }
 
-    public function testShouldImplements()
+    public function testShouldImplements(): void
     {
         $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
     }
@@ -41,7 +41,7 @@ class UpgradeResolverTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidArgumentWhileResolve()
+    public function testInvalidArgumentWhileResolve(): void
     {
         $message = $this->getMockBuilder(Message::class)
             ->disableOriginalConstructor()
@@ -55,7 +55,7 @@ class UpgradeResolverTest extends TestCase
      *
      * @param Upgrade $message
      */
-    public function testValidResolve(Upgrade $message)
+    public function testValidResolve(Upgrade $message): void
     {
         $lastVersion = $message->getShop()->getVersion();
 
@@ -63,7 +63,7 @@ class UpgradeResolverTest extends TestCase
         $this->assertTrue($message->getShop()->getVersion() >= $lastVersion);
     }
 
-    public function validMessages()
+    public function validMessages(): array
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();

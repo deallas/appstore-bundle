@@ -43,14 +43,14 @@ class InstallResolverTest extends TestCase
      */
     protected $resolver;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->shopStateMachineFactory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $this->authenticator = $this->getMockBuilder(AuthenticatorInterface::class)->getMock();
         $this->resolver = new InstallResolver($this->shopStateMachineFactory,$this->authenticator);
     }
 
-    public function testShouldImplements()
+    public function testShouldImplements(): void
     {
         $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
     }
@@ -58,7 +58,7 @@ class InstallResolverTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidArgumentWhileResolve()
+    public function testInvalidArgumentWhileResolve(): void
     {
         $message = $this->getMockBuilder(Message::class)
             ->disableOriginalConstructor()
@@ -72,7 +72,7 @@ class InstallResolverTest extends TestCase
      *
      * @param Install $message
      */
-    public function testChangeVersionWhileResolving(Install $message)
+    public function testChangeVersionWhileResolving(Install $message): void
     {
         $lastVersion = $message->getShop()->getVersion();
 
@@ -100,7 +100,7 @@ class InstallResolverTest extends TestCase
      * @param Install $message
      * @param string $transition
      */
-    public function testChangeStateWhileResolving(Install $message, string $transition)
+    public function testChangeStateWhileResolving(Install $message, string $transition): void
     {
         $this->shopStateMachineFactory
             ->expects($this->once())
@@ -126,7 +126,7 @@ class InstallResolverTest extends TestCase
 
     /* --------------------------------------------------------------------- */
 
-    public function stateMessages()
+    public function stateMessages(): array
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();
@@ -150,7 +150,7 @@ class InstallResolverTest extends TestCase
         return $messages;
     }
 
-    public function versionMessages()
+    public function versionMessages(): array
     {
         /** @var ApplicationInterface $application */
         $application = $this->getMockBuilder(ApplicationInterface::class)->getMock();

@@ -27,12 +27,12 @@ class ResolverRegistryTest extends TestCase
      */
     private $resolver;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->resolver = new ResolverRegistry();
     }
 
-    public function testShouldImplements()
+    public function testShouldImplements(): void
     {
         $this->assertInstanceOf(ServiceRegistryInterface::class, $this->resolver);
     }
@@ -43,7 +43,7 @@ class ResolverRegistryTest extends TestCase
      * @param string $action
      * @param string $className
      */
-    public function testRegisterValidResolver(string $action, string $className)
+    public function testRegisterValidResolver(string $action, string $className): void
     {
         $resolver = new $className();
         $this->resolver->register($action, $resolver);
@@ -57,21 +57,21 @@ class ResolverRegistryTest extends TestCase
      * @param string $action
      * @param string $className
      */
-    public function testRegisterInvalidResolver(string $action, string $className)
+    public function testRegisterInvalidResolver(string $action, string $className): void
     {
         $this->resolver->register($action, new $className());
     }
 
     /* --------------------------------------------------------------------- */
 
-    public function validResolvers()
+    public function validResolvers(): array
     {
         return [
             [DispatcherInterface::ACTION_INSTALL, ExampleResolver::class],
         ];
     }
 
-    public function invalidResolvers()
+    public function invalidResolvers(): array
     {
         return [
             [DispatcherInterface::ACTION_INSTALL, stdClass::class],

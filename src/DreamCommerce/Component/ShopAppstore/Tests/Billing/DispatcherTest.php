@@ -76,7 +76,7 @@ class DispatcherTest extends TestCase
      */
     private $resolverRegistry;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->applicationRegistry = $this->getMockBuilder(ServiceRegistryInterface::class)->getMock();
         $this->shopRepository = $this->getMockBuilder(ShopRepositoryInterface::class)->getMock();
@@ -95,7 +95,7 @@ class DispatcherTest extends TestCase
         );
     }
 
-    public function testShouldImplements()
+    public function testShouldImplements(): void
     {
         $this->assertInstanceOf(DispatcherInterface::class, $this->dispatcher);
     }
@@ -104,7 +104,7 @@ class DispatcherTest extends TestCase
      * @expectedException \DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException
      * @expectedExceptionCode \DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException::CODE_INVALID_REQUEST_METHOD
      */
-    public function testInvalidRequestMethodWhileDispatching()
+    public function testInvalidRequestMethodWhileDispatching(): void
     {
         $serverRequest = $this->getMockBuilder(ServerRequestInterface::class)
             ->getMock();
@@ -122,7 +122,7 @@ class DispatcherTest extends TestCase
      *
      * @param array $params
      */
-    public function testUnfulfilledRequirementsWhileDispatching(array $params = [])
+    public function testUnfulfilledRequirementsWhileDispatching(array $params = []): void
     {
         $serverRequest = $this->getMockBuilder(ServerRequestInterface::class)
             ->getMock();
@@ -140,7 +140,7 @@ class DispatcherTest extends TestCase
      * @expectedException \DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException
      * @expectedExceptionCode \DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException::CODE_NOT_EXIST_APPLICATION
      */
-    public function testNotExistApplicationWhileDispatching()
+    public function testNotExistApplicationWhileDispatching(): void
     {
         $params = $this->getValidRequestParams(DispatcherInterface::ACTION_UNINSTALL);
 
@@ -164,7 +164,7 @@ class DispatcherTest extends TestCase
      * @expectedException \DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException
      * @expectedExceptionCode \DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException::CODE_INVALID_PAYLOAD_HASH
      */
-    public function testInvalidHashWhileDispatching()
+    public function testInvalidHashWhileDispatching(): void
     {
         $params = $this->getValidRequestParams(DispatcherInterface::ACTION_UNINSTALL);
         $params['hash'] = '#';
@@ -193,7 +193,7 @@ class DispatcherTest extends TestCase
      * @param ServerRequestInterface $serverRequest
      * @param string $action
      */
-    public function testValidDispatch(ServerRequestInterface $serverRequest, string $action)
+    public function testValidDispatch(ServerRequestInterface $serverRequest, string $action): void
     {
         $this->registerResolvers();
 
@@ -268,7 +268,7 @@ class DispatcherTest extends TestCase
         $this->dispatcher->dispatch($serverRequest);
     }
 
-    public function testUpdateShopUrlWhileDispatch()
+    public function testUpdateShopUrlWhileDispatch(): void
     {
         $action = DispatcherInterface::ACTION_UNINSTALL;
         $serverRequest = $this->getValidServerRequest($action);
@@ -322,7 +322,7 @@ class DispatcherTest extends TestCase
 
     /* --------------------------------------------------------------------- */
 
-    public function validServerRequests()
+    public function validServerRequests(): array
     {
         $serverRequests = [];
         foreach (array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
@@ -332,7 +332,7 @@ class DispatcherTest extends TestCase
         return $serverRequests;
     }
 
-    public function invalidRequestParams()
+    public function invalidRequestParams(): array
     {
         $validParams = [
             'action' => DispatcherInterface::ACTION_UNINSTALL,
@@ -382,7 +382,7 @@ class DispatcherTest extends TestCase
      *
      * @return MockObject|ServerRequestInterface
      */
-    private function getValidServerRequest(string $action)
+    private function getValidServerRequest(string $action): MockObject
     {
         $serverRequest = $this->getMockBuilder(ServerRequestInterface::class)->getMock();
         $serverRequest->expects($this->once())
@@ -397,7 +397,7 @@ class DispatcherTest extends TestCase
         return $serverRequest;
     }
 
-    private function getValidRequestParams(string $action)
+    private function getValidRequestParams(string $action): array
     {
         $dt = new DateTime();
 
@@ -438,7 +438,7 @@ class DispatcherTest extends TestCase
         return $params;
     }
 
-    private function registerResolvers()
+    private function registerResolvers(): void
     {
         $map = [];
         foreach (array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
