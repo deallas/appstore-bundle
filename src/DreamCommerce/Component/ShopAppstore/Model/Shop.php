@@ -45,7 +45,7 @@ class Shop implements ShopInterface, ArrayableInterface
      * @param array $params
      * @param DateTimeFactoryInterface|null $dateTimeFactory
      */
-    public function __construct(array $params = array(), ?DateTimeFactoryInterface $dateTimeFactory)
+    public function __construct(array $params = array(), DateTimeFactoryInterface $dateTimeFactory = null)
     {
         $this->fromArray($params);
 

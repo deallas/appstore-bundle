@@ -26,14 +26,15 @@ class LimitExceededException extends ApiException
     /**
      * @param RequestInterface $httpRequest
      * @param ResponseInterface $httpResponse
-     * @param int|null $retryAfter
      * @param Throwable|null $previous
      * @return LimitExceededException
      */
-    public static function forExceededApiCalls(RequestInterface $httpRequest, ResponseInterface $httpResponse, ?int $retryAfter, Throwable $previous = null): self
+    public static function forResponse(RequestInterface $httpRequest, ResponseInterface $httpResponse, Throwable $previous = null): self
     {
         $exception = new self('The API calls has been exceeded', self::CODE_EXCEEDED_API_CALLS, $previous);
-        $exception->retryAfter = $retryAfter;
+        $responseHeaders = $httpResponse->getHeaders();
+
+        $exception->retryAfter = isset($responseHeaders['Retry-After']) ? $responseHeaders['Retry-After'] : 1;
         $exception->httpRequest = $httpRequest;
         $exception->httpResponse = $httpResponse;
 

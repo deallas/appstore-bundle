@@ -13,9 +13,12 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Http;
 
+use DreamCommerce\Component\Common\Http\ClientInterface;
+use DreamCommerce\Component\Common\Util\Sleeper;
 use DreamCommerce\Component\ShopAppstore\Api\Exception\LimitExceededException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 final class AwaitShopClient extends ShopClient
 {
@@ -23,6 +26,26 @@ final class AwaitShopClient extends ShopClient
      * @var int
      */
     private $retryLimit = 5;
+
+    /**
+     * @var Sleeper
+     */
+    private $sleeper;
+
+    /**
+     * @param ClientInterface $httpClient
+     * @param LoggerInterface|null $logger
+     * @param Sleeper|null $sleeper
+     */
+    public function __construct(ClientInterface $httpClient, LoggerInterface $logger = null, Sleeper $sleeper = null)
+    {
+        if($sleeper === null) {
+            $sleeper = new Sleeper();
+        }
+        $this->sleeper = $sleeper;
+
+        parent::__construct($httpClient, $logger);
+    }
 
     /**
      * @return int
@@ -61,17 +84,18 @@ final class AwaitShopClient extends ShopClient
                     $limit = $responseHeaders['X-Shop-Api-Limit'];
 
                     if ($limit - $calls == 0) {
-                        sleep(1);
+                        $this->sleeper->sleep(1);
                     }
                 }
 
                 $response = parent::send($request);
+                break;
             } catch (LimitExceededException $exception) {
                 if($exception->getCode() === LimitExceededException::CODE_EXCEEDED_API_CALLS) {
                     $response = $exception->getHttpResponse();
                     $responseHeaders = $response->getHeaders();
 
-                    sleep($exception->getRetryAfter());
+                    $this->sleeper->sleep($exception->getRetryAfter());
                 } else {
                     throw $exception;
                 }

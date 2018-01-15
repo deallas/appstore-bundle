@@ -47,6 +47,36 @@ class ShopClient implements ShopClientInterface
      */
     public function send(RequestInterface $request): ResponseInterface
     {
+        $this->logRequest($request);
+        $exception = null;
+
+        try {
+            $response = $this->httpClient->send($request);
+        } catch (Throwable $exception) {
+            if (class_exists('\\GuzzleHttp\\Exception\\RequestException') &&
+                $exception instanceof \GuzzleHttp\Exception\RequestException
+            ) {
+                $response = $exception->getResponse();
+            } else {
+                throw Exception\CommunicationException::forBrokenConnection($request, $exception);
+            }
+        }
+
+        $this->logResponse($response);
+        $this->checkResponse($request, $response, $exception);
+
+        return $response;
+    }
+
+    /**
+     * @param RequestInterface $request
+     */
+    private function logRequest(RequestInterface $request): void
+    {
+        if($this->logger === null) {
+            return;
+        }
+
         $uri = $request->getUri();
         $stream = $request->getBody();
         $body = $stream->getContents();
@@ -60,36 +90,6 @@ class ShopClient implements ShopClientInterface
                 'body' => $body
             ]
         );
-
-        try {
-            $response = $this->httpClient->send($request);
-        } catch (Throwable $exception) {
-            if (class_exists('\\GuzzleHttp\\Exception\\RequestException') &&
-                $exception instanceof \GuzzleHttp\Exception\RequestException
-            ) {
-                $response = $exception->getResponse();
-                $this->logResponse($response);
-
-                $responseHeaders = $response->getHeaders();
-                if ($response->getStatusCode() === 429 || !isset($responseHeaders['Retry-After'])) {
-                    throw Exception\LimitExceededException::forExceededApiCalls(
-                        $request,
-                        $response,
-                        isset($responseHeaders['Retry-After']) ? $responseHeaders['Retry-After'] : null,
-                        $exception
-                    );
-                } else {
-                    throw Exception\CommunicationException::forInvalidResponseCode($request, $response, $exception);
-                }
-            } else {
-                throw Exception\CommunicationException::forBrokenConnection($request, $exception);
-            }
-        }
-
-        $this->logResponse($response);
-        $this->checkResponse($request, $response);
-
-        return $response;
     }
 
     /**
@@ -97,6 +97,10 @@ class ShopClient implements ShopClientInterface
      */
     private function logResponse(ResponseInterface $response): void
     {
+        if($this->logger === null) {
+            return;
+        }
+
         $stream = $response->getBody();
         $body = $stream->getContents();
         $stream->rewind();
@@ -114,28 +118,32 @@ class ShopClient implements ShopClientInterface
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
+     * @param Throwable $previous
      * @throws Exception\CommunicationException
      * @throws Exception\MethodUnsupportedException
      * @throws Exception\NotFoundException
      * @throws Exception\ObjectLockedException
      * @throws Exception\PermissionsException
      * @throws Exception\ValidationException
+     * @throws Exception\LimitExceededException
      */
-    private function checkResponse(RequestInterface $request, ResponseInterface $response): void
+    private function checkResponse(RequestInterface $request, ResponseInterface $response, Throwable $previous = null): void
     {
         $responseCode = $response->getStatusCode();
 
         switch ($responseCode) {
             case 400:
-                throw Exception\ValidationException::forResponse($request, $response);
+                throw Exception\ValidationException::forResponse($request, $response, $previous);
             case 401:
-                throw Exception\PermissionsException::forResponse($request, $response);
+                throw Exception\PermissionsException::forResponse($request, $response, $previous);
             case 404:
-                throw Exception\NotFoundException::forResponse($request, $response);
+                throw Exception\NotFoundException::forResponse($request, $response, $previous);
             case 405:
-                throw Exception\MethodUnsupportedException::forResponse($request, $response);
+                throw Exception\MethodUnsupportedException::forResponse($request, $response, $previous);
             case 409:
-                throw Exception\ObjectLockedException::forResponse($request, $response);
+                throw Exception\ObjectLockedException::forResponse($request, $response, $previous);
+            case 429:
+                throw Exception\LimitExceededException::forResponse($request, $response, $previous);
         }
 
         if($responseCode !== 200) {
