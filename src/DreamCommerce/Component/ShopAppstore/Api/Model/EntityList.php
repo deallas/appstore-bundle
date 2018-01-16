@@ -11,11 +11,12 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api;
+namespace DreamCommerce\Component\ShopAppstore\Api\Model;
 
 use ArrayObject;
+use DreamCommerce\Component\ShopAppstore\Api\EntityListInterface;
 
-final class ResourceList extends ArrayObject
+final class EntityList extends ArrayObject implements EntityListInterface
 {
     /**
      * @var int

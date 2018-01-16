@@ -19,6 +19,11 @@ use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 interface ResourceInterface
 {
     /**
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
      * @param ShopInterface $shop
      * @param array ...$args
      * @return mixed
@@ -52,9 +57,4 @@ interface ResourceInterface
      * @param int $id
      */
     public function delete(ShopInterface $shop, int $id): void;
-
-    /**
-     * @return string
-     */
-    public function getName(): string;
 }
