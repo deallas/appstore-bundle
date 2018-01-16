@@ -23,8 +23,6 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface DispatcherInterface
 {
-    public const TIMEZONE = 'Europe/Warsaw';
-
     public const ACTION_BILLING_INSTALL = 'billing_install';
     public const ACTION_BILLING_SUBSCRIPTION = 'billing_subscription';
     public const ACTION_INSTALL = 'install';

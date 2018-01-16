@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Billing\Payload;
 
 use DateTime;
 use DateTimeZone;
-use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
+use DreamCommerce\Component\ShopAppstore\Info;
 
 final class BillingSubscription extends Message
 {
@@ -38,7 +38,7 @@ final class BillingSubscription extends Message
     public function setSubscriptionEndTime($subscriptionEndTime): void
     {
         if (!($subscriptionEndTime instanceof DateTime)) {
-            $subscriptionEndTime = new DateTime($subscriptionEndTime, new DateTimeZone(DispatcherInterface::TIMEZONE));
+            $subscriptionEndTime = new DateTime($subscriptionEndTime, new DateTimeZone(Info::TIMEZONE));
         }
 
         $this->subscriptionEndTime = $subscriptionEndTime;

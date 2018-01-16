@@ -69,7 +69,6 @@ final class AwaitShopClient extends ShopClient
      */
     public function send(RequestInterface $request): ResponseInterface
     {
-        $responseHeaders = [];
         $counter = $this->retryLimit;
 
         /** @var ResponseInterface $response */
@@ -77,33 +76,19 @@ final class AwaitShopClient extends ShopClient
 
         while($counter--) {
             try {
-                // pause upon limits exceeding
-                if (isset($responseHeaders['X-Shop-Api-Calls'])) {
-
-                    $calls = $responseHeaders['X-Shop-Api-Calls'];
-                    $limit = $responseHeaders['X-Shop-Api-Limit'];
-
-                    if ($limit - $calls == 0) {
-                        $this->sleeper->sleep(1);
-                    }
-                }
-
                 $response = parent::send($request);
                 break;
             } catch (LimitExceededException $exception) {
                 if($exception->getCode() === LimitExceededException::CODE_EXCEEDED_API_CALLS) {
+                    if($counter <= 0) {
+                        throw LimitExceededException::forExceededMaxApiRetries($request, $this->retryLimit, $exception);
+                    }
                     $response = $exception->getHttpResponse();
-                    $responseHeaders = $response->getHeaders();
-
                     $this->sleeper->sleep($exception->getRetryAfter());
                 } else {
                     throw $exception;
                 }
             }
-        }
-
-        if($response === null) {
-            throw LimitExceededException::forExceededMaxApiRetries($request, $this->retryLimit);
         }
 
         return $response;

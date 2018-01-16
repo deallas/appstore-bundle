@@ -13,27 +13,27 @@ class ApiException extends ShopAppstoreException
     const CODE_INVALID_RESPONSE     = 1;
 
     /**
-     * @var RequestInterface
+     * @var RequestInterface|null
      */
     protected $httpRequest;
 
     /**
-     * @var ResponseInterface
+     * @var ResponseInterface|null
      */
     protected $httpResponse;
 
     /**
-     * @return RequestInterface
+     * @return RequestInterface|null
      */
-    public function getHttpRequest(): RequestInterface
+    public function getHttpRequest(): ?RequestInterface
     {
         return $this->httpRequest;
     }
 
     /**
-     * @return ResponseInterface
+     * @return ResponseInterface|null
      */
-    public function getHttpResponse(): ResponseInterface
+    public function getHttpResponse(): ?ResponseInterface
     {
         return $this->httpResponse;
     }

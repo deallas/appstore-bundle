@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Http;
 
+use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,4 +24,9 @@ interface ShopClientInterface
      * @return ResponseInterface
      */
     public function send(RequestInterface $request): ResponseInterface;
+
+    /**
+     * @return HttpClientInterface
+     */
+    public function getHttpClient(): HttpClientInterface;
 }

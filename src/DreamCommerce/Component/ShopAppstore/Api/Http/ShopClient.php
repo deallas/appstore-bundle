@@ -13,33 +13,33 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Http;
 
-use DreamCommerce\Component\Common\Http\ClientInterface;
+use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
+use DreamCommerce\Component\Common\Http\LoggerInterface as HttpLoggerInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 use Throwable;
 
 class ShopClient implements ShopClientInterface
 {
     /**
-     * @var ClientInterface
+     * @var HttpClientInterface
      */
     private $httpClient;
 
     /**
-     * @var LoggerInterface
+     * @var HttpLoggerInterface
      */
-    private $logger;
+    private $httpLogger;
 
     /**
-     * @param ClientInterface $httpClient
-     * @param LoggerInterface|null $logger
+     * @param HttpClientInterface $httpClient
+     * @param HttpLoggerInterface|null $httpLogger
      */
-    public function __construct(ClientInterface $httpClient, LoggerInterface $logger = null)
+    public function __construct(HttpClientInterface $httpClient, HttpLoggerInterface $httpLogger = null)
     {
         $this->httpClient = $httpClient;
-        $this->logger = $logger;
+        $this->httpLogger = $httpLogger;
     }
 
     /**
@@ -47,7 +47,10 @@ class ShopClient implements ShopClientInterface
      */
     public function send(RequestInterface $request): ResponseInterface
     {
-        $this->logRequest($request);
+        if($this->httpLogger !== null) {
+            $this->httpLogger->logRequest($request);
+        }
+
         $exception = null;
 
         try {
@@ -62,57 +65,20 @@ class ShopClient implements ShopClientInterface
             }
         }
 
-        $this->logResponse($response);
+        if($this->httpLogger !== null) {
+            $this->httpLogger->logResponse($response);
+        }
         $this->checkResponse($request, $response, $exception);
 
         return $response;
     }
 
     /**
-     * @param RequestInterface $request
+     * @return HttpClientInterface
      */
-    private function logRequest(RequestInterface $request): void
+    public function getHttpClient(): HttpClientInterface
     {
-        if($this->logger === null) {
-            return;
-        }
-
-        $uri = $request->getUri();
-        $stream = $request->getBody();
-        $body = $stream->getContents();
-        $stream->rewind();
-
-        $this->logger->debug(
-            'Send request to "' . $uri->getHost() . '"',
-            [
-                'uri' => $uri->__toString(),
-                'headers' => $request->getHeaders(),
-                'body' => $body
-            ]
-        );
-    }
-
-    /**
-     * @param ResponseInterface $response
-     */
-    private function logResponse(ResponseInterface $response): void
-    {
-        if($this->logger === null) {
-            return;
-        }
-
-        $stream = $response->getBody();
-        $body = $stream->getContents();
-        $stream->rewind();
-
-        $this->logger->debug(
-            'Received a response',
-            [
-                'status_code' => $response->getStatusCode(),
-                'headers' => $response->getHeaders(),
-                'body' => $body
-            ]
-        );
+        return $this->httpClient;
     }
 
     /**

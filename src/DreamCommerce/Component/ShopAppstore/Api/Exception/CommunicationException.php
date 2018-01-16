@@ -12,7 +12,7 @@ class CommunicationException extends ApiException
 {
     const BROKEN_CONNECTION         = 10;
     const INVALID_RESPONSE_CODE     = 11;
-    const INVALID_RESPONSE_BODY     = 12;
+    const EMPTY_RESPONSE_BODY     = 12;
 
     /**
      * @param RequestInterface $httpRequest
@@ -42,8 +42,33 @@ class CommunicationException extends ApiException
         return $exception;
     }
 
-    public static function forInvalidResponseBody(RequestInterface $httpRequest, ResponseInterface $httpResponse, Throwable $previous = null): self
+    /**
+     * @param RequestInterface $httpRequest
+     * @param ResponseInterface $httpResponse
+     * @param Throwable|null $previous
+     * @return CommunicationException
+     */
+    public static function forEmptyResponseBody(RequestInterface $httpRequest, ResponseInterface $httpResponse, Throwable $previous = null): self
     {
-        // TODO
+        $exception = new self('Response body is empty', self::EMPTY_RESPONSE_BODY, $previous);
+        $exception->httpRequest = $httpRequest;
+        $exception->httpResponse = $httpResponse;
+
+        return $exception;
+    }
+
+    /**
+     * @param RequestInterface $httpRequest
+     * @param ResponseInterface $httpResponse
+     * @param Throwable|null $previous
+     * @return CommunicationException
+     */
+    public static function forUnsupportedResponseBody(RequestInterface $httpRequest, ResponseInterface $httpResponse, Throwable $previous = null): self
+    {
+        $exception = new self('Unexpected response body', self::EMPTY_RESPONSE_BODY, $previous);
+        $exception->httpRequest = $httpRequest;
+        $exception->httpResponse = $httpResponse;
+
+        return $exception;
     }
 }

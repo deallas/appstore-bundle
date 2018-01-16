@@ -86,13 +86,40 @@ class AwaitShopClientTest extends TestCase
             ->method('getStatusCode')
             ->will($this->onConsecutiveCalls(429, 200));
 
-        $response->expects($this->exactly(2))
+        $response->expects($this->once())
             ->method('getHeaders')
             ->will(
                 $this->onConsecutiveCalls([ 'Retry-After' => $retryAfter ], [])
             );
 
         $this->psrClient->expects($this->exactly(2))
+            ->method('send')
+            ->willReturn($response);
+
+        $this->assertEquals($response, $this->shopClient->send($request));
+    }
+
+    /**
+     * @expectedException \DreamCommerce\Component\ShopAppstore\Api\Exception\LimitExceededException
+     * @expectedExceptionCode \DreamCommerce\Component\ShopAppstore\Api\Exception\LimitExceededException::CODE_EXCEEDED_MAX_API_RETRIES
+     */
+    public function testSendExceedRetryLimit(): void
+    {
+        $this->shopClient->setRetryLimit(1);
+
+        /** @var RequestInterface|MockObject $request */
+        $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+
+        $response = $this->getMockBuilder(ResponseInterface::class)->getMock();
+        $response->expects($this->once())
+            ->method('getStatusCode')
+            ->willReturn(429);
+
+        $response->expects($this->once())
+            ->method('getHeaders')
+            ->willReturn([ 'Retry-After' => 10 ]);
+
+        $this->psrClient->expects($this->once())
             ->method('send')
             ->willReturn($response);
 

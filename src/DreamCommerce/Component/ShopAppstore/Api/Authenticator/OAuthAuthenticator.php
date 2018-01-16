@@ -14,7 +14,8 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
+use DreamCommerce\Component\Common\Factory\DateTimeFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use DreamCommerce\Component\ShopAppstore\ShopTransitions;
@@ -34,12 +35,14 @@ final class OAuthAuthenticator extends BearerAuthenticator
     private $shopObjectManager;
 
     /**
-     * @param HttpClientInterface $httpClient
+     * @param ShopClientInterface $shopClient
+     * @param DateTimeFactoryInterface|null $dateTimeFactory
      * @param ObjectManager|null $tokenObjectManager
      * @param ObjectManager|null $shopObjectManager
      * @param FactoryInterface|null $shopStateMachineFactory
      */
-    public function __construct(HttpClientInterface $httpClient,
+    public function __construct(ShopClientInterface $shopClient,
+                                DateTimeFactoryInterface $dateTimeFactory = null,
                                 ObjectManager $tokenObjectManager = null,
                                 ObjectManager $shopObjectManager = null,
                                 FactoryInterface $shopStateMachineFactory = null
@@ -47,7 +50,7 @@ final class OAuthAuthenticator extends BearerAuthenticator
         $this->shopObjectManager = $shopObjectManager;
         $this->shopStateMachineFactory = $shopStateMachineFactory;
 
-        parent::__construct($httpClient, $tokenObjectManager);
+        parent::__construct($shopClient, $dateTimeFactory, $tokenObjectManager);
     }
 
     /**
@@ -71,9 +74,9 @@ final class OAuthAuthenticator extends BearerAuthenticator
 
         $authUri = $shopUri
             ->withPath($shopUri->getPath() . '/webapi/rest/oauth/token')
-            ->withQuery('?' . http_build_query($query, '', '&'));
+            ->withQuery(http_build_query($query, '', '&'));
 
-        $request = $this->httpClient->createRequest(
+        $request = $this->shopClient->getHttpClient()->createRequest(
             'post',
             $authUri,
             [
@@ -119,9 +122,9 @@ final class OAuthAuthenticator extends BearerAuthenticator
 
         $refreshUri = $shopUri
             ->withPath($shopUri->getPath() . '/webapi/rest/oauth/token')
-            ->withQuery('?' . http_build_query($query, '', '&'));
+            ->withQuery(http_build_query($query, '', '&'));
 
-        $request = $this->httpClient->createRequest(
+        $request = $this->shopClient->getHttpClient()->createRequest(
             'post',
             $refreshUri,
             [

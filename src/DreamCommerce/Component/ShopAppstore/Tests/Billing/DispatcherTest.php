@@ -21,6 +21,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\OAuthShopFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Info;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Repository\ShopRepositoryInterface;
@@ -243,7 +244,7 @@ class DispatcherTest extends TestCase
 
                 $timestamp = $payload->getTimestamp();
                 $this->assertInstanceOf(DateTime::class, $timestamp);
-                $this->assertEquals($timestamp->getTimezone()->getName(), DispatcherInterface::TIMEZONE);
+                $this->assertEquals($timestamp->getTimezone()->getName(), Info::TIMEZONE);
 
                 $this->assertInstanceOf(OAuthShopInterface::class, $payload->getShop());
                 $this->assertInstanceOf(ApplicationInterface::class, $payload->getApplication());
@@ -251,7 +252,7 @@ class DispatcherTest extends TestCase
                 if ($action === DispatcherInterface::ACTION_BILLING_SUBSCRIPTION) {
                     $subscriptionTime = $payload->getSubscriptionEndTime();
                     $this->assertInstanceOf(DateTime::class, $subscriptionTime);
-                    $this->assertEquals($subscriptionTime->getTimezone()->getName(), DispatcherInterface::TIMEZONE);
+                    $this->assertEquals($subscriptionTime->getTimezone()->getName(), Info::TIMEZONE);
                 } elseif (in_array($action, [DispatcherInterface::ACTION_INSTALL, DispatcherInterface::ACTION_UPGRADE])) {
                     $this->assertInternalType('int', $payload->getApplicationVersion());
                     if ($action === DispatcherInterface::ACTION_INSTALL) {

@@ -17,7 +17,7 @@ use DateTime;
 use DateTimeZone;
 use DreamCommerce\Component\Common\Model\ArrayableInterface;
 use DreamCommerce\Component\Common\Model\ArrayableTrait;
-use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
+use DreamCommerce\Component\ShopAppstore\Info;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 
@@ -83,7 +83,7 @@ abstract class Message implements ArrayableInterface
     public function setTimestamp($timestamp): void
     {
         if (!($timestamp instanceof DateTime)) {
-            $timestamp = new DateTime($timestamp, new DateTimeZone(DispatcherInterface::TIMEZONE));
+            $timestamp = new DateTime($timestamp, new DateTimeZone(Info::TIMEZONE));
         }
 
         $this->timestamp = $timestamp;

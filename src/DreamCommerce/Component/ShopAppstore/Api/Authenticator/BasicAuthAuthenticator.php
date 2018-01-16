@@ -51,9 +51,9 @@ final class BasicAuthAuthenticator extends BearerAuthenticator
 
         $authUri = $shopUri
             ->withPath($shopUri->getPath() . '/webapi/rest/auth')
-            ->withQuery('?' . http_build_query($query, '', '&'));
+            ->withQuery(http_build_query($query, '', '&'));
 
-        $request = $this->httpClient->createRequest(
+        $request = $this->shopClient->getHttpClient()->createRequest(
             'post',
             $authUri,
             [

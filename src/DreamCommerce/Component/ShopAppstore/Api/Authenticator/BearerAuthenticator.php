@@ -13,21 +13,28 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
 
-use DateTime;
+use DateInterval;
 use DateTimeZone;
 use Doctrine\Common\Persistence\ObjectManager;
-use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
-use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
-use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
+use DreamCommerce\Component\Common\Factory\DateTimeFactory;
+use DreamCommerce\Component\Common\Factory\DateTimeFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Exception;
+use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
+use DreamCommerce\Component\ShopAppstore\Info;
+use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use Psr\Http\Message\RequestInterface;
-use Throwable;
 
 abstract class BearerAuthenticator implements AuthenticatorInterface
 {
     /**
-     * @var HttpClientInterface
+     * @var DateTimeFactoryInterface
      */
-    protected $httpClient;
+    private $dateTimeFactory;
+
+    /**
+     * @var ShopClientInterface
+     */
+    protected $shopClient;
 
     /**
      * @var ObjectManager|null
@@ -35,53 +42,62 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
     protected $tokenObjectManager;
 
     /**
-     * @param HttpClientInterface $httpClient
+     * @param ShopClientInterface $shopClient
+     * @param DateTimeFactoryInterface|null $dateTimeFactory
      * @param ObjectManager|null $tokenObjectManager
      */
-    public function __construct(HttpClientInterface $httpClient, ObjectManager $tokenObjectManager = null)
+    public function __construct(ShopClientInterface $shopClient, DateTimeFactoryInterface $dateTimeFactory = null, ObjectManager $tokenObjectManager = null)
     {
-        $this->httpClient = $httpClient;
+        $this->shopClient = $shopClient;
+        $this->dateTimeFactory = $dateTimeFactory;
         $this->tokenObjectManager = $tokenObjectManager;
     }
 
     /**
      * @param RequestInterface $request
-     * @param OAuthShopInterface $shop
+     * @param ShopInterface $shop
+     * @throws Exception\AuthenticationFailedException
+     * @throws Exception\CommunicationException
      */
-    protected function handleRequest(RequestInterface $request, OAuthShopInterface $shop): void
+    protected function handleRequest(RequestInterface $request, ShopInterface $shop): void
     {
+        $exception = null;
+
         try {
-            $response = $this->httpClient->send($request);
-        } catch(Throwable $exception) {
-            // TODO
+            $response = $this->shopClient->send($request);
+        } catch(Exception\PermissionsException $exception) {
+            $response = $exception->getHttpResponse();
         }
 
         $stream = $response->getBody();
         $stream->rewind();
 
         $body = $stream->getContents();
+        if(strlen($body) === 0) {
+            throw Exception\CommunicationException::forEmptyResponseBody($request, $response, $exception);
+        }
+        $body = @json_decode($body, true);
 
         if(!$body || !is_array($body)) {
-            // TODO
-        } elseif(isset($body['data']['error'])) {
-            // TODO
+            throw Exception\CommunicationException::forUnsupportedResponseBody($request, $response, $exception);
+        } elseif(isset($body['error'])) {
+            throw Exception\AuthenticationFailedException::forInvalidResponseBody($body, $request, $response, $exception);
         }
 
         $token = $shop->getToken();
-        $token->setAccessToken($body['data']['access_token']);
+        $token->setAccessToken($body['access_token']);
 
         $refreshToken = null;
-        if(isset($body['data']['refresh_token'])) {
-            $refreshToken = $body['data']['refresh_token'];
+        if(isset($body['refresh_token'])) {
+            $refreshToken = $body['refresh_token'];
         }
         $token->setRefreshToken($refreshToken);
 
         $expiresAt = null;
-        if(isset($body['data']['expires_in'])) {
-            $expiresAt = new DateTime(
-                $body['data']['expires_in'] . ' seconds',
-                new DateTimeZone(DispatcherInterface::TIMEZONE)
-            );
+        if(isset($body['expires_in'])) {
+            $dateTimeFactory = $this->getDateTimeFactory();
+            $expiresAt = $dateTimeFactory->createNewWithTimezone(new DateTimeZone(Info::TIMEZONE));
+            $expiresAt->add(DateInterval::createFromDateString($body['expires_in'] . ' seconds'));
         }
         $token->setExpiresAt($expiresAt);
 
@@ -89,5 +105,17 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
             $this->tokenObjectManager->persist($token);
             $this->tokenObjectManager->flush();
         }
+    }
+
+    /**
+     * @return DateTimeFactoryInterface
+     */
+    private function getDateTimeFactory(): DateTimeFactoryInterface
+    {
+        if($this->dateTimeFactory === null) {
+            $this->dateTimeFactory = new DateTimeFactory();
+        }
+
+        return $this->dateTimeFactory;
     }
 }
