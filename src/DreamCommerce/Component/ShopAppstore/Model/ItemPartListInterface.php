@@ -11,22 +11,22 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api;
+namespace DreamCommerce\Component\ShopAppstore\Model;
 
-use ArrayObject;
-
-final class Entity extends ArrayObject
+interface ItemPartListInterface extends ItemListInterface
 {
     /**
-     * @var int|null
+     * @return int|null
      */
-    private $identifier;
+    public function getTotal(): ?int;
 
     /**
      * @return int|null
      */
-    public function getIdentifier(): ?int
-    {
-        // TODO
-    }
+    public function getPage(): ?int;
+
+    /**
+     * @return int|null
+     */
+    public function getTotalPages(): ?int;
 }

@@ -21,11 +21,12 @@ use DreamCommerce\Component\ShopAppstore\Api\Authenticator\BasicAuthAuthenticato
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\OAuthAuthenticator;
 use DreamCommerce\Component\ShopAppstore\Api\Http\AwaitShopClient;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
-use DreamCommerce\Component\ShopAppstore\Api\Resource\IdentifierAwareInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Hydrator\ItemHydrator;
+use DreamCommerce\Component\ShopAppstore\Api\Hydrator\HydratorInterface;
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ItemListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
-use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 abstract class Resource implements ResourceInterface
@@ -41,14 +42,29 @@ abstract class Resource implements ResourceInterface
     private $authenticator;
 
     /**
+     * @var HydratorInterface|null
+     */
+    private $hydrator;
+
+    /**
+     * @var HydratorInterface|null
+     */
+    private static $globalHydrator;
+
+    /**
+     * @var ShopClientInterface
+     */
+    private static $globalShopClient;
+
+    /**
      * @var HttpClientInterface
      */
-    private static $httpClient;
+    private static $globalHttpClient;
 
     /**
      * @var array
      */
-    private static $authMap = [
+    private static $globalAuthMap = [
         BasicAuthShopInterface::class   => BasicAuthAuthenticator::class,
         OAuthShopInterface::class       => OAuthAuthenticator::class
     ];
@@ -56,16 +72,20 @@ abstract class Resource implements ResourceInterface
     /**
      * @var AuthenticatorInterface[]
      */
-    private static $authInstances = [];
+    private static $globalAuthInstances = [];
 
     /**
      * @param ShopClientInterface|null $shopClient
      * @param AuthenticatorInterface|null $authenticator
+     * @param HydratorInterface|null $hydrator
      */
-    public function __construct(ShopClientInterface $shopClient = null, AuthenticatorInterface $authenticator = null)
-    {
+    public function __construct(ShopClientInterface $shopClient = null,
+                                AuthenticatorInterface $authenticator = null,
+                                HydratorInterface $hydrator = null
+    ) {
         $this->shopClient = $shopClient;
         $this->authenticator = $authenticator;
+        $this->hydrator = $hydrator;
     }
 
     /**
@@ -74,15 +94,20 @@ abstract class Resource implements ResourceInterface
     public function get(ShopInterface $shop, ...$args): ArrayObject
     {
         list($id, $criteria) = $this->parseArgs($args);
-        $response = $this->perform($shop, 'GET', $id, null, $criteria);
+        list($request, $response) = $this->perform($shop, 'GET', $id, null, $criteria);
+
+        return $this->getHydrator()->hydrate($this, $request, $response);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function head(ShopInterface $shop, ...$args): ArrayObject
+    public function head(ShopInterface $shop, ...$args): ItemListInterface
     {
         list($id, $criteria) = $this->parseArgs($args);
+        list($request, $response) = $this->perform($shop, 'HEAD', $id, null, $criteria);
+
+        return $this->getHydrator()->hydrate($this, $request, $response);
     }
 
     /**
@@ -90,7 +115,8 @@ abstract class Resource implements ResourceInterface
      */
     public function post(ShopInterface $shop, array $data): int
     {
-        $response = $this->perform($shop, 'POST', null, $data);
+        list($request, $response) = $this->perform($shop, 'POST', null, $data);
+
         return (int) $response->getBody()->getContents();
     }
 
@@ -128,79 +154,14 @@ abstract class Resource implements ResourceInterface
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param bool $isCollection should transform response as a collection?
-     * @throws ResourceException
-     * @return mixed
-     */
-    protected function transformResponse(ResponseInterface $response, bool $isCollection)
-    {
-        $code = $response->getStatusCode();
-        $data = @json_decode($response->getBody());
-        if($data === false) {
-            // TODO throw exception
-        }
-
-        // everything is okay when 200-299 status code
-        if ($code >= 200 && $code < 300) {
-            if ($this instanceof IdentifierAwareInterface) {
-                if (isset($data['list'])) {
-                    $objectList = new ResourceList($data['list']);
-                } else {
-                    $objectList = new ResourceList();
-                }
-
-                $headers = $response->getHeaders();
-
-                // add meta properties (eg. count, page, etc) as a ArrayObject properties
-                if (isset($response['data']['page'])) {
-                    $objectList->setPage($response['data']['page']);
-                } elseif (isset($response['headers']['X-Shop-Result-Page'])) {
-                    $objectList->setPage($response['headers']['X-Shop-Result-Page']);
-                }
-
-                if (isset($response['data']['count'])) {
-                    $objectList->setCount($response['data']['count']);
-                } elseif (isset($response['headers']['X-Shop-Result-Count'])) {
-                    $objectList->setCount($response['headers']['X-Shop-Result-Count']);
-                }
-
-                if (isset($response['data']['pages'])) {
-                    $objectList->setPageCount($response['data']['pages']);
-                } elseif (isset($response['headers']['X-Shop-Result-Pages'])) {
-                    $objectList->setPageCount($response['headers']['X-Shop-Result-Pages']);
-                }
-
-                return $objectList;
-            } else {
-                $result = $response['data'];
-                if (!is_scalar($response['data'])) {
-                    $result = new ArrayObject(ResourceList::transform($result));
-                }
-
-                return $result;
-            }
-
-        } else {
-            if (isset($response['data']['error'])) {
-                $msg = $response['data']['error'];
-            } else {
-                $msg = $response;
-            }
-
-            throw new ResourceException($msg, $code); // TODO
-        }
-    }
-
-    /**
      * @param ShopInterface $shop
      * @param string $method
      * @param int|null $id
      * @param array|null $data
      * @param Criteria|null $criteria
-     * @return ResponseInterface
+     * @return array
      */
-    private function perform(ShopInterface $shop, string $method, int $id = null, array $data = null, Criteria $criteria = null): ResponseInterface
+    private function perform(ShopInterface $shop, string $method, int $id = null, array $data = null, Criteria $criteria = null): array
     {
         if(!$shop->isAuthenticated()) {
             $authenticator = $this->getAuthByShop($shop);
@@ -238,7 +199,7 @@ abstract class Resource implements ResourceInterface
         );
         $criteria->fillRequest($request);
 
-        $shopClient->send($request);
+        return [ $request, $shopClient->send($request) ];
     }
 
     /**
@@ -251,7 +212,7 @@ abstract class Resource implements ResourceInterface
             return $this->authenticator;
         }
 
-        foreach(self::$authMap as $shopClass => $authClass) {
+        foreach(self::$globalAuthMap as $shopClass => $authClass) {
             if($shop instanceof $shopClass) {
                 return $this->getAuthInstance($authClass);
             }
@@ -266,11 +227,11 @@ abstract class Resource implements ResourceInterface
      */
     private function getAuthInstance(string $authClass): AuthenticatorInterface
     {
-        if(!isset(self::$authInstances[$authClass])) {
-            self::$authInstances[$authClass] = new $authClass($this->getHttpClient());
+        if(!isset(self::$globalAuthInstances[$authClass])) {
+            self::$globalAuthInstances[$authClass] = new $authClass($this->getHttpClient());
         }
 
-        return self::$authInstances[$authClass];
+        return self::$globalAuthInstances[$authClass];
     }
 
     /**
@@ -278,15 +239,15 @@ abstract class Resource implements ResourceInterface
      */
     private function getShopClient(): ShopClientInterface
     {
-        if($this->shopClient === null) {
-            if(class_exists('\\GuzzleHttp\\Client')) {
-                $this->shopClient = new AwaitShopClient($this->getHttpClient());
-            } else {
-                throw new RuntimeException('Unable initialize shop client');
-            }
+        if($this->shopClient !== null) {
+            return $this->shopClient;
         }
 
-        return $this->shopClient;
+        if(self::$globalShopClient === null) {
+            self::$globalShopClient = new AwaitShopClient($this->getHttpClient());
+        }
+
+        return self::$globalShopClient;
     }
 
     /**
@@ -294,14 +255,30 @@ abstract class Resource implements ResourceInterface
      */
     private function getHttpClient(): HttpClientInterface
     {
-        if(self::$httpClient === null) {
+        if(self::$globalHttpClient === null) {
             if (class_exists('\\GuzzleHttp\\Client')) {
-                self::$httpClient = new GuzzlePsrClient(new \GuzzleHttp\Client());
+                self::$globalHttpClient = new GuzzlePsrClient(new \GuzzleHttp\Client());
             } else {
                 throw new RuntimeException('Unable initialize HTTP client');
             }
         }
 
-        return self::$httpClient;
+        return self::$globalHttpClient;
+    }
+
+    /**
+     * @return HydratorInterface
+     */
+    private function getHydrator(): HydratorInterface
+    {
+        if($this->hydrator !== null) {
+            return $this->hydrator;
+        }
+
+        if(self::$globalHydrator === null) {
+            self::$globalHydrator = new ItemHydrator();
+        }
+
+        return self::$globalHydrator;
     }
 }

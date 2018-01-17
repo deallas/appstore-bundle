@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api;
+namespace DreamCommerce\Component\ShopAppstore\Model;
 
-interface EntityInterface
+interface DataContainerInterface
 {
     /**
-     * @return int|null
+     * @return array
      */
-    public function getIdentifier(): ?int;
+    public function getData(): array;
 }

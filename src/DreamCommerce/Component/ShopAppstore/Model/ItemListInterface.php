@@ -11,15 +11,16 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
+namespace DreamCommerce\Component\ShopAppstore\Model;
 
-final class ArrayObjectHydrator implements HydratorInterface
+use ArrayAccess;
+use Countable;
+use SeekableIterator;
+
+interface ItemListInterface extends SeekableIterator, Countable, ArrayAccess
 {
     /**
-     * {@inheritdoc}
+     * @return ItemInterface[]
      */
-    public function hydrate(array $data)
-    {
-        // TODO
-    }
+    public function getItems(): array;
 }

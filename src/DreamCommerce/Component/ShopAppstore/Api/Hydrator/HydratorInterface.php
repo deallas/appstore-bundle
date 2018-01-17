@@ -11,13 +11,19 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
+namespace DreamCommerce\Component\ShopAppstore\Api\Hydrator;
+
+use DreamCommerce\Component\ShopAppstore\Api\ResourceInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 interface HydratorInterface
 {
     /**
-     * @param array $data
+     * @param ResourceInterface $resource
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return mixed
      */
-    public function hydrate(array $data);
+    public function hydrate(ResourceInterface $resource, RequestInterface $request, ResponseInterface $response);
 }

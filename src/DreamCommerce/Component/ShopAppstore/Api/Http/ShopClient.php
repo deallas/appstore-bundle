@@ -52,6 +52,7 @@ class ShopClient implements ShopClientInterface
         }
 
         $exception = null;
+        $response = null;
 
         try {
             $response = $this->httpClient->send($request);
@@ -60,7 +61,8 @@ class ShopClient implements ShopClientInterface
                 $exception instanceof \GuzzleHttp\Exception\RequestException
             ) {
                 $response = $exception->getResponse();
-            } else {
+            }
+            if($response === null) {
                 throw Exception\CommunicationException::forBrokenConnection($request, $exception);
             }
         }
