@@ -56,10 +56,11 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
     /**
      * @param RequestInterface $request
      * @param ShopInterface $shop
-     * @throws Exception\AuthenticationFailedException
+     * @param string $exceptionClass
+     * @throws Exception\AuthenticationException
      * @throws Exception\CommunicationException
      */
-    protected function handleRequest(RequestInterface $request, ShopInterface $shop): void
+    protected function handleRequest(RequestInterface $request, ShopInterface $shop, string $exceptionClass): void
     {
         $exception = null;
 
@@ -79,9 +80,9 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
         $body = @json_decode($body, true);
 
         if(!$body || !is_array($body)) {
-            throw Exception\CommunicationException::forUnsupportedResponseBody($request, $response, $exception);
+            throw Exception\CommunicationException::forInvalidResponseBody($request, $response, $exception);
         } elseif(isset($body['error'])) {
-            throw Exception\AuthenticationFailedException::forInvalidResponseBody($body, $request, $response, $exception);
+            throw $exceptionClass::forErrorMessage($body, $shop, $request, $response, $exception);
         }
 
         $token = $shop->getToken();

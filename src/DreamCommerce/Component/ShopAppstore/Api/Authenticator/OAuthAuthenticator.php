@@ -15,6 +15,8 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Factory\DateTimeFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\AuthenticationException;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\RefreshTokenException;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
@@ -86,7 +88,7 @@ final class OAuthAuthenticator extends BearerAuthenticator
             http_build_query($params, '', '&')
         );
 
-        $this->handleRequest($request, $shop);
+        $this->handleRequest($request, $shop, AuthenticationException::class);
         $shop->setAuthCode(null);
 
         if($this->shopStateMachineFactory !== null) {
@@ -133,6 +135,6 @@ final class OAuthAuthenticator extends BearerAuthenticator
             http_build_query($params, '', '&')
         );
 
-        $this->handleRequest($request, $shop);
+        $this->handleRequest($request, $shop, RefreshTokenException::class);
     }
 }

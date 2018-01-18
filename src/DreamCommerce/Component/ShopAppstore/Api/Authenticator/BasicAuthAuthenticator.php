@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Authenticator;
 
+use DreamCommerce\Component\ShopAppstore\Api\Exception\AuthenticationException;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\RefreshTokenException;
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use Webmozart\Assert\Assert;
@@ -61,7 +63,7 @@ final class BasicAuthAuthenticator extends BearerAuthenticator
             ]
         );
 
-        $this->handleRequest($request, $shop);
+        $this->handleRequest($request, $shop, AuthenticationException::class);
     }
 
     /**
@@ -69,6 +71,6 @@ final class BasicAuthAuthenticator extends BearerAuthenticator
      */
     public function refresh(ShopInterface $shop): void
     {
-        // not supported
+        throw RefreshTokenException::forUnsupportedMethod($shop);
     }
 }

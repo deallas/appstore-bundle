@@ -17,6 +17,7 @@ use DateTime;
 use DreamCommerce\Component\Common\Factory\DateTimeFactoryInterface;
 use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\AuthenticatorInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\AuthenticationException;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\TokenInterface;
@@ -93,7 +94,56 @@ abstract class BearerAuthenticatorTest extends TestCase
         $this->authenticator->authenticate($shop);
     }
 
-    protected function prepareRequest(array $body)
+    /**
+     * @expectedException \DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException
+     * @expectedExceptionCode \DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException::EMPTY_RESPONSE_BODY
+     */
+    public function testAuthenticationEmptyBody(): void
+    {
+        $this->prepareRequest(); // empty response body
+
+        $shop = $this->getShop();
+        $this->authenticator->authenticate($shop);
+    }
+
+    /**
+     * @expectedException \DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException
+     * @expectedExceptionCode \DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException::INVALID_RESPONSE_BODY
+     */
+    public function testAuthenticationInvalidBody(): void
+    {
+        $this->prepareRequest('test'); // invalid response body
+
+        $shop = $this->getShop();
+        $this->authenticator->authenticate($shop);
+    }
+
+    public function testAuthenticationFailure(): void
+    {
+        $code = 'error-123';
+        $description = 'error description';
+
+        $this->prepareRequest([
+            'error' => $code,
+            'error_description' => $description
+        ]);
+
+        $shop = $this->getShop();
+        try {
+            $this->authenticator->authenticate($shop);
+        } catch(AuthenticationException $e) {
+            $this->assertEquals(AuthenticationException::CODE_ERROR_MESSAGE, $e->getCode());
+            $this->assertEquals($code, $e->getErrorCode());
+            $this->assertEquals($description, $e->getErrorDescription());
+            $this->assertEquals($shop, $e->getShop());
+
+            return;
+        }
+
+        $this->fail('Never happen !');
+    }
+
+    protected function prepareRequest($body = null)
     {
         $this->shopClient->expects($this->once())
             ->method('getHttpClient')
@@ -105,10 +155,16 @@ abstract class BearerAuthenticatorTest extends TestCase
             ->method('createRequest')
             ->willReturn($request);
 
+        if($body === null) {
+            $body = '';
+        } elseif(is_array($body)) {
+            $body = json_encode($body);
+        }
+
         $stream = $this->getMockBuilder(StreamInterface::class)->getMock();
         $stream->expects($this->once())
             ->method('getContents')
-            ->willReturn(json_encode($body));
+            ->willReturn($body);
 
         $stream->expects($this->once())
             ->method('rewind');
@@ -123,7 +179,7 @@ abstract class BearerAuthenticatorTest extends TestCase
             ->willReturn($response);
     }
 
-    protected function prepareValidResponse(ShopInterface $shop, string $accessToken, ?string $refreshToken, int $expiresIn, DateTime $dateTime)
+    protected function prepareValidResponse(ShopInterface $shop, string $accessToken, ?string $refreshToken, int $expiresIn, DateTime $dateTime, bool $isRefresh = false)
     {
         /** @var TokenInterface|MockObject $token */
         $token = $this->getMockBuilder(TokenInterface::class)->getMock();
@@ -174,7 +230,8 @@ abstract class BearerAuthenticatorTest extends TestCase
     }
 
     /**
+     * @param bool $isRefresh
      * @return ShopInterface|MockObject
      */
-    abstract protected function getShop(): ShopInterface;
+    abstract protected function getShop(bool $isRefresh = false): ShopInterface;
 }

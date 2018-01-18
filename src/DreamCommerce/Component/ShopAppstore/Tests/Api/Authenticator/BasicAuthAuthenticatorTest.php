@@ -26,21 +26,33 @@ class BasicAuthAuthenticatorTest extends BearerAuthenticatorTest
         $this->authenticator = new BasicAuthAuthenticator($this->shopClient, $this->dateTimeFactory);
     }
 
-    protected function getShop(): ShopInterface
+    /**
+     * @expectedException \DreamCommerce\Component\ShopAppstore\Api\Exception\RefreshTokenException
+     * @expectedExceptionCode \DreamCommerce\Component\ShopAppstore\Api\Exception\RefreshTokenException::CODE_UNSUPPORTED_METHOD
+     */
+    public function testInvalidRefreshToken(): void
+    {
+        $shop = $this->getShop(true);
+        $this->authenticator->refresh($shop);
+    }
+
+    protected function getShop(bool $isRefresh = false): ShopInterface
     {
         /** @var ShopInterface|MockObject $shop */
         $shop = $this->getMockBuilder(BasicAuthShopInterface::class)->getMock();
-        $shop->expects($this->once())
-            ->method('getUsername')
-            ->willReturn('test');
+        if(!$isRefresh) {
+            $shop->expects($this->once())
+                ->method('getUsername')
+                ->willReturn('test');
 
-        $shop->expects($this->once())
-            ->method('getPassword')
-            ->willReturn('pass');
+            $shop->expects($this->once())
+                ->method('getPassword')
+                ->willReturn('pass');
 
-        $shop->expects($this->once())
-            ->method('getUri')
-            ->willReturn($this->getUri());
+            $shop->expects($this->once())
+                ->method('getUri')
+                ->willReturn($this->getUri());
+        }
 
         return $shop;
     }
