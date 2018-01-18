@@ -19,7 +19,7 @@ use DreamCommerce\Component\ShopAppstore\Api\ResourceInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\DataContainerFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\ItemFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\ItemListFactoryInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ItemListInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ItemList;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -76,7 +76,7 @@ final class ItemHydrator implements HydratorInterface
             }
 
             if(isset($body['list'])) {
-                /** @var ItemListInterface $result */
+                /** @var ItemList $result */
                 $result = $this->itemListFactory->createNew();
                 if(isset($body['page'])) {
                     $result->setPage((int)$body['page']);

@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
-use DreamCommerce\Component\ShopAppstore\Model\ItemListInterface;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\LimitExceededException;
+use DreamCommerce\Component\ShopAppstore\Model\ItemList;
+use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 
 final class Fetcher
 {
@@ -31,12 +33,32 @@ final class Fetcher
     }
 
     /**
+     * @param ShopInterface $shop
      * @param Criteria|null $criteria
-     * @return ItemListInterface
+     * @return ItemList
      */
-    public function fetchAll(Criteria $criteria = null): ItemListInterface
+    public function fetchAll(ShopInterface $shop, Criteria $criteria = null): ItemList
     {
-        // TODO
+        if($criteria === null) {
+            $criteria = Criteria::create();
+        }
+        $criteria->setPage(1);
+
+        $itemList = new ItemList();
+        $totalPages = null;
+
+        do {
+            try {
+                $itemPartList = $this->resource->list($shop, $criteria);
+            } catch(LimitExceededException $exception) {
+                // TODO throw
+            }
+
+            $itemList->addPart($itemPartList);
+            $criteria->nextPage();
+        } while($criteria->getPage() <= $itemPartList->getTotalPages());
+
+        return $itemList;
     }
 
     /**
@@ -51,9 +73,10 @@ final class Fetcher
 
     /**
      * @param callable $callback
-     * @param Criteria $criteria
+     * @param ShopInterface $shop
+     * @param Criteria|null $criteria
      */
-    public function walk(callable $callback, Criteria $criteria = null): void
+    public function walk(callable $callback, ShopInterface $shop, Criteria $criteria = null): void
     {
         // TODO
     }

@@ -192,6 +192,20 @@ final class Criteria
         return $this->page;
     }
 
+    public function nextPage(): void
+    {
+        $this->page++;
+    }
+
+    public function prevPage(): void
+    {
+        if($this->page === 0) {
+            // TODO throw
+        }
+
+        $this->page--;
+    }
+
     /**
      * @param int|null $limit
      * @return self

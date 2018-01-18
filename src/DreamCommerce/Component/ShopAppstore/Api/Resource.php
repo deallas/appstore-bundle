@@ -91,10 +91,9 @@ abstract class Resource implements ResourceInterface
     /**
      * {@inheritdoc}
      */
-    public function get(ShopInterface $shop, ...$args): ArrayObject
+    public function find(ShopInterface $shop, int $id): ItemInterface
     {
-        list($id, $criteria) = $this->parseArgs($args);
-        list($request, $response) = $this->perform($shop, 'GET', $id, null, $criteria);
+        list($request, $response) = $this->perform($shop, 'GET', $id);
 
         return $this->getHydrator()->hydrate($this, $request, $response);
     }
@@ -191,9 +190,7 @@ abstract class Resource implements ResourceInterface
             $uri,
             [
                 'Authorization' => 'Bearer ' . $shop->getToken()->getAccessToken(),
-                'Content-Type' => 'application/json',
-                'User-Agent' => 'DreamCommerce ShopAppStore Agent', // TODO
-                'Accept-Language' => 'en_US;q=0.8' // TODO
+                'Content-Type' => 'application/json'
             ],
             $body
         );

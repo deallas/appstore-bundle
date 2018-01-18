@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
-use ArrayObject;
+use DreamCommerce\Component\ShopAppstore\Model\ItemInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ItemList;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 
 interface ResourceInterface
@@ -25,36 +26,51 @@ interface ResourceInterface
 
     /**
      * @param ShopInterface $shop
-     * @param array ...$args
-     * @return mixed
+     * @param int $id
+     * @return ItemInterface
      */
-    public function get(ShopInterface $shop, ...$args): ArrayObject;
+    public function find(ShopInterface $shop, int $id): ItemInterface;
 
     /**
      * @param ShopInterface $shop
-     * @param array ...$args
-     * @return ArrayObject
+     * @param Criteria $criteria
+     * @return ItemList
      */
-    public function head(ShopInterface $shop, ...$args): ArrayObject;
+    public function findBy(ShopInterface $shop, Criteria $criteria): ItemList;
+
+    /**
+     * @param ShopInterface $shop
+     * @return ItemList
+     */
+    public function findAll(ShopInterface $shop): ItemList;
 
     /**
      * @param ShopInterface $shop
      * @param array $data
-     * @return int
+     * @return ItemInterface
      */
-    public function post(ShopInterface $shop, array $data): int;
+    public function insert(ShopInterface $shop, $data): ItemInterface;
 
     /**
      * @param ShopInterface $shop
      * @param int $id
      * @param array $data
-     * @return void
      */
-    public function put(ShopInterface $shop, int $id, array $data): void;
+    public function update(ShopInterface $shop, int $id, array $data): void;
+
+    /**
+     * @param ItemInterface $item
+     */
+    public function updateItem(ItemInterface $item): void;
 
     /**
      * @param ShopInterface $shop
      * @param int $id
      */
     public function delete(ShopInterface $shop, int $id): void;
+
+    /**
+     * @param ItemInterface $item
+     */
+    public function deleteItem(ItemInterface $item): void;
 }

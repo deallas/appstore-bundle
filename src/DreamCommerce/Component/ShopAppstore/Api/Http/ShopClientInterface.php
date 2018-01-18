@@ -26,6 +26,16 @@ interface ShopClientInterface
     public function send(RequestInterface $request): ResponseInterface;
 
     /**
+     * @param string $locale
+     */
+    public function setLocale(string $locale): void;
+
+    /**
+     * @return string
+     */
+    public function getLocale(): string;
+
+    /**
      * @return HttpClientInterface
      */
     public function getHttpClient(): HttpClientInterface;

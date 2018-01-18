@@ -15,8 +15,10 @@ namespace DreamCommerce\Component\ShopAppstore;
 
 final class Info
 {
-    public const VERSION = '2.0.0dev';
-    public const TIMEZONE = 'Europe/Warsaw';
+    public const VERSION            = '2.0.0dev';
+    public const TIMEZONE           = 'Europe/Warsaw';
+    public const LOCALE             = 'en_US';
+    public const HTTP_USER_AGENT    = 'DreamCommerce ShopAppStore Agent ' . self::VERSION;
 
     private function __construct()
     {

@@ -16,6 +16,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Http;
 use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
 use DreamCommerce\Component\Common\Http\LoggerInterface as HttpLoggerInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Exception;
+use DreamCommerce\Component\ShopAppstore\Info;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
@@ -31,6 +32,16 @@ class ShopClient implements ShopClientInterface
      * @var HttpLoggerInterface
      */
     private $httpLogger;
+
+    /**
+     * @var string
+     */
+    private $userAgent = Info::LOCALE;
+
+    /**
+     * @var string
+     */
+    private $locale = Info::LOCALE;
 
     /**
      * @param HttpClientInterface $httpClient
@@ -50,6 +61,9 @@ class ShopClient implements ShopClientInterface
         if($this->httpLogger !== null) {
             $this->httpLogger->logRequest($request);
         }
+
+        $request = $request->withAddedHeader('User-Agent', $this->userAgent);
+        $request = $request->withAddedHeader('Accept-Language', $this->locale . ';q=0.8');
 
         $exception = null;
         $response = null;
@@ -76,7 +90,39 @@ class ShopClient implements ShopClientInterface
     }
 
     /**
-     * @return HttpClientInterface
+     * {@inheritdoc}
+     */
+    public function setLocale(string $locale): void
+    {
+        $this->locale = $locale;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUserAgent(): string
+    {
+        return $this->userAgent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUserAgent(string $userAgent): void
+    {
+        $this->userAgent = $userAgent;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getHttpClient(): HttpClientInterface
     {

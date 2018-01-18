@@ -15,7 +15,15 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-interface ItemInterface extends DataContainerInterface, ResourceInterface
+interface ItemInterface extends ResourceInterface
 {
+    /**
+     * @param ShopInterface $shop
+     */
+    public function setShop(ShopInterface $shop): void;
 
+    /**
+     * @return ShopInterface
+     */
+    public function getShop(): ShopInterface;
 }
