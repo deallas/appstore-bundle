@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
+namespace DreamCommerce\Component\ShopAppstore\Tests\Billing\Resolver;
 
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingInstall;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;

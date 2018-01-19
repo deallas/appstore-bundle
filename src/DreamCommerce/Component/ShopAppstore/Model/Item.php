@@ -21,6 +21,24 @@ class Item extends DataContainer implements ItemInterface
     private $id;
 
     /**
+     * @var ShopInterface|null
+     */
+    private $shop;
+
+    /**
+     * @param ShopInterface|null $shop
+     * @param int|null $id
+     * @param array $data
+     */
+    public function __construct(ShopInterface $shop = null, int $id = null, array $data = [])
+    {
+        $this->shop = $shop;
+        $this->id = $id;
+
+        parent::__construct($data);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getId()
@@ -29,10 +47,26 @@ class Item extends DataContainer implements ItemInterface
     }
 
     /**
-     * @param int $id
+     * {@inheritdoc}
      */
-    public function setId(int $id)
+    public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getShop(): ShopInterface
+    {
+        return $this->shop;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setShop(ShopInterface $shop): void
+    {
+        $this->shop = $shop;
     }
 }

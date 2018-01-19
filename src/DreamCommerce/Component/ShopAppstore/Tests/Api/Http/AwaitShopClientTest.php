@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
+namespace DreamCommerce\Component\ShopAppstore\Tests\Api\Http;
 
 use DreamCommerce\Component\Common\Http\ClientInterface;
 use DreamCommerce\Component\Common\Util\Sleeper;
@@ -55,6 +55,9 @@ class AwaitShopClientTest extends TestCase
     {
         /** @var RequestInterface|MockObject $request */
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $request->expects($this->any())
+            ->method('withAddedHeader')
+            ->willReturn($request);
 
         $response = $this->getMockBuilder(ResponseInterface::class)->getMock();
         $response->expects($this->once())
@@ -80,6 +83,9 @@ class AwaitShopClientTest extends TestCase
 
         /** @var RequestInterface|MockObject $request */
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $request->expects($this->any())
+            ->method('withAddedHeader')
+            ->willReturn($request);
 
         $response = $this->getMockBuilder(ResponseInterface::class)->getMock();
         $response->expects($this->exactly(2))
@@ -109,6 +115,9 @@ class AwaitShopClientTest extends TestCase
 
         /** @var RequestInterface|MockObject $request */
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $request->expects($this->any())
+            ->method('withAddedHeader')
+            ->willReturn($request);
 
         $response = $this->getMockBuilder(ResponseInterface::class)->getMock();
         $response->expects($this->once())

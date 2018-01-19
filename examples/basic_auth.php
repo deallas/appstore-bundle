@@ -3,12 +3,11 @@
 require_once __DIR__ . '/../src/DreamCommerce/Component/ShopAppstore/vendor/autoload.php';
 
 $shop = new \DreamCommerce\Component\ShopAppstore\Model\BasicAuthShop([
-    'uri' => 'http://shoper.local',
-    'username' => 'api',
+    'uri' => 'https://shoper.local',
+    'username' => 'test',
     'password' => 'test'
 ]);
 
 $resource = new \DreamCommerce\Component\ShopAppstore\Api\Resource\Order();
-$result = $resource->get($shop);
-
-var_dump($result);
+$result = $resource->find($shop, 1);
+var_dump($result->getId(), (string)$result->getShop()->getUri(), $result->order_id);

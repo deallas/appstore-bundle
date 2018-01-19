@@ -11,16 +11,17 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Model;
+namespace DreamCommerce\Component\ShopAppstore\Factory;
 
-final class ItemList extends AbstractItemList implements ItemListInterface
+use DreamCommerce\Component\ShopAppstore\Model\ItemList;
+
+class ItemListFactory implements ItemListFactoryInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function addPart(ItemPartList $itemPartList): void
+    public function createNew()
     {
-        $this->items = array_merge($this->items, $itemPartList->items);
-        $this->count = count($this->items);
+        return new ItemList();
     }
 }

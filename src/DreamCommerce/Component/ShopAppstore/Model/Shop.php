@@ -115,6 +115,6 @@ class Shop implements ShopInterface, ArrayableInterface
      */
     public function isAuthenticated(): bool
     {
-        return ($this->getToken()->getAccessToken() !== null);
+        return ($this->token !== null && $this->token->getAccessToken() !== null);
     }
 }

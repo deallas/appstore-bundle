@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
+namespace DreamCommerce\Component\ShopAppstore\Tests\Billing\Resolver;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingSubscription;

@@ -125,7 +125,7 @@ final class Criteria
             } elseif(!in_array($operator, [ self::OPERATOR_IN, self::OPERATOR_NOT_IN ])) {
                 throw new InvalidArgumentException('Unsupported operator "' . $operator . '"');
             }
-        } elseif(is_scalar($value)) {
+        } elseif(is_scalar($value) || is_null($value)) {
             if($operator === self::OPERATOR_IN) {
                 $operator = self::OPERATOR_EQUAL;
             } elseif($operator === self::OPERATOR_NOT_IN) {

@@ -14,6 +14,12 @@ class CommunicationException extends ApiException
     const INVALID_RESPONSE_CODE     = 11;
     const EMPTY_RESPONSE_BODY       = 12;
     const INVALID_RESPONSE_BODY     = 13;
+    const INVALID_REQUEST_BODY      = 14;
+
+    /**
+     * @var array
+     */
+    private $requestBody;
 
     /**
      * @param RequestInterface $httpRequest
@@ -69,6 +75,19 @@ class CommunicationException extends ApiException
         $exception = new self('Invalid response body', self::INVALID_RESPONSE_BODY, $previous);
         $exception->httpRequest = $httpRequest;
         $exception->httpResponse = $httpResponse;
+
+        return $exception;
+    }
+
+    /**
+     * @param array $requestBody
+     * @param Throwable|null $previous
+     * @return CommunicationException
+     */
+    public static function forInvalidRequestBody(array $requestBody, Throwable $previous = null): self
+    {
+        $exception = new self('Invalid request body', self::INVALID_REQUEST_BODY, $previous);
+        $exception->requestBody = $requestBody;
 
         return $exception;
     }

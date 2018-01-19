@@ -13,22 +13,20 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-use Sylius\Component\Resource\Model\ResourceInterface;
-
-interface ItemInterface extends DataContainerInterface, ResourceInterface
+interface ItemPartListInterface
 {
     /**
-     * @param int $id
+     * @return int
      */
-    public function setId(int $id): void;
+    public function getTotal(): int;
 
     /**
-     * @param ShopInterface $shop
+     * @return int
      */
-    public function setShop(ShopInterface $shop): void;
+    public function getPage(): int;
 
     /**
-     * @return ShopInterface
+     * @return int
      */
-    public function getShop(): ShopInterface;
+    public function getTotalPages(): int;
 }

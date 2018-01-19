@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-final class ItemPartList extends ItemList
+final class ItemPartList extends AbstractItemList implements ItemPartListInterface
 {
     /**
      * @var int
@@ -36,7 +36,7 @@ final class ItemPartList extends ItemList
      * @param int $page
      * @param int $totalPages
      */
-    public function __construct(array $items, int $total, int $page, int $totalPages)
+    public function __construct(array $items = [], int $total = 0, int $page = 1, int $totalPages = 0)
     {
         $this->total = $total;
         $this->page = $page;
@@ -46,7 +46,7 @@ final class ItemPartList extends ItemList
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getTotal(): int
     {
@@ -54,7 +54,7 @@ final class ItemPartList extends ItemList
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getPage(): int
     {
@@ -62,7 +62,7 @@ final class ItemPartList extends ItemList
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getTotalPages(): int
     {

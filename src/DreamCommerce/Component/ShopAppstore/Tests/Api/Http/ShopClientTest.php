@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
+namespace DreamCommerce\Component\ShopAppstore\Tests\Api\Http;
 
 use DreamCommerce\Component\Common\Http\ClientInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClient;
@@ -110,6 +110,10 @@ class ShopClientTest extends TestCase
 
         /** @var RequestInterface|MockObject $request */
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $request->expects($this->any())
+            ->method('withAddedHeader')
+            ->willReturn($request);
+
         $this->shopClient->send($request);
     }
 
@@ -131,6 +135,9 @@ class ShopClientTest extends TestCase
 
         /** @var RequestInterface|MockObject $request */
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $request->expects($this->any())
+            ->method('withAddedHeader')
+            ->willReturn($request);
 
         $this->psrClient->expects($this->once())
             ->method('send')

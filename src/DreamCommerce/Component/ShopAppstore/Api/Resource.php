@@ -13,23 +13,32 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
-use ArrayObject;
 use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
 use DreamCommerce\Component\Common\Http\GuzzleClient as GuzzlePsrClient;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\AuthenticatorInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\BasicAuthAuthenticator;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\OAuthAuthenticator;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\LimitExceededException;
 use DreamCommerce\Component\ShopAppstore\Api\Http\AwaitShopClient;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
-use DreamCommerce\Component\ShopAppstore\Api\Hydrator\ItemHydrator;
-use DreamCommerce\Component\ShopAppstore\Api\Hydrator\HydratorInterface;
+use DreamCommerce\Component\ShopAppstore\Factory\ItemFactory;
+use DreamCommerce\Component\ShopAppstore\Factory\ItemFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Factory\ItemListFactory;
+use DreamCommerce\Component\ShopAppstore\Factory\ItemListFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Factory\ItemPartListFactory;
+use DreamCommerce\Component\ShopAppstore\Factory\ItemPartListFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ItemInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ItemList;
 use DreamCommerce\Component\ShopAppstore\Model\ItemListInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ItemPartList;
+use DreamCommerce\Component\ShopAppstore\Model\ItemPartListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use RuntimeException;
 
-abstract class Resource implements ResourceInterface
+abstract class Resource
 {
     /**
      * @var ShopClientInterface|null
@@ -42,14 +51,34 @@ abstract class Resource implements ResourceInterface
     private $authenticator;
 
     /**
-     * @var HydratorInterface|null
+     * @var ItemFactoryInterface|null
      */
-    private $hydrator;
+    private $itemFactory;
 
     /**
-     * @var HydratorInterface|null
+     * @var ItemPartListFactoryInterface|null
      */
-    private static $globalHydrator;
+    private $itemListFactory;
+
+    /**
+     * @var ItemPartListInterface|null
+     */
+    private $itemPartListFactory;
+
+    /**
+     * @var ItemFactoryInterface|null
+     */
+    private static $globalItemFactory;
+
+    /**
+     * @var ItemListFactoryInterface|null
+     */
+    private static $globalItemListFactory;
+
+    /**
+     * @var ItemPartListFactoryInterface|null
+     */
+    private static $globalItemPartListFactory;
 
     /**
      * @var ShopClientInterface
@@ -77,16 +106,27 @@ abstract class Resource implements ResourceInterface
     /**
      * @param ShopClientInterface|null $shopClient
      * @param AuthenticatorInterface|null $authenticator
-     * @param HydratorInterface|null $hydrator
+     * @param ItemFactoryInterface|null $itemFactory
+     * @param ItemPartListFactoryInterface|null $itemPartListFactory
+     * @param ItemListFactoryInterface|null $itemListFactory
      */
     public function __construct(ShopClientInterface $shopClient = null,
                                 AuthenticatorInterface $authenticator = null,
-                                HydratorInterface $hydrator = null
+                                ItemFactoryInterface $itemFactory = null,
+                                ItemPartListFactoryInterface $itemPartListFactory = null,
+                                ItemListFactoryInterface $itemListFactory = null
     ) {
         $this->shopClient = $shopClient;
         $this->authenticator = $authenticator;
-        $this->hydrator = $hydrator;
+        $this->itemFactory = $itemFactory;
+        $this->itemPartListFactory = $itemPartListFactory;
+        $this->itemListFactory = $itemListFactory;
     }
+
+    /**
+     * @return string
+     */
+    abstract public function getName(): string;
 
     /**
      * {@inheritdoc}
@@ -95,40 +135,98 @@ abstract class Resource implements ResourceInterface
     {
         list($request, $response) = $this->perform($shop, 'GET', $id);
 
-        return $this->getHydrator()->hydrate($this, $request, $response);
+        return $this->getItemFactory()->createByApiRequest($shop, $this, $request, $response);
     }
 
     /**
-     * {@inheritdoc}
+     * @param ShopInterface $shop
+     * @param Criteria $criteria
+     * @return ItemListInterface|ItemInterface[]
      */
-    public function head(ShopInterface $shop, ...$args): ItemListInterface
+    public function findBy(ShopInterface $shop, Criteria $criteria): ItemListInterface
     {
-        list($id, $criteria) = $this->parseArgs($args);
-        list($request, $response) = $this->perform($shop, 'HEAD', $id, null, $criteria);
+        /** @var ItemListInterface $itemList */
+        $itemList = $this->getItemListFactory()->createNew();
+        $this->fetchAll($shop, $criteria, function(ItemPartList $itemPartList) use($itemList) {
+            $itemList->addPart($itemPartList);
+        });
 
-        return $this->getHydrator()->hydrate($this, $request, $response);
+        return $itemList;
     }
 
     /**
-     * {@inheritdoc}
+     * @param ShopInterface $shop
+     * @param Criteria $criteria
+     * @return ItemPartListInterface|ItemInterface[]
      */
-    public function post(ShopInterface $shop, array $data): int
+    public function findByPartial(ShopInterface $shop, Criteria $criteria): ItemPartListInterface
     {
-        list($request, $response) = $this->perform($shop, 'POST', null, $data);
+        list($request, $response) = $this->perform($shop,'GET',null, null, $criteria);
+
+        return $this->getItemPartListFactory()->createByApiRequest($shop, $this, $request, $response);
+    }
+
+    /**
+     * @param ShopInterface $shop
+     * @return ItemListInterface|ItemInterface[]
+     */
+    public function findAll(ShopInterface $shop): ItemListInterface
+    {
+        return $this->findBy($shop, Criteria::create());
+    }
+
+    /**
+     * @param ShopInterface $shop
+     * @param callable $callback
+     * @param Criteria|null $criteria
+     */
+    public function walk(ShopInterface $shop, callable $callback, Criteria $criteria = null): void
+    {
+        if($criteria === null) {
+            $criteria = Criteria::create();
+        }
+
+        $this->fetchAll($shop, $criteria, function(ItemPartList $itemPartList) use($callback) {
+            foreach($itemPartList as $item) {
+                call_user_func($callback, $item);
+            }
+        });
+    }
+
+    /**
+     * @param ItemInterface $item
+     */
+    public function reconnect(ItemInterface $item): void
+    {
+        $actualItem = $this->find($item->getShop(), $item->getId());
+        $item->setData($actualItem->getData());
+    }
+
+    /**
+     * @param ShopInterface $shop
+     * @param array $data
+     * @return int
+     */
+    public function insert(ShopInterface $shop, array $data): int
+    {
+        list(, $response) = $this->perform($shop, 'POST', null, $data);
 
         return (int) $response->getBody()->getContents();
     }
 
     /**
-     * {@inheritdoc}
+     * @param ShopInterface $shop
+     * @param int $id
+     * @param array $data
      */
-    public function put(ShopInterface $shop, int $id, array $data): void
+    public function update(ShopInterface $shop, int $id, array $data): void
     {
         $this->perform($shop, 'PUT', $id, $data);
     }
 
     /**
-     * {@inheritdoc}
+     * @param ShopInterface $shop
+     * @param int $id
      */
     public function delete(ShopInterface $shop, int $id): void
     {
@@ -136,20 +234,28 @@ abstract class Resource implements ResourceInterface
     }
 
     /**
-     * @param array $args
-     * @return array
+     * @param ItemInterface $item
      */
-    private function parseArgs(array $args): array
+    public function insertItem(ItemInterface $item): void
     {
-        if(count($args) === 1) {
-            if(is_numeric($args[0]) && (int)$args[0] == $args[0]) {
-                return [$args[0], null];
-            } elseif($args[0] instanceof Criteria) {
-                return [ null, $args[0] ];
-            } else {
-                // TODO throw exception
-            }
-        }
+        $id = $this->insert($item->getShop(), $item->getData());
+        $item->setId($id);
+    }
+
+    /**
+     * @param ItemInterface $item
+     */
+    public function updateItem(ItemInterface $item): void
+    {
+        $this->update($item->getShop(), $item->getId(), $item->getDiffData());
+    }
+
+    /**
+     * @param ItemInterface $item
+     */
+    public function deleteItem(ItemInterface $item): void
+    {
+        $this->delete($item->getShop(), $item->getId());
     }
 
     /**
@@ -159,6 +265,7 @@ abstract class Resource implements ResourceInterface
      * @param array|null $data
      * @param Criteria|null $criteria
      * @return array
+     * @throws CommunicationException
      */
     private function perform(ShopInterface $shop, string $method, int $id = null, array $data = null, Criteria $criteria = null): array
     {
@@ -181,7 +288,7 @@ abstract class Resource implements ResourceInterface
         if($data !== null && in_array($method, [ 'POST', 'PUT' ])) {
             $body = @json_encode($data);
             if ($body === false) {
-                // TODO throw exception
+                throw CommunicationException::forInvalidRequestBody($data);
             }
         }
 
@@ -194,9 +301,29 @@ abstract class Resource implements ResourceInterface
             ],
             $body
         );
-        $criteria->fillRequest($request);
+        if($criteria !== null) {
+            $criteria->fillRequest($request);
+        }
 
         return [ $request, $shopClient->send($request) ];
+    }
+
+    /**
+     * @param ShopInterface $shop
+     * @param Criteria $criteria
+     * @param callable $callback
+     */
+    private function fetchAll(ShopInterface $shop, Criteria $criteria, callable $callback)
+    {
+        do {
+            try {
+                $itemPartList = $this->findByPartial($shop, $criteria);
+            } catch(LimitExceededException $exception) {
+                // TODO throw
+            }
+            call_user_func($callback, $itemPartList);
+            $criteria->nextPage();
+        } while($criteria->getPage() <= $itemPartList->getTotalPages());
     }
 
     /**
@@ -225,7 +352,7 @@ abstract class Resource implements ResourceInterface
     private function getAuthInstance(string $authClass): AuthenticatorInterface
     {
         if(!isset(self::$globalAuthInstances[$authClass])) {
-            self::$globalAuthInstances[$authClass] = new $authClass($this->getHttpClient());
+            self::$globalAuthInstances[$authClass] = new $authClass($this->getShopClient());
         }
 
         return self::$globalAuthInstances[$authClass];
@@ -264,18 +391,50 @@ abstract class Resource implements ResourceInterface
     }
 
     /**
-     * @return HydratorInterface
+     * @return ItemFactoryInterface
      */
-    private function getHydrator(): HydratorInterface
+    private function getItemFactory(): ItemFactoryInterface
     {
-        if($this->hydrator !== null) {
-            return $this->hydrator;
+        if($this->itemFactory !== null) {
+            return $this->itemFactory;
         }
 
-        if(self::$globalHydrator === null) {
-            self::$globalHydrator = new ItemHydrator();
+        if(self::$globalItemFactory === null) {
+            self::$globalItemFactory = new ItemFactory();
         }
 
-        return self::$globalHydrator;
+        return self::$globalItemFactory;
+    }
+
+    /**
+     * @return ItemListFactoryInterface
+     */
+    private function getItemListFactory(): ItemListFactoryInterface
+    {
+        if($this->itemListFactory !== null) {
+            return $this->itemListFactory;
+        }
+
+        if(self::$globalItemListFactory === null) {
+            self::$globalItemListFactory = new ItemListFactory();
+        }
+
+        return self::$globalItemListFactory;
+    }
+
+    /**
+     * @return ItemPartListFactoryInterface
+     */
+    private function getItemPartListFactory(): ItemPartListFactoryInterface
+    {
+        if($this->itemPartListFactory !== null) {
+            return $this->itemPartListFactory;
+        }
+
+        if(self::$globalItemPartListFactory === null) {
+            self::$globalItemPartListFactory = new ItemPartListFactory($this->getItemFactory());
+        }
+
+        return self::$globalItemPartListFactory;
     }
 }

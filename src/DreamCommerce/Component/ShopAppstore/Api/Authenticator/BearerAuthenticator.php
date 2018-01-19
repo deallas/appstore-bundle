@@ -22,7 +22,10 @@ use DreamCommerce\Component\ShopAppstore\Api\Exception;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
 use DreamCommerce\Component\ShopAppstore\Info;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\Token;
+use DreamCommerce\Component\ShopAppstore\Model\TokenInterface;
 use Psr\Http\Message\RequestInterface;
+use Sylius\Component\Resource\Factory\FactoryInterface;
 
 abstract class BearerAuthenticator implements AuthenticatorInterface
 {
@@ -42,15 +45,23 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
     protected $tokenObjectManager;
 
     /**
+     * @var FactoryInterface|null
+     */
+    protected $tokenFactory;
+
+    /**
      * @param ShopClientInterface $shopClient
      * @param DateTimeFactoryInterface|null $dateTimeFactory
      * @param ObjectManager|null $tokenObjectManager
+     * @param FactoryInterface|null $tokenFactory
      */
-    public function __construct(ShopClientInterface $shopClient, DateTimeFactoryInterface $dateTimeFactory = null, ObjectManager $tokenObjectManager = null)
+    public function __construct(ShopClientInterface $shopClient, DateTimeFactoryInterface $dateTimeFactory = null,
+                                ObjectManager $tokenObjectManager = null, FactoryInterface $tokenFactory = null)
     {
         $this->shopClient = $shopClient;
         $this->dateTimeFactory = $dateTimeFactory;
         $this->tokenObjectManager = $tokenObjectManager;
+        $this->tokenFactory = $tokenFactory;
     }
 
     /**
@@ -86,6 +97,11 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
         }
 
         $token = $shop->getToken();
+        if($token === null) {
+            $token = $this->createToken();
+            $shop->setToken($token);
+        }
+
         $token->setAccessToken($body['access_token']);
 
         $refreshToken = null;
@@ -118,5 +134,17 @@ abstract class BearerAuthenticator implements AuthenticatorInterface
         }
 
         return $this->dateTimeFactory;
+    }
+
+    /**
+     * @return TokenInterface
+     */
+    private function createToken(): TokenInterface
+    {
+        if($this->tokenFactory !== null) {
+            return $this->tokenFactory->createNew();
+        }
+
+        return new Token();
     }
 }

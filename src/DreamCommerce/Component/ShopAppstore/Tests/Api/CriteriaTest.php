@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
+namespace DreamCommerce\Component\ShopAppstore\Tests\Api;
 
 use DreamCommerce\Component\ShopAppstore\Api\Criteria;
 use PHPUnit\Framework\MockObject\MockObject;
