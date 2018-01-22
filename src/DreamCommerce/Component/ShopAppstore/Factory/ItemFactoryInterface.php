@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ResourceInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ItemInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use Psr\Http\Message\RequestInterface;
@@ -24,11 +24,18 @@ interface ItemFactoryInterface extends FactoryInterface
 {
     /**
      * @param ShopInterface $shop
-     * @param Resource $resource
+     * @param int|null $externalId
+     * @return ItemInterface
+     */
+    public function createByExternalIdAndShop(ShopInterface $shop, ?int $externalId): ItemInterface;
+
+    /**
+     * @param ShopInterface $shop
+     * @param ResourceInterface $resource
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return ItemInterface
      */
-    public function createByApiRequest(ShopInterface $shop, Resource $resource,
+    public function createByApiRequest(ShopInterface $shop, ResourceInterface $resource,
                                        RequestInterface $request, ResponseInterface $response): ItemInterface;
 }

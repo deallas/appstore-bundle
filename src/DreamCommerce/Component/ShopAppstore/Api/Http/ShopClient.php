@@ -15,10 +15,12 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Http;
 
 use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
 use DreamCommerce\Component\Common\Http\LoggerInterface as HttpLoggerInterface;
+use DreamCommerce\Component\Common\Http\GuzzleClient as GuzzlePsrClient;
 use DreamCommerce\Component\ShopAppstore\Api\Exception;
 use DreamCommerce\Component\ShopAppstore\Info;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use Throwable;
 
 class ShopClient implements ShopClientInterface
@@ -44,10 +46,15 @@ class ShopClient implements ShopClientInterface
     private $locale = Info::LOCALE;
 
     /**
-     * @param HttpClientInterface $httpClient
+     * @var HttpClientInterface
+     */
+    private static $globalHttpClient;
+
+    /**
+     * @param HttpClientInterface|null $httpClient
      * @param HttpLoggerInterface|null $httpLogger
      */
-    public function __construct(HttpClientInterface $httpClient, HttpLoggerInterface $httpLogger = null)
+    public function __construct(HttpClientInterface $httpClient = null, HttpLoggerInterface $httpLogger = null)
     {
         $this->httpClient = $httpClient;
         $this->httpLogger = $httpLogger;
@@ -69,7 +76,7 @@ class ShopClient implements ShopClientInterface
         $response = null;
 
         try {
-            $response = $this->httpClient->send($request);
+            $response = $this->getHttpClient()->send($request);
         } catch (Throwable $exception) {
             if (class_exists('\\GuzzleHttp\\Exception\\RequestException') &&
                 $exception instanceof \GuzzleHttp\Exception\RequestException
@@ -126,7 +133,19 @@ class ShopClient implements ShopClientInterface
      */
     public function getHttpClient(): HttpClientInterface
     {
-        return $this->httpClient;
+        if($this->httpClient !== null) {
+            return $this->httpClient;
+        }
+
+        if(self::$globalHttpClient === null) {
+            if (class_exists('\\GuzzleHttp\\Client')) {
+                self::$globalHttpClient = new GuzzlePsrClient(new \GuzzleHttp\Client());
+            } else {
+                throw new RuntimeException('Unable initialize HTTP client');
+            }
+        }
+
+        return self::$globalHttpClient;
     }
 
     /**

@@ -14,7 +14,8 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
 use DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException;
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\Resource\IdentifierAwareInterface;
+use DreamCommerce\Component\ShopAppstore\Api\ResourceInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ItemPartList;
 use DreamCommerce\Component\ShopAppstore\Model\ItemPartListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
@@ -47,7 +48,7 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createByApiRequest(ShopInterface $shop, Resource $resource,
+    public function createByApiRequest(ShopInterface $shop, ResourceInterface $resource,
                                        RequestInterface $request, ResponseInterface $response): ItemPartListInterface
     {
         $stream = $response->getBody();
@@ -77,7 +78,7 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
             $totalPages = (int)$body['pages'];
         }
 
-        if($resource instanceof Resource\IdentifierAwareInterface) {
+        if($resource instanceof IdentifierAwareInterface) {
             $factory = $this->itemFactory;
             $identifierName = $resource->getIdentifierName();
         } else {

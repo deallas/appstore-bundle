@@ -105,10 +105,18 @@ final class Criteria
      */
     public function andWhere(string $field, $value = null, $operator = self::OPERATOR_EQUAL): self
     {
-        if(preg_match('/^([a-z0-9\._]+)[ ]?(>|>=|<=|<|=|!=|like|not like)(.*)$/i', $field, $matches)) {
+        if(preg_match('/^([a-z0-9\._]+)[ ]?(>|>=|<=|<|=|!=|like|not like|is null|is not null)(.*)$/i', $field, $matches)) {
             $field = trim($matches[1]);
             $operator = trim($matches[2]);
             $value = trim($matches[3], " \"'");
+
+            if($operator === 'is null') {
+                $operator = self::OPERATOR_EQUAL;
+                $value = null;
+            } elseif($operator === 'is not null') {
+                $operator = self::OPERATOR_NOT_EQUAL;
+                $value = null;
+            }
         }
 
         Assert::oneOf($operator, self::ALL_OPERATORS);

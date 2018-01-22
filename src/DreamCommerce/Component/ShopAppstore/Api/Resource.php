@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
-use DreamCommerce\Component\Common\Http\ClientInterface as HttpClientInterface;
-use DreamCommerce\Component\Common\Http\GuzzleClient as GuzzlePsrClient;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\AuthenticatorInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\BasicAuthAuthenticator;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\OAuthAuthenticator;
@@ -30,7 +28,6 @@ use DreamCommerce\Component\ShopAppstore\Factory\ItemPartListFactory;
 use DreamCommerce\Component\ShopAppstore\Factory\ItemPartListFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ItemInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ItemList;
 use DreamCommerce\Component\ShopAppstore\Model\ItemListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ItemPartList;
 use DreamCommerce\Component\ShopAppstore\Model\ItemPartListInterface;
@@ -38,7 +35,7 @@ use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use RuntimeException;
 
-abstract class Resource
+abstract class Resource implements ResourceInterface
 {
     /**
      * @var ShopClientInterface|null
@@ -86,11 +83,6 @@ abstract class Resource
     private static $globalShopClient;
 
     /**
-     * @var HttpClientInterface
-     */
-    private static $globalHttpClient;
-
-    /**
      * @var array
      */
     private static $globalAuthMap = [
@@ -124,11 +116,6 @@ abstract class Resource
     }
 
     /**
-     * @return string
-     */
-    abstract public function getName(): string;
-
-    /**
      * {@inheritdoc}
      */
     public function find(ShopInterface $shop, int $id): ItemInterface
@@ -139,9 +126,7 @@ abstract class Resource
     }
 
     /**
-     * @param ShopInterface $shop
-     * @param Criteria $criteria
-     * @return ItemListInterface|ItemInterface[]
+     * {@inheritdoc}
      */
     public function findBy(ShopInterface $shop, Criteria $criteria): ItemListInterface
     {
@@ -155,9 +140,7 @@ abstract class Resource
     }
 
     /**
-     * @param ShopInterface $shop
-     * @param Criteria $criteria
-     * @return ItemPartListInterface|ItemInterface[]
+     * {@inheritdoc}
      */
     public function findByPartial(ShopInterface $shop, Criteria $criteria): ItemPartListInterface
     {
@@ -167,8 +150,7 @@ abstract class Resource
     }
 
     /**
-     * @param ShopInterface $shop
-     * @return ItemListInterface|ItemInterface[]
+     * {@inheritdoc}
      */
     public function findAll(ShopInterface $shop): ItemListInterface
     {
@@ -176,9 +158,7 @@ abstract class Resource
     }
 
     /**
-     * @param ShopInterface $shop
-     * @param callable $callback
-     * @param Criteria|null $criteria
+     * {@inheritdoc}
      */
     public function walk(ShopInterface $shop, callable $callback, Criteria $criteria = null): void
     {
@@ -194,7 +174,7 @@ abstract class Resource
     }
 
     /**
-     * @param ItemInterface $item
+     * {@inheritdoc}
      */
     public function reconnect(ItemInterface $item): void
     {
@@ -203,9 +183,7 @@ abstract class Resource
     }
 
     /**
-     * @param ShopInterface $shop
-     * @param array $data
-     * @return int
+     * {@inheritdoc}
      */
     public function insert(ShopInterface $shop, array $data): int
     {
@@ -215,9 +193,7 @@ abstract class Resource
     }
 
     /**
-     * @param ShopInterface $shop
-     * @param int $id
-     * @param array $data
+     * {@inheritdoc}
      */
     public function update(ShopInterface $shop, int $id, array $data): void
     {
@@ -225,8 +201,7 @@ abstract class Resource
     }
 
     /**
-     * @param ShopInterface $shop
-     * @param int $id
+     * {@inheritdoc}
      */
     public function delete(ShopInterface $shop, int $id): void
     {
@@ -234,28 +209,40 @@ abstract class Resource
     }
 
     /**
-     * @param ItemInterface $item
+     * {@inheritdoc}
      */
     public function insertItem(ItemInterface $item): void
     {
+        if($item->hasExternalId()) {
+            // TODO throw exception
+        }
+
         $id = $this->insert($item->getShop(), $item->getData());
-        $item->setId($id);
+        $item->setExternalId($id);
     }
 
     /**
-     * @param ItemInterface $item
+     * {@inheritdoc}
      */
     public function updateItem(ItemInterface $item): void
     {
-        $this->update($item->getShop(), $item->getId(), $item->getDiffData());
+        if(!$item->hasExternalId()) {
+            // TODO throw exception
+        }
+
+        $this->update($item->getShop(), $item->getExternalId(), $item->getDiffData());
     }
 
     /**
-     * @param ItemInterface $item
+     * {@inheritdoc}
      */
     public function deleteItem(ItemInterface $item): void
     {
-        $this->delete($item->getShop(), $item->getId());
+        if(!$item->hasExternalId()) {
+            // TODO throw exception
+        }
+
+        $this->delete($item->getShop(), $item->getExternalId());
     }
 
     /**
@@ -274,7 +261,6 @@ abstract class Resource
             $authenticator->authenticate($shop);
         }
 
-        $httpClient = $this->getHttpClient();
         $shopClient = $this->getShopClient();
 
         $uri = $shop->getUri();
@@ -292,7 +278,7 @@ abstract class Resource
             }
         }
 
-        $request = $httpClient->createRequest(
+        $request = $shopClient->getHttpClient()->createRequest(
             $method,
             $uri,
             [
@@ -368,26 +354,10 @@ abstract class Resource
         }
 
         if(self::$globalShopClient === null) {
-            self::$globalShopClient = new AwaitShopClient($this->getHttpClient());
+            self::$globalShopClient = new AwaitShopClient();
         }
 
         return self::$globalShopClient;
-    }
-
-    /**
-     * @return HttpClientInterface
-     */
-    private function getHttpClient(): HttpClientInterface
-    {
-        if(self::$globalHttpClient === null) {
-            if (class_exists('\\GuzzleHttp\\Client')) {
-                self::$globalHttpClient = new GuzzlePsrClient(new \GuzzleHttp\Client());
-            } else {
-                throw new RuntimeException('Unable initialize HTTP client');
-            }
-        }
-
-        return self::$globalHttpClient;
     }
 
     /**

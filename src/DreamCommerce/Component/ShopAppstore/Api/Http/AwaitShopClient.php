@@ -33,11 +33,11 @@ final class AwaitShopClient extends ShopClient
     private $sleeper;
 
     /**
-     * @param ClientInterface $httpClient
+     * @param ClientInterface|null $httpClient
      * @param LoggerInterface|null $logger
      * @param Sleeper|null $sleeper
      */
-    public function __construct(ClientInterface $httpClient, LoggerInterface $logger = null, Sleeper $sleeper = null)
+    public function __construct(ClientInterface $httpClient = null, LoggerInterface $logger = null, Sleeper $sleeper = null)
     {
         if($sleeper === null) {
             $sleeper = new Sleeper();

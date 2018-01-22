@@ -15,25 +15,22 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 
 class Item extends DataContainer implements ItemInterface
 {
+    use ShopDependTrait;
+
     /**
      * @var int|null
      */
-    private $id;
-
-    /**
-     * @var ShopInterface|null
-     */
-    private $shop;
+    private $externalId;
 
     /**
      * @param ShopInterface|null $shop
-     * @param int|null $id
+     * @param int|null $externalId
      * @param array $data
      */
-    public function __construct(ShopInterface $shop = null, int $id = null, array $data = [])
+    public function __construct(ShopInterface $shop = null, int $externalId = null, array $data = [])
     {
         $this->shop = $shop;
-        $this->id = $id;
+        $this->externalId = $externalId;
 
         parent::__construct($data);
     }
@@ -41,32 +38,24 @@ class Item extends DataContainer implements ItemInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getExternalId(): ?int
     {
-        return $this->id;
+        return $this->externalId;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setId(int $id): void
+    public function setExternalId(int $externalId): void
     {
-        $this->id = $id;
+        $this->externalId = $externalId;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getShop(): ShopInterface
+    public function hasExternalId(): bool
     {
-        return $this->shop;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setShop(ShopInterface $shop): void
-    {
-        $this->shop = $shop;
+        return ($this->externalId !== null);
     }
 }

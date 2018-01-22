@@ -164,6 +164,20 @@ class CriteriaTest extends TestCase
         $expr = $this->criteria->getWhereExpression();
         $this->assertCount(1, $expr);
         $this->assertEquals(['field_1' => [ Criteria::OPERATOR_EQUAL => 'test2' ]], $expr);
+
+        // null value
+
+        $this->criteria->where('field_1 is null');
+        $expr = $this->criteria->getWhereExpression();
+        $this->assertCount(1, $expr);
+        $this->assertEquals(['field_1' => [ Criteria::OPERATOR_EQUAL => null ]], $expr);
+
+        // not null value
+
+        $this->criteria->where('field_1 is not null');
+        $expr = $this->criteria->getWhereExpression();
+        $this->assertCount(1, $expr);
+        $this->assertEquals(['field_1' => [ Criteria::OPERATOR_NOT_EQUAL => null ]], $expr);
     }
 
     public function testAndWhere(): void
