@@ -43,13 +43,21 @@ abstract class AbstractItemList implements Iterator, Countable, ArrayAccess
     }
 
     /**
+     * @param array $items
+     */
+    public function setItems(array $items)
+    {
+        $this->items = $items;
+    }
+
+    /**
      * @return array
      */
-    public function getIds(): array
+    public function getExternalIds(): array
     {
         $array = [];
         foreach($this->items as $item) {
-            $array[] = $item->getId();
+            $array[] = $item->getExternalId();
         }
 
         return $array;

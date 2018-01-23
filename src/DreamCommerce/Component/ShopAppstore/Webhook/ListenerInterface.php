@@ -11,11 +11,12 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
+namespace DreamCommerce\Component\ShopAppstore\Webhook;
 
-use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
-
-interface MessageResolverInterface
+interface ListenerInterface
 {
-    public function resolve(Message $message): void;
+    /**
+     * @param Payload $payload
+     */
+    public function notify(Payload $payload): void;
 }

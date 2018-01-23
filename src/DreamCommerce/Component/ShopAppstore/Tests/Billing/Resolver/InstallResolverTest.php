@@ -17,7 +17,7 @@ use DreamCommerce\Component\ShopAppstore\Api\Authenticator\AuthenticatorInterfac
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Install;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\InstallResolver;
-use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
+use DreamCommerce\Component\ShopAppstore\Billing\Resolver\ResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\ShopTransitions;
@@ -52,7 +52,7 @@ class InstallResolverTest extends TestCase
 
     public function testShouldImplements(): void
     {
-        $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
+        $this->assertInstanceOf(ResolverInterface::class, $this->resolver);
     }
 
     /**

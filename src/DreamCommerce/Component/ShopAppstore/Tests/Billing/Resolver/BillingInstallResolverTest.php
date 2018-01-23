@@ -16,7 +16,7 @@ namespace DreamCommerce\Component\ShopAppstore\Tests\Billing\Resolver;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingInstall;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\BillingInstallResolver;
-use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
+use DreamCommerce\Component\ShopAppstore\Billing\Resolver\ResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\ShopBillingTransitions;
@@ -45,7 +45,7 @@ class BillingInstallResolverTest extends TestCase
 
     public function testShouldImplements(): void
     {
-        $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
+        $this->assertInstanceOf(ResolverInterface::class, $this->resolver);
     }
 
     /**

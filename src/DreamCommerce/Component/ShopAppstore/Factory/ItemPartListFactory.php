@@ -30,6 +30,11 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
     protected $itemFactory;
 
     /**
+     * @var
+     */
+    protected $dataContainerFactory;
+
+    /**
      * @param ItemFactoryInterface $itemFactory
      */
     public function __construct(ItemFactoryInterface $itemFactory)
@@ -64,18 +69,16 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
             throw CommunicationException::forInvalidResponseBody($request, $response);
         }
 
-        $page = 1;
-        $total = 0;
-        $totalPages = 0;
+        $itemPartList = $this->createNew();
 
         if(isset($body['page'])) {
-            $page = (int)$body['page'];
+            $itemPartList->setPage((int)$body['page']);
         }
         if(isset($body['count'])) {
-            $total = (int)$body['count'];
+            $itemPartList->setTotal((int)$body['count']);
         }
         if(isset($body['pages'])) {
-            $totalPages = (int)$body['pages'];
+            $itemPartList->setTotalPages((int)$body['pages']);
         }
 
         if($resource instanceof IdentifierAwareInterface) {
@@ -95,13 +98,14 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
                 if(!isset($data[$identifierName])) {
                     // TODO throw
                 }
-                $item->setId((int)$data[$identifierName]);
+                $item->setExternalId((int)$data[$identifierName]);
                 $items[] = $item;
             } else {
                 $items[] = $item;
             }
         }
+        $itemPartList->setItems($items);
 
-        return new ItemPartList($items, $total, $page, $totalPages);
+        return $itemPartList;
     }
 }

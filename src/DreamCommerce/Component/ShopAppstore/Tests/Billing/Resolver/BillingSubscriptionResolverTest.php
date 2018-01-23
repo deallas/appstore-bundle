@@ -17,7 +17,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\BillingSubscription;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Resolver\BillingSubscriptionResolver;
-use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
+use DreamCommerce\Component\ShopAppstore\Billing\Resolver\ResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\SubscriptionFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
@@ -51,7 +51,7 @@ class BillingSubscriptionResolverTest extends TestCase
 
     public function testShouldImplements(): void
     {
-        $this->assertInstanceOf(MessageResolverInterface::class, $this->resolver);
+        $this->assertInstanceOf(ResolverInterface::class, $this->resolver);
     }
 
     /**

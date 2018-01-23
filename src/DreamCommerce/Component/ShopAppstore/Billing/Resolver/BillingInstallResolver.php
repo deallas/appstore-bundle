@@ -19,7 +19,7 @@ use DreamCommerce\Component\ShopAppstore\ShopBillingTransitions;
 use SM\Factory\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-final class BillingInstallResolver implements MessageResolverInterface
+final class BillingInstallResolver implements ResolverInterface
 {
     /**
      * @var FactoryInterface

@@ -21,7 +21,7 @@ use DreamCommerce\Component\ShopAppstore\ShopTransitions;
 use SM\Factory\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-final class UninstallResolver implements MessageResolverInterface
+final class UninstallResolver implements ResolverInterface
 {
     /**
      * @var FactoryInterface

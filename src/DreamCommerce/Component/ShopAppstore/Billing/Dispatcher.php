@@ -16,7 +16,6 @@ namespace DreamCommerce\Component\ShopAppstore\Billing;
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Factory\UriFactoryInterface;
-use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
 use DreamCommerce\Component\ShopAppstore\Factory\OAuthShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
@@ -120,7 +119,7 @@ final class Dispatcher implements DispatcherInterface
         }
 
         try {
-            /** @var MessageResolverInterface $resolver */
+            /** @var ResolverInterface $resolver */
             $resolver = $this->resolverRegistry->get($params['action']);
         } catch (NonExistingServiceException $exception) {
             throw UnableDispatchException::forNotSupportedAction($serverRequest, $exception);

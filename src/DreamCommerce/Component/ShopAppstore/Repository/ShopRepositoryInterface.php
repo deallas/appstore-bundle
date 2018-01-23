@@ -16,6 +16,7 @@ namespace DreamCommerce\Component\ShopAppstore\Repository;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use Psr\Http\Message\UriInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 interface ShopRepositoryInterface extends RepositoryInterface
@@ -41,4 +42,17 @@ interface ShopRepositoryInterface extends RepositoryInterface
      * @return OAuthShopInterface|null
      */
     public function findOneByNameAndApplication(string $name, ApplicationInterface $application): ?OAuthShopInterface;
+
+    /**
+     * @param string|UriInterface $uri
+     * @return ShopInterface|null
+     */
+    public function findOneByUri($uri): ?ShopInterface;
+
+    /**
+     * @param string|UriInterface $uri
+     * @param ApplicationInterface $application
+     * @return OAuthShopInterface|null
+     */
+    public function findOneByUriAndApplication($uri, ApplicationInterface $application): ?OAuthShopInterface;
 }

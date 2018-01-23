@@ -11,17 +11,11 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Model;
+namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
 
-interface DataContainerInterface
+use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
+
+interface ResolverInterface
 {
-    /**
-     * @return array
-     */
-    public function getData(): array;
-
-    /**
-     * @return array
-     */
-    public function getDiffData(): array;
+    public function resolve(Message $message): void;
 }

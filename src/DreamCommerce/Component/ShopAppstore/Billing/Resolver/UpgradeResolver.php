@@ -17,7 +17,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Upgrade;
 use Webmozart\Assert\Assert;
 
-final class UpgradeResolver implements MessageResolverInterface
+final class UpgradeResolver implements ResolverInterface
 {
     /**
      * {@inheritdoc}

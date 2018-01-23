@@ -68,4 +68,28 @@ final class ItemPartList extends AbstractItemList implements ItemPartListInterfa
     {
         return $this->totalPages;
     }
+
+    /**
+     * @param int $total
+     */
+    public function setTotal(int $total)
+    {
+        $this->total = $total;
+    }
+
+    /**
+     * @param int $page
+     */
+    public function setPage(int $page)
+    {
+        $this->page = $page;
+    }
+
+    /**
+     * @param int $totalPages
+     */
+    public function setTotalPages(int $totalPages)
+    {
+        $this->totalPages = $totalPages;
+    }
 }

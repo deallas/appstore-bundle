@@ -178,8 +178,8 @@ abstract class Resource implements ResourceInterface
      */
     public function reconnect(ItemInterface $item): void
     {
-        $actualItem = $this->find($item->getShop(), $item->getId());
-        $item->setData($actualItem->getData());
+        $actualItem = $this->find($item->getShop(), $item->getExternalId());
+        $item->setData($actualItem->getData()); // TODO
     }
 
     /**

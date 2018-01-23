@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Tests\Billing;
 
 use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
-use DreamCommerce\Component\ShopAppstore\Billing\ResolverRegistry;
+use DreamCommerce\Component\ShopAppstore\Billing\Resolver\ResolverRegistry;
 use DreamCommerce\Component\ShopAppstore\Tests\Fixtures\Billing\ExampleResolver;
 use PHPUnit\Framework\TestCase;
 use stdClass;

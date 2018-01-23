@@ -19,7 +19,7 @@ use DreamCommerce\Component\Common\Factory\UriFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Dispatcher;
 use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
 use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
-use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
+use DreamCommerce\Component\ShopAppstore\Billing\Resolver\ResolverInterface;
 use DreamCommerce\Component\ShopAppstore\Factory\OAuthShopFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Info;
 use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
@@ -43,7 +43,7 @@ class DispatcherTest extends TestCase
     private $dispatcher;
 
     /**
-     * @var MessageResolverInterface[]|MockObject[]
+     * @var ResolverInterface[]|MockObject[]
      */
     private $resolvers = [];
 
@@ -274,7 +274,7 @@ class DispatcherTest extends TestCase
         $action = DispatcherInterface::ACTION_UNINSTALL;
         $serverRequest = $this->getValidServerRequest($action);
 
-        $resolver = $this->getMockBuilder(MessageResolverInterface::class)->getMock();
+        $resolver = $this->getMockBuilder(ResolverInterface::class)->getMock();
         $this->resolverRegistry->method('get')
             ->willReturn($resolver);
 
@@ -443,7 +443,7 @@ class DispatcherTest extends TestCase
     {
         $map = [];
         foreach (array_keys(DispatcherInterface::ACTION_PAYLOAD_MAP) as $action) {
-            $this->resolvers[$action] = $this->getMockBuilder(MessageResolverInterface::class)->getMock();
+            $this->resolvers[$action] = $this->getMockBuilder(ResolverInterface::class)->getMock();
             $map[] = [$action, $this->resolvers[$action]];
         }
 

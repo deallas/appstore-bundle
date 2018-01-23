@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Billing;
+namespace DreamCommerce\Component\ShopAppstore\Billing\Resolver;
 
-use DreamCommerce\Component\ShopAppstore\Billing\Resolver\MessageResolverInterface;
+use DreamCommerce\Component\ShopAppstore\Billing\DispatcherInterface;
 use InvalidArgumentException;
 use Sylius\Component\Registry\ServiceRegistry;
 
@@ -21,7 +21,7 @@ final class ResolverRegistry extends ServiceRegistry
 {
     public function __construct($context = 'service')
     {
-        parent::__construct(MessageResolverInterface::class, $context);
+        parent::__construct(ResolverInterface::class, $context);
     }
 
     /**

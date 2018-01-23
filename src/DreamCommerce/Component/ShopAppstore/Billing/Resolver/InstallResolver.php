@@ -22,7 +22,7 @@ use DreamCommerce\Component\ShopAppstore\ShopTransitions;
 use SM\Factory\FactoryInterface;
 use Webmozart\Assert\Assert;
 
-final class InstallResolver implements MessageResolverInterface
+final class InstallResolver implements ResolverInterface
 {
     /**
      * @var FactoryInterface

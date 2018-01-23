@@ -19,7 +19,7 @@ use DreamCommerce\Component\ShopAppstore\Billing\Payload\Message;
 use DreamCommerce\Component\ShopAppstore\Factory\SubscriptionFactoryInterface;
 use Webmozart\Assert\Assert;
 
-final class BillingSubscriptionResolver implements MessageResolverInterface
+final class BillingSubscriptionResolver implements ResolverInterface
 {
     /**
      * @var SubscriptionFactoryInterface
