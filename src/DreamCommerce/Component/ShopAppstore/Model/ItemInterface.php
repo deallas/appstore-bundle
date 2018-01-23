@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-interface ItemInterface extends DataContainerInterface, ShopDependInterface
+interface ItemInterface extends DataContainerInterface
 {
     /**
      * @return int|null

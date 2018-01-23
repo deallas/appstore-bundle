@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\DataResource;
 
-final class DashboardStat extends Resource
+final class DashboardStat extends DataResource
 {
     /**
      * {@inheritdoc}

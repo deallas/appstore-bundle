@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-interface DataContainerInterface
+interface DataContainerInterface extends ShopDependInterface
 {
     /**
      * @return array
@@ -24,4 +24,10 @@ interface DataContainerInterface
      * @return array
      */
     public function getDiffData(): array;
+
+    /**
+     * @param string $field
+     * @return mixed
+     */
+    public function getFieldValue(string $field);
 }

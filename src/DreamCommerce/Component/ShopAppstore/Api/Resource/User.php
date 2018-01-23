@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class User extends Resource implements IdentifierAwareInterface
+final class User extends ItemResource
 {
     /**
      * user created via shop
@@ -78,7 +78,7 @@ final class User extends Resource implements IdentifierAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierName(): string
+    public function getExternalIdName(): string
     {
         return 'user_id';
     }

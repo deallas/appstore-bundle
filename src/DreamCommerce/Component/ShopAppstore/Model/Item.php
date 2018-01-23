@@ -15,8 +15,6 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 
 class Item extends DataContainer implements ItemInterface
 {
-    use ShopDependTrait;
-
     /**
      * @var int|null
      */
@@ -24,15 +22,14 @@ class Item extends DataContainer implements ItemInterface
 
     /**
      * @param ShopInterface|null $shop
-     * @param int|null $externalId
      * @param array $data
+     * @param int|null $externalId
      */
-    public function __construct(ShopInterface $shop = null, int $externalId = null, array $data = [])
+    public function __construct(ShopInterface $shop = null, array $data = [], int $externalId = null)
     {
-        $this->shop = $shop;
         $this->externalId = $externalId;
 
-        parent::__construct($data);
+        parent::__construct($shop, $data);
     }
 
     /**

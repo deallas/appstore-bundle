@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class Option extends Resource implements IdentifierAwareInterface
+final class Option extends ItemResource
 {
     /**
      * It's not possible to change required flag for option with warehouse support
@@ -85,7 +85,7 @@ final class Option extends Resource implements IdentifierAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierName(): string
+    public function getExternalIdName(): string
     {
         return 'option_id';
     }

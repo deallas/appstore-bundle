@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class Metafield extends Resource implements IdentifierAwareInterface
+final class Metafield extends ItemResource
 {
     /**
      * type of integer
@@ -49,35 +49,8 @@ final class Metafield extends Resource implements IdentifierAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierName(): string
+    public function getExternalIdName(): string
     {
         return 'metafield_id';
     }
-
-    // TODO
-//    /**
-//     * Read Resource
-//     * @param mixed $args,... params
-//     * @return \ArrayObject
-//     * @throws ResourceException
-//     */
-//    public function get()
-//    {
-//        $query = $this->getCriteria();
-//
-//        $args = func_get_args();
-//        if(empty($args)){
-//            $args = array("system");
-//        }
-//
-//        $isCollection = !$this->isSingleOnly && count($args)==1;
-//
-//        try {
-//            $response = $this->client->request($this, 'get', $args, array(), $query);
-//        } catch(ClientException $ex) {
-//            throw new Resource\Exception\CommunicationException($ex->getMessage(), $ex);
-//        }
-//
-//        return $this->transformResponse($response, $isCollection);
-//    }
 }

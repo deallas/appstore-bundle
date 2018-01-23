@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class OptionValue extends Resource implements IdentifierAwareInterface
+final class OptionValue extends ItemResource
 {
     /**
      * This option type doesn't support values management
@@ -58,7 +58,7 @@ final class OptionValue extends Resource implements IdentifierAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierName(): string
+    public function getExternalIdName(): string
     {
         return 'ovalue_id';
     }

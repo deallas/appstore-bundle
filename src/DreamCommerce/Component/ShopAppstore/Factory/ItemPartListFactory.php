@@ -14,8 +14,7 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
 use DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException;
-use DreamCommerce\Component\ShopAppstore\Api\Resource\IdentifierAwareInterface;
-use DreamCommerce\Component\ShopAppstore\Api\ResourceInterface;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResourceInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ItemPartList;
 use DreamCommerce\Component\ShopAppstore\Model\ItemPartListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
@@ -28,11 +27,6 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
      * @var ItemFactoryInterface
      */
     protected $itemFactory;
-
-    /**
-     * @var
-     */
-    protected $dataContainerFactory;
 
     /**
      * @param ItemFactoryInterface $itemFactory
@@ -53,7 +47,7 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createByApiRequest(ShopInterface $shop, ResourceInterface $resource,
+    public function createByApiRequest(ShopInterface $shop, ItemResourceInterface $resource,
                                        RequestInterface $request, ResponseInterface $response): ItemPartListInterface
     {
         $stream = $response->getBody();
@@ -81,28 +75,14 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
             $itemPartList->setTotalPages((int)$body['pages']);
         }
 
-        if($resource instanceof IdentifierAwareInterface) {
-            $factory = $this->itemFactory;
-            $identifierName = $resource->getIdentifierName();
-        } else {
-            $factory = $this->dataContainerFactory;
-            $identifierName = null;
-        }
+        $externalIdName = $resource->getExternalIdName();
 
         $items = [];
         foreach($body['list'] as $data) {
-            $item = $factory->createNew();
-            $item->setData($data);
+            $item = $this->itemFactory->createFromArray($data);
+            $item->setExternalId((int)$data[$externalIdName]);
 
-            if($identifierName !== null) {
-                if(!isset($data[$identifierName])) {
-                    // TODO throw
-                }
-                $item->setExternalId((int)$data[$identifierName]);
-                $items[] = $item;
-            } else {
-                $items[] = $item;
-            }
+            $items[] = $item;
         }
         $itemPartList->setItems($items);
 

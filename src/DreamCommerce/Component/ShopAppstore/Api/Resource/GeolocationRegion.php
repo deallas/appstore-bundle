@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class GeolocationRegion extends Resource implements IdentifierAwareInterface
+final class GeolocationRegion extends ItemResource
 {
     /**
      * {@inheritdoc}
@@ -28,7 +28,7 @@ final class GeolocationRegion extends Resource implements IdentifierAwareInterfa
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierName(): string
+    public function getExternalIdName(): string
     {
         return 'region_id';
     }

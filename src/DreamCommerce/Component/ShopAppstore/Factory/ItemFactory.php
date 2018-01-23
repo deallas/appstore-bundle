@@ -22,7 +22,7 @@ use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ItemFactory implements ItemFactoryInterface
+class ItemFactory extends DataContainerFactory implements ItemFactoryInterface
 {
     /**
      * {@inheritdoc}
@@ -35,45 +35,18 @@ class ItemFactory implements ItemFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createByExternalIdAndShop(ShopInterface $shop, ?int $externalId): ItemInterface
-    {
-        $item = $this->createNew();
-        $item->setShop($shop);
-        $item->setExternalId($externalId);
-
-        return $item;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createByApiRequest(ShopInterface $shop, ResourceInterface $resource,
                                        RequestInterface $request, ResponseInterface $response): ItemInterface
     {
-        $stream = $response->getBody();
-        $stream->rewind();
+        $fieldName = $resource->getE();
 
-        $body = $stream->getContents();
-        if(strlen($body) === 0) {
-            throw CommunicationException::forEmptyResponseBody($request, $response);
-        }
-        $body = @json_decode($body, true);
-
-        if(!$body || !is_array($body)) {
+        /** @var ItemInterface $item */
+        $item = parent::createByApiRequest($shop, $resource, $request, $response);
+        $externalId = $item->getFieldValue($fieldName);
+        if(!$externalId) {
             throw CommunicationException::forInvalidResponseBody($request, $response);
         }
-
-        $externalId = null;
-        if($resource instanceof IdentifierAwareInterface) {
-            $primaryKey = $resource->getIdentifierName();
-            if(!isset($body[$primaryKey])) {
-                throw CommunicationException::forInvalidResponseBody($request, $response);
-            }
-            $externalId = (int)$body[$primaryKey];
-        }
-
-        $item = $this->createByExternalIdAndShop($shop, $externalId);
-        $item->setData($body);
+        $item->setExternalId($externalId);
 
         return $item;
     }

@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\DataResource;
 
-final class ApplicationConfig extends Resource
+final class ApplicationConfig extends DataResource
 {
     /**
      * Shop URL - string

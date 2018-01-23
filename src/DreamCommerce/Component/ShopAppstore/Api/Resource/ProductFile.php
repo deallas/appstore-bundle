@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class ProductFile extends Resource implements IdentifierAwareInterface
+final class ProductFile extends ItemResource
 {
     /**
      * {@inheritdoc}
@@ -28,7 +28,7 @@ final class ProductFile extends Resource implements IdentifierAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierName(): string
+    public function getExternalIdName(): string
     {
         return 'file_id';
     }

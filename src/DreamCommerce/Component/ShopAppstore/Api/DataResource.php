@@ -13,10 +13,16 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
-interface ResourceInterface
+use DreamCommerce\Component\ShopAppstore\Model\DataContainerInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+
+abstract class DataResource extends Resource implements DataResourceInterface
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getName(): string;
+    public function fetch(ShopInterface $shop): DataContainerInterface
+    {
+        // TODO
+    }
 }

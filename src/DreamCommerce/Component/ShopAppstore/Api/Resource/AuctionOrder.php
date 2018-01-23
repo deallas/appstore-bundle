@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\Resource;
+use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class AuctionOrder extends Resource implements IdentifierAwareInterface
+final class AuctionOrder extends ItemResource
 {
     /**
      * The order has already been connected to the auction
@@ -33,7 +33,7 @@ final class AuctionOrder extends Resource implements IdentifierAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierName(): string
+    public function getExternalIdName(): string
     {
         return 'auction_order_id';
     }
