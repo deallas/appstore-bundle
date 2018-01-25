@@ -82,12 +82,13 @@ interface ItemResourceInterface extends ResourceInterface
     /**
      * @param ShopItemInterface $shopItem
      */
-    public function reconnect(ShopItemInterface $shopItem): void;
+    public function reattach(ShopItemInterface $shopItem): void;
 
     /**
      * @param ShopItemInterface $item
+     * @param array|null $data
      */
-    public function updateItem(ShopItemInterface $item): void;
+    public function updateItem(ShopItemInterface $item, array $data = null): void;
 
     /**
      * @param ShopItemInterface $item

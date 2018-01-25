@@ -173,7 +173,7 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     /**
      * {@inheritdoc}
      */
-    public function reconnect(ShopItemInterface $shopItem): void
+    public function reattach(ShopItemInterface $shopItem): void
     {
         $actualItem = $this->find($shopItem->getShop(), $shopItem->getExternalId());
         $shopItem->setData($actualItem->getData());
@@ -182,13 +182,17 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     /**
      * {@inheritdoc}
      */
-    public function updateItem(ShopItemInterface $item): void
+    public function updateItem(ShopItemInterface $item, array $data = null): void
     {
         if(!$item->hasExternalId()) {
             // TODO throw exception
         }
 
-        $this->update($item->getShop(), $item->getExternalId(), $item->getDiffData());
+        if($data === null) {
+            $data = $item->getDiffData();
+        }
+
+        $this->update($item->getShop(), $item->getExternalId(), $data);
     }
 
     /**
