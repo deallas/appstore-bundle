@@ -16,9 +16,22 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 trait ApplicationDependTrait
 {
     /**
+     * @var string|null
+     */
+    protected $applicationName;
+
+    /**
      * @var ApplicationInterface|null
      */
     protected $application;
+
+    /**
+     * @return null|string
+     */
+    public function getApplicationName(): ?string
+    {
+        return $this->applicationName;
+    }
 
     /**
      * @return ApplicationInterface|null

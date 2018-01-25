@@ -16,6 +16,11 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 interface ApplicationDependInterface
 {
     /**
+     * @return string|null
+     */
+    public function getApplicationName(): ?string;
+
+    /**
      * @return ApplicationInterface|null
      */
     public function getApplication(): ?ApplicationInterface;
