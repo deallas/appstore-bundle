@@ -34,7 +34,7 @@ class LimitExceededException extends ApiException
         $exception = new self('The API calls has been exceeded', self::CODE_EXCEEDED_API_CALLS, $previous);
         $responseHeaders = $httpResponse->getHeaders();
 
-        $exception->retryAfter = isset($responseHeaders['Retry-After']) ? $responseHeaders['Retry-After'] : 1;
+        $exception->retryAfter = isset($responseHeaders['Retry-After']) ? (int)$responseHeaders['Retry-After'][0] : 1;
         $exception->httpRequest = $httpRequest;
         $exception->httpResponse = $httpResponse;
 

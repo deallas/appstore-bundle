@@ -95,7 +95,7 @@ class AwaitShopClientTest extends TestCase
         $response->expects($this->once())
             ->method('getHeaders')
             ->will(
-                $this->onConsecutiveCalls([ 'Retry-After' => $retryAfter ], [])
+                $this->onConsecutiveCalls([ 'Retry-After' => [$retryAfter] ], [])
             );
 
         $this->psrClient->expects($this->exactly(2))
