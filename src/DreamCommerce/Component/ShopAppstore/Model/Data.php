@@ -18,19 +18,28 @@ class Data implements DataInterface
     /**
      * @var array
      */
-    private $data = [];
+    private $_data = [];
 
     /**
      * @var array
      */
-    private $changedKeys = [];
+    private $_changedKeys = [];
 
     /**
      * @param array $data
      */
     public function __construct(array $data = [])
     {
-        $this->data = $data;
+        $this->_data = $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setData(array $data): void
+    {
+        $this->_data = $data;
+        $this->_changedKeys = [];
     }
 
     /**
@@ -38,7 +47,7 @@ class Data implements DataInterface
      */
     public function getData(): array
     {
-        return $this->data;
+        return $this->_data;
     }
 
     /**
@@ -46,10 +55,10 @@ class Data implements DataInterface
      */
     public function getDiffData(): array
     {
-        $diff = array_intersect_key($this->data, array_flip($this->changedKeys));
-        foreach($this->data as $k => $v) {
-            if($this->data[$k] instanceof DataInterface) {
-                $partDiff = $this->data[$k]->getDiffData();
+        $diff = array_intersect_key($this->_data, array_flip($this->_changedKeys));
+        foreach($this->_data as $k => $v) {
+            if($this->_data[$k] instanceof DataInterface) {
+                $partDiff = $this->_data[$k]->getDiffData();
                 if(!empty($partDiff)) {
                     $diff[$k] = $partDiff;
                 }
@@ -81,11 +90,11 @@ class Data implements DataInterface
      */
     public function __get(string $name)
     {
-        if(!isset($this->data[$name])) {
+        if(!isset($this->_data[$name])) {
             return null;
         }
 
-        return $this->data[$name];
+        return $this->_data[$name];
     }
 
     /**
@@ -94,10 +103,10 @@ class Data implements DataInterface
      */
     public function __set(string $name, $value): void
     {
-        if(!in_array($name, $this->changedKeys)) {
-            $this->changedKeys[] = $name;
+        if(!in_array($name, $this->_changedKeys)) {
+            $this->_changedKeys[] = $name;
         }
 
-        $this->data[$name] = $value;
+        $this->_data[$name] = $value;
     }
 }

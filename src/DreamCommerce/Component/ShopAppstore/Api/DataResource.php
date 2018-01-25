@@ -53,7 +53,7 @@ abstract class DataResource extends Resource implements DataResourceInterface
     {
         list($request, $response) = $this->perform($shop, 'GET');
 
-        return $this->getShopDataFactory()->createByApiRequest($shop, $request, $response);
+        return $this->getShopDataFactory()->createByApiRequest($this, $shop, $request, $response);
     }
 
     /**

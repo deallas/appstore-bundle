@@ -88,7 +88,7 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     {
         list($request, $response) = $this->perform($shop, 'GET', $id);
 
-        return $this->getShopItemFactory()->createByApiRequest($shop, $this, $request, $response);
+        return $this->getShopItemFactory()->createByApiRequest($this, $shop, $request, $response);
     }
 
     /**
@@ -148,7 +148,7 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
         list(, $response) = $this->perform($shop, 'POST', null, $data);
         $id = (int) $response->getBody()->getContents();
 
-        $item = $this->getShopItemFactory()->createByShopAndData($shop, $this, $data);
+        $item = $this->getShopItemFactory()->createByShopAndData($this, $shop, $data);
         $item->setExternalId($id);
 
         return $item;
@@ -168,6 +168,15 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     public function delete(ShopInterface $shop, int $id): void
     {
         $this->perform($shop, 'DELETE', $id);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function reconnect(ShopItemInterface $shopItem): void
+    {
+        $actualItem = $this->find($shopItem->getShop(), $shopItem->getExternalId());
+        $shopItem->setData($actualItem->getData());
     }
 
     /**

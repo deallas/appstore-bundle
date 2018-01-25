@@ -23,8 +23,8 @@ class ShopData extends Data implements ShopDataInterface
      */
     public function __construct(ShopInterface $shop = null, array $data = [])
     {
-        $this->shop = $shop;
-
         parent::__construct($data);
+
+        $this->shop = $shop;
     }
 }

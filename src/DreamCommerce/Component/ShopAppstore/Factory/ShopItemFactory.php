@@ -33,16 +33,24 @@ class ShopItemFactory extends AbstractFactory implements ShopItemFactoryInterfac
     /**
      * {@inheritdoc}
      */
-    public function createByApiRequest(ShopInterface $shop, ItemResourceInterface $resource,
-                                       RequestInterface $request, ResponseInterface $response): ShopItemInterface
+    public function createByApiResource(ItemResourceInterface $resource): ShopItemInterface
     {
-        return $this->createByShopAndData($shop, $resource, $this->handleApiRequest($request, $response));
+        return $this->createNew();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createByShopAndData(ShopInterface $shop, ItemResourceInterface $resource, array $data): ShopItemInterface
+    public function createByApiRequest(ItemResourceInterface $resource, ShopInterface $shop,
+                                       RequestInterface $request, ResponseInterface $response): ShopItemInterface
+    {
+        return $this->createByShopAndData($resource, $shop, $this->handleApiRequest($request, $response));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createByShopAndData(ItemResourceInterface $resource, ShopInterface $shop, array $data): ShopItemInterface
     {
         $fieldName = $resource->getExternalIdName();
 

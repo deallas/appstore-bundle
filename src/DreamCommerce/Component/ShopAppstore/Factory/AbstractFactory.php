@@ -69,15 +69,17 @@ abstract class AbstractFactory implements FactoryInterface
             $container = $this->dataFactory->createNew();
         }
 
+        $vals = [];
         foreach($data as $k => $v) {
             if(is_array($v)) {
-                $container->setFieldValue($k, $this->createFromArray($v));
+                $vals[$k] = $this->createFromArray($v);
             } elseif(is_scalar($v) || is_null($v)) {
-                $container->setFieldValue($k, $v);
+                $vals[$k] = $v;
             } else {
                 // TODO throw exception
             }
         }
+        $container->setData($vals);
 
         return $container;
     }

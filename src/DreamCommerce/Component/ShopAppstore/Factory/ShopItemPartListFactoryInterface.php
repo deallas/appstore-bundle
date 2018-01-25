@@ -23,12 +23,18 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 interface ShopItemPartListFactoryInterface extends FactoryInterface
 {
     /**
-     * @param ShopInterface $shop
      * @param ItemResourceInterface $resource
+     * @return ShopItemPartListInterface
+     */
+    public function createByApiResource(ItemResourceInterface $resource): ShopItemPartListInterface;
+
+    /**
+     * @param ItemResourceInterface $resource
+     * @param ShopInterface $shop
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return ShopItemPartListInterface
      */
-    public function createByApiRequest(ShopInterface $shop, ItemResourceInterface $resource,
+    public function createByApiRequest(ItemResourceInterface $resource, ShopInterface $shop,
                                        RequestInterface $request, ResponseInterface $response): ShopItemPartListInterface;
 }

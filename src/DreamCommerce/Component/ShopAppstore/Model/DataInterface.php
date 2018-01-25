@@ -16,6 +16,11 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 interface DataInterface
 {
     /**
+     * @param array $data
+     */
+    public function setData(array $data): void;
+
+    /**
      * @return array
      */
     public function getData(): array;

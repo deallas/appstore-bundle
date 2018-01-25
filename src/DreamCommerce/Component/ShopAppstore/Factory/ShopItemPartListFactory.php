@@ -47,7 +47,15 @@ class ShopItemPartListFactory implements ShopItemPartListFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createByApiRequest(ShopInterface $shop, ItemResourceInterface $resource,
+    public function createByApiResource(ItemResourceInterface $resource): ShopItemPartListInterface
+    {
+        return $this->createNew();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createByApiRequest(ItemResourceInterface $resource, ShopInterface $shop,
                                        RequestInterface $request, ResponseInterface $response): ShopItemPartListInterface
     {
         $stream = $response->getBody();
@@ -77,7 +85,7 @@ class ShopItemPartListFactory implements ShopItemPartListFactoryInterface
 
         $items = [];
         foreach($body['list'] as $data) {
-            $items[] = $this->shopItemFactory->createByShopAndData($shop, $resource, $data);
+            $items[] = $this->shopItemFactory->createByShopAndData($resource, $shop, $data);
         }
         $itemPartList->setItems($items);
 

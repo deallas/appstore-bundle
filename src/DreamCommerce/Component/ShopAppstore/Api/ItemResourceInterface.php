@@ -80,6 +80,11 @@ interface ItemResourceInterface extends ResourceInterface
     public function delete(ShopInterface $shop, int $id): void;
 
     /**
+     * @param ShopItemInterface $shopItem
+     */
+    public function reconnect(ShopItemInterface $shopItem): void;
+
+    /**
      * @param ShopItemInterface $item
      */
     public function updateItem(ShopItemInterface $item): void;
