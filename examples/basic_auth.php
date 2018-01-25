@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../src/DreamCommerce/Component/ShopAppstore/vendor/autoload.php';
 
 $shop = new \DreamCommerce\Component\ShopAppstore\Model\BasicAuthShop([
-    'uri' => 'https://kotarb.builder.dreamcommerce.com',
+    'uri' => 'https://shoper.local',
     'username' => 'test',
     'password' => 'test'
 ]);
