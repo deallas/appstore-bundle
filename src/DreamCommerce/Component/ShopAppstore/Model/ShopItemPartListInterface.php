@@ -13,14 +13,20 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-final class ItemList extends AbstractItemList implements ItemListInterface
+interface ShopItemPartListInterface
 {
     /**
-     * {@inheritdoc}
+     * @return int
      */
-    public function addPart(ItemPartList $itemPartList): void
-    {
-        $this->items = array_merge($this->items, $itemPartList->items);
-        $this->count = count($this->items);
-    }
+    public function getTotal(): int;
+
+    /**
+     * @return int
+     */
+    public function getPage(): int;
+
+    /**
+     * @return int
+     */
+    public function getTotalPages(): int;
 }

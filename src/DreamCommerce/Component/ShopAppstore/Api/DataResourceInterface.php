@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
-use DreamCommerce\Component\ShopAppstore\Model\DataContainerInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopDataInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 
 interface DataResourceInterface extends ResourceInterface
 {
     /**
      * @param ShopInterface $shop
-     * @return DataContainerInterface
+     * @return ShopDataInterface
      */
-    public function fetch(ShopInterface $shop): DataContainerInterface;
+    public function fetch(ShopInterface $shop): ShopDataInterface;
 }

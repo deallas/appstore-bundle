@@ -22,12 +22,12 @@ class ShopFactory implements FactoryInterface
     /**
      * @var FactoryInterface
      */
-    private $factory;
+    protected $factory;
 
     /**
      * @var FactoryInterface
      */
-    private $tokenFactory;
+    protected $tokenFactory;
 
     /**
      * @param FactoryInterface $factory

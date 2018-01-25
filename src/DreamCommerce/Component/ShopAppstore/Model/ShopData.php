@@ -13,20 +13,18 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-interface ItemInterface extends DataContainerInterface
+class ShopData extends Data implements ShopDataInterface
 {
-    /**
-     * @return int|null
-     */
-    public function getExternalId(): ?int;
+    use ShopDependTrait;
 
     /**
-     * @param int $id
+     * @param ShopInterface|null $shop
+     * @param array $data
      */
-    public function setExternalId(int $id): void;
+    public function __construct(ShopInterface $shop = null, array $data = [])
+    {
+        $this->shop = $shop;
 
-    /**
-     * @return bool
-     */
-    public function hasExternalId(): bool;
+        parent::__construct($data);
+    }
 }

@@ -13,20 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-interface ItemPartListInterface
+interface ShopDataInterface extends ShopDependInterface, DataInterface
 {
-    /**
-     * @return int
-     */
-    public function getTotal(): int;
 
-    /**
-     * @return int
-     */
-    public function getPage(): int;
-
-    /**
-     * @return int
-     */
-    public function getTotalPages(): int;
 }

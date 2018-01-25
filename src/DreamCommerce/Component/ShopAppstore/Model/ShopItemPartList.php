@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-final class ItemPartList extends AbstractItemList implements ItemPartListInterface
+final class ShopItemPartList extends AbstractShopItemList implements ShopItemPartListInterface
 {
     /**
      * @var int

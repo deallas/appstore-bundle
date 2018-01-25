@@ -22,7 +22,7 @@ class SubscriptionFactory implements SubscriptionFactoryInterface
     /**
      * @var FactoryInterface
      */
-    private $factory;
+    protected $factory;
 
     /**
      * @param FactoryInterface $factory

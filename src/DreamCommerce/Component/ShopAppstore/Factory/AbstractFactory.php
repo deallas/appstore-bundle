@@ -14,28 +14,33 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
 use DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException;
-use DreamCommerce\Component\ShopAppstore\Api\ResourceInterface;
-use DreamCommerce\Component\ShopAppstore\Model\DataContainer;
-use DreamCommerce\Component\ShopAppstore\Model\DataContainerInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\DataInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Sylius\Component\Resource\Factory\FactoryInterface;
 
-class DataContainerFactory implements DataContainerFactoryInterface
+abstract class AbstractFactory implements FactoryInterface
 {
     /**
-     * {@inheritdoc}
+     * @var DataFactoryInterface
      */
-    public function createNew()
+    protected $dataFactory;
+
+    /**
+     * @param DataFactoryInterface $dataFactory
+     */
+    public function __construct(DataFactoryInterface $dataFactory)
     {
-        return new DataContainer();
+        $this->dataFactory = $dataFactory;
     }
 
     /**
-     * {@inheritdoc}
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return array
+     * @throws CommunicationException
      */
-    public function createByApiRequest(ShopInterface $shop, ResourceInterface $resource,
-                                       RequestInterface $request, ResponseInterface $response): DataContainerInterface
+    protected function handleApiRequest(RequestInterface $request, ResponseInterface $response): array
     {
         $stream = $response->getBody();
         $stream->rewind();
@@ -50,23 +55,25 @@ class DataContainerFactory implements DataContainerFactoryInterface
             throw CommunicationException::forInvalidResponseBody($request, $response);
         }
 
-        $item = $this->createFromArray($body);
-        $item->setShop($shop);
-
-        return $item;
+        return $body;
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $data
+     * @param DataInterface|null $container
+     * @return DataInterface
      */
-    public function createFromArray(array $data): DataContainerInterface
+    protected function createFromArray(array $data, DataInterface $container = null): DataInterface
     {
-        $container = $this->createNew();
+        if($container === null) {
+            $container = $this->dataFactory->createNew();
+        }
+
         foreach($data as $k => $v) {
             if(is_array($v)) {
-                $container[$k] = $this->createFromArray($v);
+                $container->setFieldValue($k, $this->createFromArray($v));
             } elseif(is_scalar($v) || is_null($v)) {
-                $container[$k] = $v;
+                $container->setFieldValue($k, $v);
             } else {
                 // TODO throw exception
             }

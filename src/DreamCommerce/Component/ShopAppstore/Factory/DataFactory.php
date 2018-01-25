@@ -13,7 +13,15 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
-interface ItemFactoryInterface extends DataContainerFactoryInterface
-{
+use DreamCommerce\Component\ShopAppstore\Model\Data;
 
+class DataFactory implements DataFactoryInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function createNew()
+    {
+        return new Data();
+    }
 }

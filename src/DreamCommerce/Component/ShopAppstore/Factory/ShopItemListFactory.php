@@ -13,9 +13,15 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
-use Sylius\Component\Resource\Factory\FactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemList;
 
-interface ItemListFactoryInterface extends FactoryInterface
+class ShopItemListFactory implements ShopItemListFactoryInterface
 {
-
+    /**
+     * {@inheritdoc}
+     */
+    public function createNew()
+    {
+        return new ShopItemList();
+    }
 }

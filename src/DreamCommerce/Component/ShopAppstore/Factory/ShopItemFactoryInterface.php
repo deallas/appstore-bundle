@@ -14,21 +14,29 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Factory;
 
 use DreamCommerce\Component\ShopAppstore\Api\ItemResourceInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ItemPartListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 
-interface ItemPartListFactoryInterface extends FactoryInterface
+interface ShopItemFactoryInterface extends FactoryInterface
 {
     /**
      * @param ShopInterface $shop
      * @param ItemResourceInterface $resource
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return ItemPartListInterface
+     * @return ShopItemInterface
      */
     public function createByApiRequest(ShopInterface $shop, ItemResourceInterface $resource,
-                                       RequestInterface $request, ResponseInterface $response): ItemPartListInterface;
+                                       RequestInterface $request, ResponseInterface $response): ShopItemInterface;
+
+    /**
+     * @param ShopInterface $shop
+     * @param ItemResourceInterface $resource
+     * @param array $data
+     * @return ShopItemInterface
+     */
+    public function createByShopAndData(ShopInterface $shop, ItemResourceInterface $resource, array $data): ShopItemInterface;
 }

@@ -39,34 +39,26 @@ final class Dispatcher implements DispatcherInterface
     private $shopRepository;
 
     /**
-     * @var ApplicationInterface
-     */
-    private $application;
-
-    /**
      * @param ServiceRegistryInterface $parserRegistry
      * @param ShopRepositoryInterface $shopRepository
-     * @param ApplicationInterface|null $application
      */
-    public function __construct(ServiceRegistryInterface $parserRegistry, ShopRepositoryInterface $shopRepository,
-                                ApplicationInterface $application = null)
+    public function __construct(ServiceRegistryInterface $parserRegistry, ShopRepositoryInterface $shopRepository)
     {
         $this->parserRegistry = $parserRegistry;
         $this->shopRepository = $shopRepository;
-        $this->application = $application;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dispatch(ServerRequestInterface $serverRequest): void
+    public function dispatch(ServerRequestInterface $serverRequest, ApplicationInterface $application = null): void
     {
         $headers = $this->checkRequest($serverRequest);
 
-        if($this->application === null) {
+        if($application === null) {
             $shop = $this->shopRepository->findOneByUri($headers['X-Shop-Domain']);
         } else {
-            $shop = $this->shopRepository->findOneByUriAndApplication($headers['X-Shop-Domain'], $this->application);
+            $shop = $this->shopRepository->findOneByUriAndApplication($headers['X-Shop-Domain'], $application);
         }
 
         if($shop === null) {

@@ -17,10 +17,10 @@ use ArrayAccess;
 use Countable;
 use Iterator;
 
-abstract class AbstractItemList implements Iterator, Countable, ArrayAccess
+abstract class AbstractShopItemList implements Iterator, Countable, ArrayAccess
 {
     /**
-     * @var ItemInterface[]
+     * @var ShopItemInterface[]
      */
     protected $items;
 
@@ -68,7 +68,7 @@ abstract class AbstractItemList implements Iterator, Countable, ArrayAccess
         $this->pointer = 0;
     }
 
-    public function current(): ItemInterface
+    public function current(): ShopItemInterface
     {
         if ($this->valid() === false) {
             return null;
@@ -102,7 +102,7 @@ abstract class AbstractItemList implements Iterator, Countable, ArrayAccess
         return isset($this->items[(int) $offset]);
     }
 
-    public function offsetGet($offset): ItemInterface
+    public function offsetGet($offset): ShopItemInterface
     {
         $this->pointer = (int) $offset;
 

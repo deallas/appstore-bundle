@@ -16,10 +16,11 @@ namespace DreamCommerce\Component\ShopAppstore\Api;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\AuthenticatorInterface;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\BasicAuthAuthenticator;
 use DreamCommerce\Component\ShopAppstore\Api\Authenticator\OAuthAuthenticator;
+use DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException;
 use DreamCommerce\Component\ShopAppstore\Api\Http\AwaitShopClient;
 use DreamCommerce\Component\ShopAppstore\Api\Http\ShopClientInterface;
-use DreamCommerce\Component\ShopAppstore\Factory\DataContainerFactory;
-use DreamCommerce\Component\ShopAppstore\Factory\DataContainerFactoryInterface;
+use DreamCommerce\Component\ShopAppstore\Factory\DataFactory;
+use DreamCommerce\Component\ShopAppstore\Factory\DataFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
@@ -38,9 +39,9 @@ abstract class Resource implements ResourceInterface
     protected $authenticator;
 
     /**
-     * @var DataContainerFactoryInterface
+     * @var DataFactoryInterface
      */
-    protected static $globalDataContainerFactory;
+    protected static $globalDataFactory;
 
     /**
      * @var ShopClientInterface
@@ -68,6 +69,55 @@ abstract class Resource implements ResourceInterface
     {
         $this->shopClient = $shopClient;
         $this->authenticator = $authenticator;
+    }
+
+    /**
+     * @param ShopInterface $shop
+     * @param string $method
+     * @param int|null $id
+     * @param array|null $data
+     * @param Criteria|null $criteria
+     * @return array
+     * @throws CommunicationException
+     */
+    protected function perform(ShopInterface $shop, string $method, int $id = null, array $data = null, Criteria $criteria = null): array
+    {
+        if(!$shop->isAuthenticated()) {
+            $authenticator = $this->getAuthByShop($shop);
+            $authenticator->authenticate($shop);
+        }
+
+        $shopClient = $this->getShopClient();
+
+        $uri = $shop->getUri();
+        $uri = $uri->withPath($uri->getPath() . '/webapi/rest/' . $this->getName());
+
+        if($id !== null) {
+            $uri = $uri->withPath($uri->getPath() . '/' . $id);
+        }
+
+        $body = null;
+        if($data !== null && in_array($method, [ 'POST', 'PUT' ])) {
+            $body = @json_encode($data);
+            if ($body === false) {
+                throw CommunicationException::forInvalidRequestBody($data);
+            }
+        }
+
+        $request = $shopClient->getHttpClient()->createRequest(
+            $method,
+            $uri,
+            [
+                'Authorization' => 'Bearer ' . $shop->getToken()->getAccessToken(),
+                'Content-Type' => 'application/json'
+            ],
+            $body
+        );
+        if($criteria !== null) {
+            $criteria->fillRequest($request);
+        }
+
+        return [ $request, $shopClient->send($request) ];
     }
 
     /**
@@ -119,14 +169,14 @@ abstract class Resource implements ResourceInterface
     }
 
     /**
-     * @return DataContainerFactoryInterface
+     * @return DataFactoryInterface
      */
-    protected function getGlobalDataContainerFactory()
+    protected function getGlobalDataFactory(): DataFactoryInterface
     {
-        if(self::$globalDataContainerFactory === null) {
-            self::$globalDataContainerFactory = new DataContainerFactory();
+        if(self::$globalDataFactory === null) {
+            self::$globalDataFactory = new DataFactory();
         }
 
-        return self::$globalDataContainerFactory;
+        return self::$globalDataFactory;
     }
 }

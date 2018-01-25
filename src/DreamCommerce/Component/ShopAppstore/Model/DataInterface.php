@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-interface DataContainerInterface extends ShopDependInterface
+interface DataInterface
 {
     /**
      * @return array
@@ -30,4 +30,10 @@ interface DataContainerInterface extends ShopDependInterface
      * @return mixed
      */
     public function getFieldValue(string $field);
+
+    /**
+     * @param string $field
+     * @param mixed $value
+     */
+    public function setFieldValue(string $field, $value): void;
 }

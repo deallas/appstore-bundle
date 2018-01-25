@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
-use DreamCommerce\Component\ShopAppstore\Model\ItemInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ItemListInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ItemPartListInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemListInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemPartListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 
 interface ItemResourceInterface extends ResourceInterface
@@ -28,29 +28,29 @@ interface ItemResourceInterface extends ResourceInterface
     /**
      * @param ShopInterface $shop
      * @param int $id
-     * @return ItemInterface
+     * @return ShopItemInterface
      */
-    public function find(ShopInterface $shop, int $id): ItemInterface;
+    public function find(ShopInterface $shop, int $id): ShopItemInterface;
 
     /**
      * @param ShopInterface $shop
      * @param Criteria $criteria
-     * @return ItemListInterface|ItemInterface[]
+     * @return ShopItemListInterface|ShopItemInterface[]
      */
-    public function findBy(ShopInterface $shop, Criteria $criteria): ItemListInterface;
+    public function findBy(ShopInterface $shop, Criteria $criteria): ShopItemListInterface;
 
     /**
      * @param ShopInterface $shop
      * @param Criteria $criteria
-     * @return ItemPartListInterface|ItemInterface[]
+     * @return ShopItemPartListInterface|ShopItemInterface[]
      */
-    public function findByPartial(ShopInterface $shop, Criteria $criteria): ItemPartListInterface;
+    public function findByPartial(ShopInterface $shop, Criteria $criteria): ShopItemPartListInterface;
 
     /**
      * @param ShopInterface $shop
-     * @return ItemListInterface|ItemInterface[]
+     * @return ShopItemListInterface|ShopItemInterface[]
      */
-    public function findAll(ShopInterface $shop): ItemListInterface;
+    public function findAll(ShopInterface $shop): ShopItemListInterface;
 
     /**
      * @param ShopInterface $shop
@@ -60,16 +60,11 @@ interface ItemResourceInterface extends ResourceInterface
     public function walk(ShopInterface $shop, callable $callback, Criteria $criteria = null): void;
 
     /**
-     * @param ItemInterface $item
-     */
-    public function reconnect(ItemInterface $item): void;
-
-    /**
      * @param ShopInterface $shop
      * @param array $data
-     * @return int
+     * @return ShopItemInterface
      */
-    public function insert(ShopInterface $shop, array $data): int;
+    public function insert(ShopInterface $shop, array $data): ShopItemInterface;
 
     /**
      * @param ShopInterface $shop
@@ -85,17 +80,12 @@ interface ItemResourceInterface extends ResourceInterface
     public function delete(ShopInterface $shop, int $id): void;
 
     /**
-     * @param ItemInterface $item
+     * @param ShopItemInterface $item
      */
-    public function insertItem(ItemInterface $item): void;
+    public function updateItem(ShopItemInterface $item): void;
 
     /**
-     * @param ItemInterface $item
+     * @param ShopItemInterface $item
      */
-    public function updateItem(ItemInterface $item): void;
-
-    /**
-     * @param ItemInterface $item
-     */
-    public function deleteItem(ItemInterface $item): void;
+    public function deleteItem(ShopItemInterface $item): void;
 }

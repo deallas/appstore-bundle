@@ -15,25 +15,25 @@ namespace DreamCommerce\Component\ShopAppstore\Factory;
 
 use DreamCommerce\Component\ShopAppstore\Api\Exception\CommunicationException;
 use DreamCommerce\Component\ShopAppstore\Api\ItemResourceInterface;
-use DreamCommerce\Component\ShopAppstore\Model\ItemPartList;
-use DreamCommerce\Component\ShopAppstore\Model\ItemPartListInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemPartList;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemPartListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ItemPartListFactory implements ItemPartListFactoryInterface
+class ShopItemPartListFactory implements ShopItemPartListFactoryInterface
 {
     /**
-     * @var ItemFactoryInterface
+     * @var ShopItemFactoryInterface
      */
-    protected $itemFactory;
+    protected $shopItemFactory;
 
     /**
-     * @param ItemFactoryInterface $itemFactory
+     * @param ShopItemFactoryInterface $shopItemFactory
      */
-    public function __construct(ItemFactoryInterface $itemFactory)
+    public function __construct(ShopItemFactoryInterface $shopItemFactory)
     {
-        $this->itemFactory = $itemFactory;
+        $this->shopItemFactory = $shopItemFactory;
     }
 
     /**
@@ -41,14 +41,14 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
      */
     public function createNew()
     {
-        return new ItemPartList();
+        return new ShopItemPartList();
     }
 
     /**
      * {@inheritdoc}
      */
     public function createByApiRequest(ShopInterface $shop, ItemResourceInterface $resource,
-                                       RequestInterface $request, ResponseInterface $response): ItemPartListInterface
+                                       RequestInterface $request, ResponseInterface $response): ShopItemPartListInterface
     {
         $stream = $response->getBody();
         $stream->rewind();
@@ -75,14 +75,9 @@ class ItemPartListFactory implements ItemPartListFactoryInterface
             $itemPartList->setTotalPages((int)$body['pages']);
         }
 
-        $externalIdName = $resource->getExternalIdName();
-
         $items = [];
         foreach($body['list'] as $data) {
-            $item = $this->itemFactory->createFromArray($data);
-            $item->setExternalId((int)$data[$externalIdName]);
-
-            $items[] = $item;
+            $items[] = $this->shopItemFactory->createByShopAndData($shop, $resource, $data);
         }
         $itemPartList->setItems($items);
 

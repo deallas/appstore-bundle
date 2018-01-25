@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-class DataContainer implements DataContainerInterface
+class Data implements DataInterface
 {
-    use ShopDependTrait;
-
     /**
      * @var array
      */
@@ -28,21 +26,10 @@ class DataContainer implements DataContainerInterface
     private $changedKeys = [];
 
     /**
-     * @param ShopInterface|null $shop
      * @param array $data
      */
-    public function __construct(ShopInterface $shop = null, array $data = [])
+    public function __construct(array $data = [])
     {
-        $this->shop = $shop;
-        $this->data = $data;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setData(array $data): void
-    {
-        $this->changedKeys = [];
         $this->data = $data;
     }
 
@@ -61,7 +48,7 @@ class DataContainer implements DataContainerInterface
     {
         $diff = array_intersect_key($this->data, array_flip($this->changedKeys));
         foreach($this->data as $k => $v) {
-            if($this->data[$k] instanceof DataContainerInterface) {
+            if($this->data[$k] instanceof DataInterface) {
                 $partDiff = $this->data[$k]->getDiffData();
                 if(!empty($partDiff)) {
                     $diff[$k] = $partDiff;
@@ -78,6 +65,14 @@ class DataContainer implements DataContainerInterface
     public function getFieldValue(string $field)
     {
         return $this->$field;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFieldValue(string $field, $value): void
+    {
+        $this->$field = $value;
     }
 
     /**

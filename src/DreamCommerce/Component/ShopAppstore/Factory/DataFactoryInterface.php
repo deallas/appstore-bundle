@@ -11,12 +11,11 @@
 
 declare(strict_types=1);
 
-namespace DreamCommerce\Component\ShopAppstore\Model;
+namespace DreamCommerce\Component\ShopAppstore\Factory;
 
-interface ItemListInterface
+use Sylius\Component\Resource\Factory\FactoryInterface;
+
+interface DataFactoryInterface extends FactoryInterface
 {
-    /**
-     * @param ItemPartList $itemPartList
-     */
-    public function addPart(ItemPartList $itemPartList): void;
+
 }

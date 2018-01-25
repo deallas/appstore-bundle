@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Webhook;
 
 use DreamCommerce\Component\ShopAppstore\Exception\Billing\UnableDispatchException;
+use DreamCommerce\Component\ShopAppstore\Model\ApplicationInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface DispatcherInterface
@@ -78,10 +79,11 @@ interface DispatcherInterface
 
     /**
      * @param ServerRequestInterface $serverRequest
+     * @param ApplicationInterface|null $application
      *
      * @throws UnableDispatchException
      */
-    public function dispatch(ServerRequestInterface $serverRequest): void;
+    public function dispatch(ServerRequestInterface $serverRequest, ApplicationInterface $application = null): void;
 
     /**
      * @param ListenerInterface $listener
