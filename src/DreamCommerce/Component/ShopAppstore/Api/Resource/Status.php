@@ -52,4 +52,12 @@ final class Status extends ItemResource
     {
         return 'status_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'status';
+    }
 }

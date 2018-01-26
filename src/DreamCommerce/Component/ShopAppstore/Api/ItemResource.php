@@ -96,11 +96,12 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
      */
     public function findBy(ShopInterface $shop, Criteria $criteria): ShopItemListInterface
     {
+        $criteria = clone $criteria;
+        $criteria->rewind();
+
         /** @var ShopItemListInterface $itemList */
-        $itemList = $this->getShopItemListFactory()->createNew();
-        $this->fetchAll($shop, $criteria, function(ShopItemPartList $itemPartList) use($itemList) {
-            $itemList->addPart($itemPartList);
-        });
+        $itemList = $this->getShopItemListFactory()->createByApiResource($this, $shop);
+        $this->resume($itemList, $criteria);
 
         return $itemList;
     }
@@ -126,10 +127,23 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     /**
      * {@inheritdoc}
      */
+    public function resume(ShopItemListInterface $itemList, Criteria $criteria): void
+    {
+        $this->fetchAll($itemList->getShop(), $criteria, function(ShopItemPartList $itemPartList) use($itemList) {
+            $itemList->addPart($itemPartList);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function walk(ShopInterface $shop, callable $callback, Criteria $criteria = null): void
     {
         if($criteria === null) {
             $criteria = Criteria::create();
+        } else {
+            $criteria = clone $criteria;
+            $criteria->rewind();
         }
 
         $this->fetchAll($shop, $criteria, function(ShopItemPartList $itemPartList) use($callback) {
@@ -177,34 +191,36 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     {
         $actualItem = $this->find($shopItem->getShop(), $shopItem->getExternalId());
         $shopItem->setData($actualItem->getData());
+        $shopItem->flush();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function updateItem(ShopItemInterface $item, array $data = null): void
+    public function updateItem(ShopItemInterface $shopItem, array $data = null): void
     {
-        if(!$item->hasExternalId()) {
+        if(!$shopItem->hasExternalId()) {
             // TODO throw exception
         }
 
         if($data === null) {
-            $data = $item->getDiffData();
+            $data = $shopItem->getDiffData();
         }
 
-        $this->update($item->getShop(), $item->getExternalId(), $data);
+        $this->update($shopItem->getShop(), $shopItem->getExternalId(), $data);
+        $shopItem->flush();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteItem(ShopItemInterface $item): void
+    public function deleteItem(ShopItemInterface $shopItem): void
     {
-        if(!$item->hasExternalId()) {
+        if(!$shopItem->hasExternalId()) {
             // TODO throw exception
         }
 
-        $this->delete($item->getShop(), $item->getExternalId());
+        $this->delete($shopItem->getShop(), $shopItem->getExternalId());
     }
 
     /**

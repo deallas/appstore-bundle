@@ -111,4 +111,12 @@ final class Webhook extends ItemResource
     {
         return 'webhook_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'webhook';
+    }
 }

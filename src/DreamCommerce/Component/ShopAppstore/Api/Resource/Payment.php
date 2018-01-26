@@ -32,4 +32,12 @@ final class Payment extends ItemResource
     {
         return 'payment_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'payment-method';
+    }
 }

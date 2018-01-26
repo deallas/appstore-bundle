@@ -32,4 +32,12 @@ final class AboutPage extends ItemResource
     {
         return 'page_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'about-page';
+    }
 }

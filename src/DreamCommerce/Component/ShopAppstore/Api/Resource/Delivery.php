@@ -32,4 +32,12 @@ final class Delivery extends ItemResource
     {
         return 'delivery_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'delivery';
+    }
 }

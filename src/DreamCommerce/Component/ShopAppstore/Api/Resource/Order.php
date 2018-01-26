@@ -107,4 +107,12 @@ final class Order extends ItemResource
     {
         return 'order_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'order';
+    }
 }

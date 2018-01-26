@@ -47,4 +47,12 @@ final class Zone extends ItemResource
     {
         return 'zone_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'zone';
+    }
 }

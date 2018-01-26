@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Tests\Api;
 
 use DreamCommerce\Component\ShopAppstore\Api\Criteria;
+use DreamCommerce\Component\ShopAppstore\Info;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -246,6 +247,16 @@ class CriteriaTest extends TestCase
         $this->assertEquals(40, $this->criteria->getMaxResults());
     }
 
+    public function testRewind(): void
+    {
+        $this->criteria->setMaxResults(15);
+        $this->criteria->setPage(200);
+        $this->criteria->rewind();
+
+        $this->assertEquals(Info::MAX_API_ITEMS, $this->criteria->getMaxResults());
+        $this->assertEquals(1, $this->criteria->getPage());
+    }
+
     public function testResetAll(): void
     {
         $this->criteria->setMaxResults(30);
@@ -275,7 +286,7 @@ class CriteriaTest extends TestCase
 
         $this->criteria->reset($part);
 
-        $this->assertEquals(($part == Criteria::PART_LIMIT ? 50 : 30), $this->criteria->getMaxResults());
+        $this->assertEquals(($part == Criteria::PART_LIMIT ? Info::MAX_API_ITEMS : 30), $this->criteria->getMaxResults());
         $this->assertEquals(($part == Criteria::PART_PAGE ? 1 : 5), $this->criteria->getPage());
         $this->assertCount(($part == Criteria::PART_EXPRESSIONS ? 0 : 1), $this->criteria->getWhereExpression());
         $this->assertCount(($part == Criteria::PART_ORDERING ? 0 : 1), $this->criteria->getOrderings());

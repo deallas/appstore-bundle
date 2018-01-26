@@ -72,4 +72,12 @@ final class ProductStock extends ItemResource
     {
         return 'stock_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'product-stock';
+    }
 }

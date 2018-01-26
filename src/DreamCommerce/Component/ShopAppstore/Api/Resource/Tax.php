@@ -32,4 +32,12 @@ final class Tax extends ItemResource
     {
         return 'tax_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'tax-value';
+    }
 }

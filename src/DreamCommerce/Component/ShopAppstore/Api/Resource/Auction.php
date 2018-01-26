@@ -47,4 +47,12 @@ final class Auction extends ItemResource
     {
         return 'auction_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'auction';
+    }
 }

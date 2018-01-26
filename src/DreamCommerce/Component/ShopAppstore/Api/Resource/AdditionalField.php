@@ -97,4 +97,12 @@ final class AdditionalField extends ItemResource
     {
         return 'field_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'additional-field';
+    }
 }

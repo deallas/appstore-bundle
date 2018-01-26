@@ -62,4 +62,12 @@ final class OptionValue extends ItemResource
     {
         return 'ovalue_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'option-value';
+    }
 }

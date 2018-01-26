@@ -32,4 +32,12 @@ final class Availability extends ItemResource
     {
         return 'availability_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'availability';
+    }
 }

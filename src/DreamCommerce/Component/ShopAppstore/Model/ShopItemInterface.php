@@ -29,4 +29,9 @@ interface ShopItemInterface extends ShopDataInterface
      * @return bool
      */
     public function hasExternalId(): bool;
+
+    /**
+     * Forget about all differences
+     */
+    public function flush(): void;
 }

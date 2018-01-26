@@ -32,4 +32,12 @@ final class Shipping extends ItemResource
     {
         return 'shipping_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'shipping';
+    }
 }

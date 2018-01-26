@@ -32,4 +32,12 @@ final class AttributeGroup extends ItemResource
     {
         return 'attribute_group_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'attribute-group';
+    }
 }

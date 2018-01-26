@@ -26,6 +26,11 @@ interface ItemResourceInterface extends ResourceInterface
     public function getExternalIdName(): string;
 
     /**
+     * @return string
+     */
+    public function getObjectName(): string;
+
+    /**
      * @param ShopInterface $shop
      * @param int $id
      * @return ShopItemInterface
@@ -51,6 +56,12 @@ interface ItemResourceInterface extends ResourceInterface
      * @return ShopItemListInterface|ShopItemInterface[]
      */
     public function findAll(ShopInterface $shop): ShopItemListInterface;
+
+    /**
+     * @param ShopItemListInterface $itemList
+     * @param Criteria $criteria
+     */
+    public function resume(ShopItemListInterface $itemList, Criteria $criteria): void;
 
     /**
      * @param ShopInterface $shop

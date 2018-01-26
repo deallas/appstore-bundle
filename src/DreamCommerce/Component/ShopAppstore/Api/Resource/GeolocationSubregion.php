@@ -32,4 +32,12 @@ final class GeolocationSubregion extends ItemResource
     {
         return 'subregion_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'country-subregion';
+    }
 }

@@ -32,4 +32,12 @@ final class GeolocationRegion extends ItemResource
     {
         return 'region_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'country-region';
+    }
 }

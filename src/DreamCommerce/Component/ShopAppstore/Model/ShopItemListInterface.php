@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model;
 
-interface ShopItemListInterface
+interface ShopItemListInterface extends ShopDependInterface
 {
     /**
      * @param ShopItemPartList $itemPartList

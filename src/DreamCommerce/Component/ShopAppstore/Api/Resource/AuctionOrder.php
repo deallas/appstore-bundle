@@ -37,4 +37,12 @@ final class AuctionOrder extends ItemResource
     {
         return 'auction_order_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'auction-order';
+    }
 }

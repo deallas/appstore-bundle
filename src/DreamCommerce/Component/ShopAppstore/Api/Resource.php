@@ -24,6 +24,7 @@ use DreamCommerce\Component\ShopAppstore\Factory\DataFactoryInterface;
 use DreamCommerce\Component\ShopAppstore\Model\BasicAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\OAuthShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use Psr\Http\Message\UriInterface;
 use RuntimeException;
 
 abstract class Resource implements ResourceInterface
@@ -118,6 +119,18 @@ abstract class Resource implements ResourceInterface
         }
 
         return [ $request, $shopClient->send($request) ];
+    }
+
+    protected function getUri(ShopInterface $shop, int $id = null): UriInterface
+    {
+        $uri = $shop->getUri();
+        $uri = $uri->withPath($uri->getPath() . '/webapi/rest/' . $this->getName());
+
+        if($id !== null) {
+            $uri = $uri->withPath($uri->getPath() . '/' . $id);
+        }
+
+        return $uri;
     }
 
     /**

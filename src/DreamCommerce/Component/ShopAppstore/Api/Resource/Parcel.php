@@ -52,4 +52,12 @@ final class Parcel extends ItemResource
     {
         return 'parcel_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'parcel';
+    }
 }

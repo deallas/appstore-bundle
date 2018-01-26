@@ -32,4 +32,12 @@ final class UserAddress extends ItemResource
     {
         return 'address_book_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'user-address';
+    }
 }

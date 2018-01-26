@@ -82,4 +82,12 @@ final class User extends ItemResource
     {
         return 'user_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'user';
+    }
 }

@@ -18,12 +18,12 @@ class Data implements DataInterface
     /**
      * @var array
      */
-    private $_data = [];
+    protected $_data = [];
 
     /**
      * @var array
      */
-    private $_changedKeys = [];
+    protected $_changedKeys = [];
 
     /**
      * @param array $data

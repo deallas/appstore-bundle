@@ -47,4 +47,12 @@ final class Attribute extends ItemResource
     {
         return 'attribute_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'attribute';
+    }
 }

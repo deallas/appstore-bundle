@@ -19,6 +19,7 @@ final class Info
     public const TIMEZONE           = 'Europe/Warsaw';
     public const LOCALE             = 'en_US';
     public const HTTP_USER_AGENT    = 'DreamCommerce ShopAppStore Agent ' . self::VERSION;
+    public const MAX_API_ITEMS      = 50;
 
     private function __construct()
     {

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api;
 
+use DreamCommerce\Component\ShopAppstore\Info;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Webmozart\Assert\Assert;
@@ -134,11 +135,13 @@ final class Criteria
                 throw new InvalidArgumentException('Unsupported operator "' . $operator . '"');
             }
         } elseif(is_scalar($value) || is_null($value)) {
-            if($operator === self::OPERATOR_IN) {
+            if ($operator === self::OPERATOR_IN) {
                 $operator = self::OPERATOR_EQUAL;
-            } elseif($operator === self::OPERATOR_NOT_IN) {
+            } elseif ($operator === self::OPERATOR_NOT_IN) {
                 $operator = self::OPERATOR_NOT_EQUAL;
             }
+        } elseif($value instanceof ItemResourceInterface) { // special case for metafields
+            $value = $value->getName();
         } else {
             throw new InvalidArgumentException('Expected string or array. Got: ' . (is_object($value) ? get_class($value) : gettype($value)));
         }
@@ -220,6 +223,10 @@ final class Criteria
      */
     public function setMaxResults(?int $limit): self
     {
+        if($limit > Info::MAX_API_ITEMS) {
+            // TODO throw
+        }
+
         $this->limit = $limit;
 
         return $this;
@@ -260,7 +267,7 @@ final class Criteria
     public function reset(string $part = null): void
     {
         if($part === self::PART_LIMIT || $part === null) {
-            $this->limit = 50;
+            $this->limit = Info::MAX_API_ITEMS;
         }
         if($part === self::PART_PAGE || $part === null) {
             $this->page = 1;
@@ -271,6 +278,12 @@ final class Criteria
         if($part === self::PART_ORDERING || $part === null) {
             $this->orderings = [];
         }
+    }
+
+    public function rewind(): void
+    {
+        $this->page = 1;
+        $this->limit = Info::MAX_API_ITEMS;
     }
 
     /**

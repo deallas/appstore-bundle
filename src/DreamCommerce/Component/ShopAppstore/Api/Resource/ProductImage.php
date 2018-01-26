@@ -32,4 +32,12 @@ final class ProductImage extends ItemResource
     {
         return 'gfx_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        // TODO
+    }
 }

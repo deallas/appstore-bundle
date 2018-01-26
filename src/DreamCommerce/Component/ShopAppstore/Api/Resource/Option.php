@@ -89,4 +89,12 @@ final class Option extends ItemResource
     {
         return 'option_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'option';
+    }
 }

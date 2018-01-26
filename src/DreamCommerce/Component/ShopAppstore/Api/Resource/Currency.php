@@ -32,4 +32,12 @@ final class Currency extends ItemResource
     {
         return 'currency_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'currency';
+    }
 }

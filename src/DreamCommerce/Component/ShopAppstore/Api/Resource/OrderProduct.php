@@ -32,4 +32,12 @@ final class OrderProduct extends ItemResource
     {
         return 'id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'order-product';
+    }
 }

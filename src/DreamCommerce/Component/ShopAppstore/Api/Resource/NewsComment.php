@@ -32,4 +32,12 @@ final class NewsComment extends ItemResource
     {
         return 'comm_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'news-comment';
+    }
 }

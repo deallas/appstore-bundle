@@ -32,4 +32,12 @@ final class NewsTag extends ItemResource
     {
         return 'tag_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'news-tag';
+    }
 }

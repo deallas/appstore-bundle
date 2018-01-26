@@ -32,4 +32,12 @@ final class AuctionHouse extends ItemResource
     {
         return 'auction_house_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'auction-house';
+    }
 }

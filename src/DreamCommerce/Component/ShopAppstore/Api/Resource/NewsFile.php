@@ -32,4 +32,12 @@ final class NewsFile extends ItemResource
     {
         return 'file_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'news-file';
+    }
 }

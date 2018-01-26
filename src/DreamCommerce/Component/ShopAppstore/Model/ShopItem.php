@@ -55,4 +55,12 @@ class ShopItem extends ShopData implements ShopItemInterface
     {
         return ($this->_externalId !== null);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flush(): void
+    {
+        $this->_changedKeys = [];
+    }
 }

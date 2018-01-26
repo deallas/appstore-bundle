@@ -32,4 +32,12 @@ final class News extends ItemResource
     {
         return 'news_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'news';
+    }
 }

@@ -47,9 +47,12 @@ class ShopItemPartListFactory implements ShopItemPartListFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createByApiResource(ItemResourceInterface $resource): ShopItemPartListInterface
+    public function createByApiResource(ItemResourceInterface $resource, ShopInterface $shop): ShopItemPartListInterface
     {
-        return $this->createNew();
+        $list = $this->createNew();
+        $list->setShop($shop);
+
+        return $list;
     }
 
     /**
@@ -71,8 +74,7 @@ class ShopItemPartListFactory implements ShopItemPartListFactoryInterface
             throw CommunicationException::forInvalidResponseBody($request, $response);
         }
 
-        $itemPartList = $this->createNew();
-
+        $itemPartList = $this->createByApiResource($resource, $shop);
         if(isset($body['page'])) {
             $itemPartList->setPage((int)$body['page']);
         }

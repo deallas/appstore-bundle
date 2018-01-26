@@ -32,4 +32,12 @@ final class Unit extends ItemResource
     {
         return 'unit_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'unit';
+    }
 }

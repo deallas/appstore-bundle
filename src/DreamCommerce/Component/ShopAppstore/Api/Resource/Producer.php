@@ -32,4 +32,12 @@ final class Producer extends ItemResource
     {
         return 'producer_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'producer';
+    }
 }

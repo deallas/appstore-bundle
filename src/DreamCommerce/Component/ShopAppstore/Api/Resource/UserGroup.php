@@ -32,4 +32,12 @@ final class UserGroup extends ItemResource
     {
         return 'group_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'user-group';
+    }
 }

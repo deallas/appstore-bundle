@@ -32,4 +32,12 @@ final class Language extends ItemResource
     {
         return 'lang_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'language';
+    }
 }

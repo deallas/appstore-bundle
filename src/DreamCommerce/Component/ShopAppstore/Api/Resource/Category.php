@@ -32,4 +32,12 @@ final class Category extends ItemResource
     {
         return 'category_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'category';
+    }
 }

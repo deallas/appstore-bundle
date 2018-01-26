@@ -32,4 +32,12 @@ final class Subscriber extends ItemResource
     {
         return 'subscriber_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'subscriber';
+    }
 }

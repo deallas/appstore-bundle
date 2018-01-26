@@ -32,4 +32,12 @@ final class MetafieldValue extends ItemResource
     {
         return 'value_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'system'; // TODO ?
+    }
 }

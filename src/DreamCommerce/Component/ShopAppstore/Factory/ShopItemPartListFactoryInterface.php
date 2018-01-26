@@ -24,9 +24,10 @@ interface ShopItemPartListFactoryInterface extends FactoryInterface
 {
     /**
      * @param ItemResourceInterface $resource
+     * @param ShopInterface $shop
      * @return ShopItemPartListInterface
      */
-    public function createByApiResource(ItemResourceInterface $resource): ShopItemPartListInterface;
+    public function createByApiResource(ItemResourceInterface $resource, ShopInterface $shop): ShopItemPartListInterface;
 
     /**
      * @param ItemResourceInterface $resource

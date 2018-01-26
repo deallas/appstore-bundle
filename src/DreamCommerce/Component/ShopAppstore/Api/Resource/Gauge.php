@@ -32,4 +32,12 @@ final class Gauge extends ItemResource
     {
         return 'gauge_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'gauge';
+    }
 }

@@ -32,4 +32,12 @@ final class SubscriberGroup extends ItemResource
     {
         return 'group_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        return 'subscriber-group';
+    }
 }

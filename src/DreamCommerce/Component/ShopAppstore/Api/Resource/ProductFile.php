@@ -32,4 +32,12 @@ final class ProductFile extends ItemResource
     {
         return 'file_id';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectName(): string
+    {
+        // TODO
+    }
 }

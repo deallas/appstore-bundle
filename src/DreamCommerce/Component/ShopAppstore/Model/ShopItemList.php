@@ -15,6 +15,8 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 
 final class ShopItemList extends AbstractShopItemList implements ShopItemListInterface
 {
+    use ShopDependTrait;
+
     /**
      * {@inheritdoc}
      */

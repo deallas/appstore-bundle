@@ -15,6 +15,8 @@ namespace DreamCommerce\Component\ShopAppstore\Model;
 
 final class ShopItemPartList extends AbstractShopItemList implements ShopItemPartListInterface
 {
+    use ShopDependTrait;
+
     /**
      * @var int
      */
