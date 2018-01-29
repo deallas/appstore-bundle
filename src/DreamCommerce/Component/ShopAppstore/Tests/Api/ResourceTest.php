@@ -51,6 +51,8 @@ abstract class ResourceTest extends TestCase
             ->method('getAccessToken');
 
         $uri = $this->getMockBuilder(UriInterface::class)->getMock();
+        $uri->method('withPath')
+            ->willReturn($uri);
 
         /** @var ShopInterface|MockObject $shop */
         $shop = $this->getMockBuilder(ShopInterface::class)->getMock();
