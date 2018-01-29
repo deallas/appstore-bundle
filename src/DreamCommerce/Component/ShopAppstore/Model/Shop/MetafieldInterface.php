@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model\Shop;
 
-use Doctrine\Common\Collections\Collection;
 use DreamCommerce\Component\ShopAppstore\Model\ShopItemInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
@@ -46,21 +45,68 @@ interface MetafieldInterface extends ShopItemInterface, ResourceInterface
     public function setKey(string $key): void;
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getKey(): ?string;
 
+    /**
+     * @param string $namespace
+     */
     public function setNamespace(string $namespace): void;
-    public function getNamespace();
-    public function setDescription(string $description);
-    public function getDescription();
-    public function setObject($object=null);
-    public function getObject();
-    public function addMetafieldValue(MetafieldValue $metafieldValues);
-    public function removeMetafieldValue(MetafieldValue $metafield);
-    public function getMetafieldValues(): Collection;
-    public function setType(string $type): void;
 
+    /**
+     * @return string|null
+     */
+    public function getNamespace(): ?string;
 
-    public function getType(): ?string;
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void;
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string;
+
+    /**
+     * @param string|null $object
+     */
+    public function setObject(?string $object): void;
+
+    /**
+     * @return string|null
+     */
+    public function getObject(): ?string;
+
+    /**
+     * @return int
+     */
+    public function getType(): ?int;
+
+    /**
+     * @param int $type
+     */
+    public function setType(int $type): void;
+
+    /**
+     * @param MetafieldValueInterface $value
+     */
+    public function addValue(MetafieldValueInterface $value): void;
+
+    /**
+     * @param MetafieldValueInterface $value
+     * @return bool
+     */
+    public function hasValue(MetafieldValueInterface $value): bool;
+
+    /**
+     * @param MetafieldValueInterface $value
+     */
+    public function removeValue(MetafieldValueInterface $value): void;
+
+    /**
+     * @return MetafieldValueInterface[]|iterable
+     */
+    public function getValues(): iterable;
 }

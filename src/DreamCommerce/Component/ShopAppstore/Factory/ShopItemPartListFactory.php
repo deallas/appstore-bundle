@@ -87,7 +87,7 @@ class ShopItemPartListFactory implements ShopItemPartListFactoryInterface
 
         $items = [];
         foreach($body['list'] as $data) {
-            $items[] = $this->shopItemFactory->createByShopAndData($resource, $shop, $data);
+            $items[] = $this->shopItemFactory->createByApiResource($resource, $shop, $data);
         }
         $itemPartList->setItems($items);
 

@@ -30,15 +30,7 @@ interface DiscriminatorMappingInterface
     public static function getMapClass(): array;
 
     /**
-     * Get mapping information to database value for mapping by discriminator
-     *
-     * Should return array similar to:
-     * [
-     *      TYPE_VALUE1    => 1,
-     *      TYPE_VALUE2    => 2,
-     *      TYPE_VALUE3    => 3,
-     * ];
-     * @return array
+     * @return string
      */
-    public static function getMapDatabase(): array;
+    public static function getMapField(): string;
 }

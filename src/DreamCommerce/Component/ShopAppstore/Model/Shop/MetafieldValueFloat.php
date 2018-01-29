@@ -13,15 +13,17 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model\Shop;
 
+use Webmozart\Assert\Assert;
+
 class MetafieldValueFloat extends MetafieldValue
 {
     /**
      * @var int
      */
-    protected $type;// = MetafieldValueInterface::TYPE_FLOAT;
+    protected $type = MetafieldInterface::TYPE_FLOAT;
 
     /**
-     * @var float
+     * @var string
      */
     protected $value;
 
@@ -36,10 +38,10 @@ class MetafieldValueFloat extends MetafieldValue
     /**
      * @param float $value
      */
-    public function setValue($value)
+    public function setValue($value): void
     {
-        $this->value = $value;
+        Assert::numeric($value);
+
+        $this->value = (float) $value;
     }
-
-
 }

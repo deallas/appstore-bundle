@@ -140,8 +140,6 @@ final class Criteria
             } elseif ($operator === self::OPERATOR_NOT_IN) {
                 $operator = self::OPERATOR_NOT_EQUAL;
             }
-        } elseif($value instanceof ItemResourceInterface) { // special case for metafields
-            $value = $value->getName();
         } else {
             throw new InvalidArgumentException('Expected string or array. Got: ' . (is_object($value) ? get_class($value) : gettype($value)));
         }

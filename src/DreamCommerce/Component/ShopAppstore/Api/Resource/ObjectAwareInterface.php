@@ -13,23 +13,10 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
-use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
-
-final class ProductFile extends ItemResource
+interface ObjectAwareInterface
 {
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getName(): string
-    {
-        return 'product-files';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getExternalIdName(): string
-    {
-        return 'file_id';
-    }
+    public function getObjectName(): string;
 }

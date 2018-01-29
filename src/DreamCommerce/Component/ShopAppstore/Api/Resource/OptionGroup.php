@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class OptionGroup extends ItemResource
+final class OptionGroup extends ItemResource implements ObjectAwareInterface
 {
     /**
      * {@inheritdoc}

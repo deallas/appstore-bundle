@@ -15,14 +15,14 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\Criteria;
 use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
-use DreamCommerce\Component\ShopAppstore\Api\ResourceInterface;
+use DreamCommerce\Component\ShopAppstore\Model\Shop\MetafieldInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopItemInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopItemListInterface;
 use DreamCommerce\Component\ShopAppstore\Model\ShopItemPartListInterface;
 use Psr\Http\Message\UriInterface;
 
-final class Metafield extends ItemResource
+final class Metafield extends ItemResource implements ObjectAwareInterface
 {
     /**
      * @var string|null
@@ -54,12 +54,33 @@ final class Metafield extends ItemResource
     }
 
     /**
-     * {@inheritdoc}
+     * @param ObjectAwareInterface $resource
+     * @param ShopInterface $shop
+     * @param array $data
+     * @return MetafieldInterface
      */
-    public function findByResource(ShopInterface $shop, ResourceInterface $resource, Criteria $criteria = null): ShopItemListInterface
+    public function insertByResource(ObjectAwareInterface $resource, ShopInterface $shop, array $data): MetafieldInterface
     {
-        $criteria = clone $criteria;
-        $criteria->andWhere('object', $resource);
+        $data['object'] = $resource->getObjectName();
+        $this->urlPart = $data['object'];
+
+        return $this->insert($shop, $data);
+    }
+
+    /**
+     * @param ObjectAwareInterface $resource
+     * @param ShopInterface $shop
+     * @param Criteria|null $criteria
+     * @return ShopItemListInterface|MetafieldInterface[]
+     */
+    public function findByResource(ObjectAwareInterface $resource, ShopInterface $shop, Criteria $criteria = null): ShopItemListInterface
+    {
+        if($criteria === null) {
+            $criteria = Criteria::create();
+        } else {
+            $criteria = clone $criteria;
+        }
+        $criteria->andWhere('object', $resource->getObjectName());
 
         return $this->findBy($shop, $criteria);
     }
@@ -82,11 +103,15 @@ final class Metafield extends ItemResource
      */
     public function insert(ShopInterface $shop, array $data): ShopItemInterface
     {
-        if(isset($data['object'])) {
-            $this->urlPart = $data['object'];
+        if(!isset($data['object'])) {
+            $data['object'] = $this->getObjectName();
         }
+        $this->urlPart = $data['object'];
 
-        return parent::insert($shop, $data);
+        $result = parent::insert($shop, $data);
+        $this->urlPart = null;
+
+        return $result;
     }
 
     /**
@@ -104,10 +129,22 @@ final class Metafield extends ItemResource
     /**
      * {@inheritdoc}
      */
+    public function updateItem(ShopItemInterface $shopItem, array $data = null): void
+    {
+        if($shopItem instanceof MetafieldInterface) {
+            $data['object'] = $shopItem->getObject();
+        }
+
+        parent::updateItem($shopItem, $data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getUri(ShopInterface $shop, int $id = null): UriInterface
     {
         $uri = parent::getUri($shop, $id);
-        $uri = $uri->withPath($uri->getPath() . '/' . ($this->urlPart === null) ? $this->getObjectName() : $this->urlPart);
+        $uri = $uri->withPath($uri->getPath() . '/' . (($this->urlPart === null) ? $this->getObjectName() : $this->urlPart));
         $this->urlPart = null;
 
         return $uri;

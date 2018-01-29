@@ -33,9 +33,13 @@ class ShopDataFactory extends AbstractFactory implements ShopDataFactoryInterfac
     /**
      * {@inheritdoc}
      */
-    public function createByApiResource(DataResourceInterface $resource): ShopDataInterface
+    public function createByApiResource(DataResourceInterface $resource, ShopInterface $shop, array $data): ShopDataInterface
     {
-        return $this->createNew();
+        /** @var ShopDataInterface $data */
+        $data = $this->createFromArray($data, $this->createNew());
+        $data->setShop($shop);
+
+        return $data;
     }
 
     /**
@@ -43,10 +47,6 @@ class ShopDataFactory extends AbstractFactory implements ShopDataFactoryInterfac
      */
     public function createByApiRequest(DataResourceInterface $resource, ShopInterface $shop, RequestInterface $request, ResponseInterface $response): ShopDataInterface
     {
-        /** @var ShopDataInterface $data */
-        $data = $this->createFromArray($this->handleApiRequest($request, $response), $this->createByApiResource($resource));
-        $data->setShop($shop);
-
-        return $data;
+        return $this->createByApiResource($resource, $shop, $this->handleApiRequest($request, $response));
     }
 }

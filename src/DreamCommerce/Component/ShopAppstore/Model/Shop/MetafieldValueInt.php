@@ -13,15 +13,17 @@ declare(strict_types=1);
 
 namespace DreamCommerce\Component\ShopAppstore\Model\Shop;
 
+use Webmozart\Assert\Assert;
+
 class MetafieldValueInt extends MetafieldValue
 {
     /**
      * @var int
      */
-    protected $type = MetafieldValueInterface::TYPE_INT;
+    protected $type = MetafieldInterface::TYPE_INT;
 
     /**
-     * @var int
+     * @var string
      */
     protected $value;
 
@@ -36,10 +38,10 @@ class MetafieldValueInt extends MetafieldValue
     /**
      * @param int $value
      */
-    public function setValue($value)
+    public function setValue($value): void
     {
-        $this->value = $value;
+        Assert::numeric($value);
+
+        $this->value = (int) $value;
     }
-
-
 }

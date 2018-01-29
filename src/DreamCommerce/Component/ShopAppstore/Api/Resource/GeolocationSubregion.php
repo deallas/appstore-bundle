@@ -15,7 +15,7 @@ namespace DreamCommerce\Component\ShopAppstore\Api\Resource;
 
 use DreamCommerce\Component\ShopAppstore\Api\ItemResource;
 
-final class GeolocationSubregion extends ItemResource
+final class GeolocationSubregion extends ItemResource implements ObjectAwareInterface
 {
     /**
      * {@inheritdoc}

@@ -24,9 +24,11 @@ interface ShopItemFactoryInterface extends FactoryInterface
 {
     /**
      * @param ItemResourceInterface $resource
+     * @param ShopInterface $shop
+     * @param array $data
      * @return ShopItemInterface
      */
-    public function createByApiResource(ItemResourceInterface $resource): ShopItemInterface;
+    public function createByApiResource(ItemResourceInterface $resource, ShopInterface $shop, array $data): ShopItemInterface;
 
     /**
      * @param ItemResourceInterface $resource
@@ -37,12 +39,4 @@ interface ShopItemFactoryInterface extends FactoryInterface
      */
     public function createByApiRequest(ItemResourceInterface $resource, ShopInterface $shop,
                                        RequestInterface $request, ResponseInterface $response): ShopItemInterface;
-
-    /**
-     * @param ItemResourceInterface $resource
-     * @param ShopInterface $shop
-     * @param array $data
-     * @return ShopItemInterface
-     */
-    public function createByShopAndData(ItemResourceInterface $resource, ShopInterface $shop, array $data): ShopItemInterface;
 }

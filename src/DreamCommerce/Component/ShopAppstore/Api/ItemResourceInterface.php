@@ -26,11 +26,6 @@ interface ItemResourceInterface extends ResourceInterface
     public function getExternalIdName(): string;
 
     /**
-     * @return string
-     */
-    public function getObjectName(): string;
-
-    /**
      * @param ShopInterface $shop
      * @param int $id
      * @return ShopItemInterface

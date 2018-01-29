@@ -24,9 +24,11 @@ interface ShopDataFactoryInterface extends FactoryInterface
 {
     /**
      * @param DataResourceInterface $resource
+     * @param ShopInterface $shop
+     * @param array $data
      * @return ShopDataInterface
      */
-    public function createByApiResource(DataResourceInterface $resource): ShopDataInterface;
+    public function createByApiResource(DataResourceInterface $resource, ShopInterface $shop, array $data): ShopDataInterface;
 
     /**
      * @param DataResourceInterface $resource

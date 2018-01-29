@@ -14,34 +14,25 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Model\Shop;
 
 use DreamCommerce\Component\ShopAppstore\Model\DiscriminatorMappingInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItemInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-interface MetafieldValueInterface extends ResourceInterface, DiscriminatorMappingInterface
+interface MetafieldValueInterface extends ShopItemInterface, ResourceInterface, DiscriminatorMappingInterface
 {
     /**
-     * @return string|null
+     * @return int
      */
-    public function getType(): ?string;
-
-    /**
-     * @return MetafieldInterface|null
-     */
-    public function getMetafield(): ?MetafieldInterface;
-
-    /**
-     * @param MetafieldInterface $metafield
-     */
-    public function setMetafield(MetafieldInterface $metafield): void;
+    public function getType(): int;
 
     /**
      * @return int|null
      */
-    public function getExternalObjectId(): ?int;
+    public function getObjectId(): ?int;
 
     /**
      * @param int $id
      */
-    public function setExternalObjectId(int $id): void;
+    public function setObjectId(int $id): void;
 
     /**
      * @return mixed
@@ -52,4 +43,14 @@ interface MetafieldValueInterface extends ResourceInterface, DiscriminatorMappin
      * @param mixed $value
      */
     public function setValue($value): void;
+
+    /**
+     * @return MetafieldInterface|null
+     */
+    public function getMetafield(): ?MetafieldInterface;
+
+    /**
+     * @param MetafieldInterface $metafield
+     */
+    public function setMetafield(MetafieldInterface $metafield): void;
 }

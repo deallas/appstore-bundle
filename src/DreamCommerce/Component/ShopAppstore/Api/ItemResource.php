@@ -113,7 +113,7 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     {
         list($request, $response) = $this->perform($shop,'GET',null, null, $criteria);
 
-        return $this->getShopItemPartListFactory()->createByApiRequest($shop, $this, $request, $response);
+        return $this->getShopItemPartListFactory()->createByApiRequest($this, $shop, $request, $response);
     }
 
     /**
@@ -160,10 +160,10 @@ abstract class ItemResource extends Resource implements ItemResourceInterface
     {
         /** @var ResponseInterface $response */
         list(, $response) = $this->perform($shop, 'POST', null, $data);
-        $id = (int) $response->getBody()->getContents();
+        $id = trim($response->getBody()->getContents(), '"');
 
-        $item = $this->getShopItemFactory()->createByShopAndData($this, $shop, $data);
-        $item->setExternalId($id);
+        $item = $this->getShopItemFactory()->createByApiResource($this, $shop, $data);
+        $item->setExternalId((int)$id);
 
         return $item;
     }

@@ -90,13 +90,6 @@ abstract class Resource implements ResourceInterface
 
         $shopClient = $this->getShopClient();
 
-        $uri = $shop->getUri();
-        $uri = $uri->withPath($uri->getPath() . '/webapi/rest/' . $this->getName());
-
-        if($id !== null) {
-            $uri = $uri->withPath($uri->getPath() . '/' . $id);
-        }
-
         $body = null;
         if($data !== null && in_array($method, [ 'POST', 'PUT' ])) {
             $body = @json_encode($data);
@@ -107,7 +100,7 @@ abstract class Resource implements ResourceInterface
 
         $request = $shopClient->getHttpClient()->createRequest(
             $method,
-            $uri,
+            $this->getUri($shop, $id),
             [
                 'Authorization' => 'Bearer ' . $shop->getToken()->getAccessToken(),
                 'Content-Type' => 'application/json'
@@ -121,6 +114,11 @@ abstract class Resource implements ResourceInterface
         return [ $request, $shopClient->send($request) ];
     }
 
+    /**
+     * @param ShopInterface $shop
+     * @param int|null $id
+     * @return UriInterface
+     */
     protected function getUri(ShopInterface $shop, int $id = null): UriInterface
     {
         $uri = $shop->getUri();

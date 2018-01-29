@@ -14,13 +14,16 @@ declare(strict_types=1);
 namespace DreamCommerce\Component\ShopAppstore\Model\Shop;
 
 use Doctrine\Common\Collections\Collection;
-use DreamCommerce\Component\ShopAppstore\Model\ShopDependTrait;
-use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use DreamCommerce\Component\ShopAppstore\Model\ShopInterface;
+use DreamCommerce\Component\ShopAppstore\Model\ShopItem;
 
 class Metafield extends ShopItem implements MetafieldInterface
 {
-    use ShopDependTrait;
+    /**
+     * @var int
+     */
+    private $id;
 
     /**
      * @var string
@@ -43,120 +46,29 @@ class Metafield extends ShopItem implements MetafieldInterface
     private $object;
 
     /**
+     * @var int
+     */
+    private $type = self::TYPE_STRING;
+
+    /**
      * @var Collection|MetafieldValueInterface[]
      */
-    private $values;
+    private $_values;
 
     /**
-     * @var string
+     * @param ShopInterface|null $shop
+     * @param array $data
+     * @param int|null $externalId
      */
-    private $type;
-
-    public function __construct()
+    public function __construct(ShopInterface $shop = null, array $data = [], int $externalId = null)
     {
-        $this->values = new ArrayCollection();
+        parent::__construct($shop, $data);
+
+        $this->_values = new ArrayCollection();
     }
 
     /**
-     * Set metafieldKey
-     *
-     * @param string $metafieldKey
-     *
-     * @return Metafield
-     */
-    public function setMetafieldKey(string $metafieldKey)
-    {
-        $this->metafieldKey = $metafieldKey;
-
-        return $this;
-    }
-
-    /**
-     * Get metafieldKey
-     *
-     * @return string
-     */
-    public function getMetafieldKey()
-    {
-        return $this->metafieldKey;
-    }
-
-    /**
-     * Set namespace
-     *
-     * @param string $namespace
-     *
-     * @return Metafield
-     */
-    public function setNamespace(string $namespace)
-    {
-        $this->namespace = $namespace;
-
-        return $this;
-    }
-
-    /**
-     * Get namespace
-     *
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     *
-     * @return Metafield
-     */
-    public function setDescription(string $description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * Set object
-     *
-     * @param string|null $object
-     *
-     * @return Metafield
-     */
-    public function setObject($object=null)
-    {
-        $this->object = $object;
-
-        return $this;
-    }
-
-    /**
-     * Get object
-     *
-     * @return string
-     */
-    public function getObject()
-    {
-        return $this->object;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -164,109 +76,120 @@ class Metafield extends ShopItem implements MetafieldInterface
     }
 
     /**
-     * @param MetafieldValue $metafieldValues
-     * @return $this
+     * {@inheritdoc}
      */
-    public function addMetafieldValue(MetafieldValue $metafieldValues)
+    public function setKey(string $key): void
     {
-        $this->tryToSetTypeByClassName(get_class($metafieldValues));
-
-        if (!$this->hasMetafieldValue($metafieldValues)) {
-            $this->metafieldValues->set($metafieldValues->getId(), $metafieldValues);
-        }
-
-        return $this;
-    }
-
-    public function hasMetafieldValue(MetafieldValue $metafieldValue)
-    {
-        return $this->metafieldValues->offsetExists($metafieldValue->getId());
+        $this->key = $key;
     }
 
     /**
-     * Remove MetafieldValue
-     *
-     * @param MetafieldValue $metafield
+     * {@inheritdoc}
      */
-    public function removeMetafieldValue(MetafieldValue $metafield)
+    public function getKey(): ?string
     {
-        $this->metafieldValues->removeElement($metafield);
+        return $this->key;
     }
 
     /**
-     * Get MetafieldValues
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * {@inheritdoc}
      */
-    public function getMetafieldValues(): Collection
+    public function setNamespace(string $namespace): void
     {
-        return $this->metafieldValues;
+        $this->namespace = $namespace;
     }
 
     /**
-     * @param ShopInterface $shop
-     * @return $this
+     * {@inheritdoc}
      */
-    public function setShop(ShopInterface $shop)
+    public function getNamespace(): ?string
     {
-        $this->shop = $shop;
-
-        return $this;
+        return $this->namespace;
     }
 
     /**
-     * @return ShopInterface
+     * {@inheritdoc}
      */
-    public function getShop()
+    public function setDescription(string $description): void
     {
-        return $this->shop;
+        $this->description = $description;
     }
 
     /**
-     * @return string
-     * @throws MetafieldTypeException
+     * {@inheritdoc}
      */
-    public function getType()
+    public function getDescription(): ?string
     {
-        if (!isset($this->type) || empty($this->type)) {
-            throw new MetafieldTypeException('Metafield type cannot be empty when Metafield object is set to MetafieldValue Object');
-        }
-
-        return $this->type;
+        return $this->description;
     }
 
     /**
-     * @param string $type
-     * @throws MetafieldTypeException
+     * {@inheritdoc}
      */
-    public function setType(string $type)
+    public function setObject(?string $object): void
     {
-        
-        if (isset($this->type) && !empty($this->type) && $this->type !== $type) {
-            throw new MetafieldTypeException('You can not change metafield type');
-        }
+        $this->object = $object;
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getObject(): ?string
+    {
+        return $this->object;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType(): ?int
+    {
+        return (int) $this->type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setType(int $type): void
+    {
         $this->type = $type;
     }
 
     /**
-     * @param $className
-     * @throws MetafieldTypeException
+     * {@inheritdoc}
      */
-    private function tryToSetTypeByClassName($className)
+    public function addValue(MetafieldValueInterface $value): void
     {
-        $types = array_flip(MetafieldValue::getMap());
-
-        if (!isset($types[$className])) {
-            throw new MetafieldTypeException('Metafield type class is not supported');
+        if (!$this->hasValue($value)) {
+            $this->_values->add($value);
+            $value->setMetafield($this);
         }
+    }
 
-        //the same type
-        if ((isset($this->type) || !empty($this->type)) && $this->type == $types[$className]) {
-            return;
+    /**
+     * {@inheritdoc}
+     */
+    public function hasValue(MetafieldValueInterface $value): bool
+    {
+        return $this->_values->contains($value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeValue(MetafieldValueInterface $value): void
+    {
+        if($this->hasValue($value)) {
+            $this->_values->removeElement($value);
+            $value->setMetafield(null);
         }
+    }
 
-
-        $this->setType($types[$className]);
+    /**
+     * {@inheritdoc}
+     */
+    public function getValues(): iterable
+    {
+        return $this->_values;
     }
 }

@@ -68,7 +68,7 @@ abstract class AbstractShopItemList implements Iterator, Countable, ArrayAccess
         $this->pointer = 0;
     }
 
-    public function current(): ShopItemInterface
+    public function current(): ?ShopItemInterface
     {
         if ($this->valid() === false) {
             return null;
@@ -102,7 +102,7 @@ abstract class AbstractShopItemList implements Iterator, Countable, ArrayAccess
         return isset($this->items[(int) $offset]);
     }
 
-    public function offsetGet($offset): ShopItemInterface
+    public function offsetGet($offset): ?ShopItemInterface
     {
         $this->pointer = (int) $offset;
 
